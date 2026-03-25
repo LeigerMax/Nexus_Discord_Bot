@@ -32,7 +32,8 @@ module.exports = {
         'general': '📋',
         'music': '🎵',
         'moderation': '🛡️',
-        'utility': '🔧'
+        'utility': '🔧',
+        'games': '🎮'
       };
 
       // Noms pour les catégories
@@ -42,7 +43,8 @@ module.exports = {
         'general': 'Général',
         'music': 'Musique',
         'moderation': 'Modération',
-        'utility': 'Utilitaire'
+        'utility': 'Utilitaire',
+        'games': 'Jeux'
       };
 
       // Collecte les commandes par catégorie

@@ -1,8 +1,25 @@
 {
-  "current": "0.1.4",
-  "releaseDate": "13 Janvier 2026",
+  "current": "0.2.0",
+  "releaseDate": "25 Mars 2026",
   "changelog": {
-      "v0.1.4": {
+    "v0.2.0": {
+      "date": "25 Mars 2026",
+      "features": [
+        "🎮 Ajout de 8 mini-jeux : Démineur, Pendu, Morpion, Puissance 4, Blackjack, Memory, Test de Réaction, Bataille Navale",
+        "🚢 Bataille Navale avancée : grille 8x8, placement privé, double affichage, ciblage par boutons",
+        "👹 Ajout de 8 nouveaux curses : Scribe, Polite, Auto-Destruct, Binary, Baby Talk, Dramatic, Robot, Medieval",
+        "✍️ Épreuve du Scribe : anti-copie, test de vitesse avec pénalité",
+        "📂 Nouvelle catégorie Jeux dans le menu !help",
+        "🏗️ Réorganisation des commandes (dossier games/)"
+      ],
+      "fixes": [
+        "🗑️ Suppression du module musique (incompatibilité YouTube)",
+        "Correction des erreurs Discord API 50035 (labels/emojis)",
+        "Protection allowedMentions sur les commandes sensibles",
+        "Meilleure gestion des collectors et interactions éphémères"
+      ]
+    },
+    "v0.1.4": {
       "date": "13 Janvier 2026",
       "features": [
         "Ajout de nouveaux tests unitaires pour améliorer la couverture de code",
@@ -16,19 +33,18 @@
     },
     "v0.1.3": {
       "date": "12 Janvier 2026",
-      "features": [
-      ],
+      "features": [],
       "fixes": [
         "Correction de la musique qui ne se lançait pas correctement",
         "Correction de tests unitaires"
       ]
     },
-     "v0.1.2": {
+    "v0.1.2": {
       "date": "12 Janvier 2026",
       "features": [
         "Ajout du status Discord personnalisé pour le bot",
         "Ajout de la section 'À propos' dans la configuration du bot",
-        "Identification de l'utilisateur dans les messages de malédictions, spam, roulettes et mutes forcés"  
+        "Identification de l'utilisateur dans les messages de malédictions, spam, roulettes et mutes forcés"
       ],
       "fixes": [
         "Le bot n'affiche plus le message 'Message Supprimé' lorsqu'un message est supprimé",
