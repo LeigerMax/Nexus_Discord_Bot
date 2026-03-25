@@ -91,10 +91,10 @@ describe('Override Command (KING)', () => {
     jest.clearAllMocks();
     
     // Nettoie tous les timers
-    for (const [_userId, data] of cursedPlayers) {
+    for (const data of cursedPlayers.values()) {
       if (data.timeout) clearTimeout(data.timeout);
     }
-    for (const [_userId, data] of mutedMembers) {
+    for (const data of mutedMembers.values()) {
       if (data.interval) clearInterval(data.interval);
     }
     

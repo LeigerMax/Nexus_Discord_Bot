@@ -11,11 +11,9 @@
 
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
-const { Player } = require('discord-player');
 const path = require('node:path');
 const CommandHandler = require('./utils/commandHandler');
 const keepAlive = require('./services/keepAlive');
-
 
 // ============================================
 // Initialisation du client Discord
@@ -35,115 +33,19 @@ const client = new Client({
 });
 
 // ============================================
-// Initialisation du système de musique
-// ============================================
-
-// Crée le player musical (ne pas assigner à client.player, utiliser useMainPlayer())
-const player = new Player(client, {
-  ytdlOptions: {
-    quality: 'highestaudio',
-    highWaterMark: 1 << 25,
-    filter: 'audioonly'
-  }
-});
-
-// Fonction pour charger les extracteurs
-async function loadExtractors() {
-  try {
-  
-      const { YoutubeExtractor } = require('discord-player-youtube');
-      await player.extractors.register(YoutubeExtractor, {
-        streamOptions: {
-          // Essaie plusieurs clients pour maximiser la compatibilité
-          useClient: ['WEB', 'ANDROID', 'IOS',],
-          highWaterMark: 1 << 25
-        },
-        
-        // Utilise ytdl-core pour contourner les restrictions
-        createStream: async (url) => {
-          const ytdl = require('ytdl-core');
-          return ytdl(url, {
-            filter: 'audioonly',
-            quality: 'highestaudio',
-            highWaterMark: 1 << 25,
-            dlChunkSize: 0,
-            // Options supplémentaires pour éviter le blocage
-            requestOptions: {
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-              }
-            }
-          });
-        }
-      });
-     
-    
-    // Charge les autres extracteurs (SoundCloud, Spotify, etc.)
-    const { DefaultExtractors } = require('@discord-player/extractor');
-    await player.extractors.loadMulti(DefaultExtractors);
-    
-    console.log('✅ Extracteurs chargés avec succès');
-  } catch (error) {
-     console.error('❌ Erreur lors du chargement de l\'extracteur YouTube:', error);
-  }
-}
-
-// Événements du player
-player.events.on('playerStart', (queue, track) => {
-  console.log('🎵 [Lecture démarrée]');
-  console.log(`   Titre: ${track.title}`);
-  console.log(`   Source: ${track.source}`);
-  console.log(`   URL: ${track.url}`);
-  if (track.raw?.source) {
-    console.log(`   Extracteur utilisé: ${track.raw.source}`);
-  }
-  console.log('');
-  queue.metadata.send(`🎶 Lecture en cours: **${track.title}**`);
-});
-
-player.events.on('error', (queue, error) => {
-  // N'affiche que les erreurs critiques, pas les erreurs de fallback
-  console.error('❌ [Erreur critique du player]:', error.message);
-  if (queue?.metadata) {
-    queue.metadata.send('❌ Une erreur est survenue lors de la lecture!');
-  }
-});
-
-player.events.on('playerError', (queue, error) => {
-  // Filtre les erreurs de streaming pour ne pas spammer
-  const errorMsg = error.message || error.toString();
-  
-  // Ignore les erreurs de tentatives de fallback (messages informatifs)
-  if (errorMsg.includes('Stream error') || errorMsg.includes('Extractor')) {
-    console.log('⚠️  [Fallback] Tentative avec un autre extracteur...');
-    return;
-  }
-  
-  console.error('❌ [Erreur de lecture]:', errorMsg);
-  if (queue?.metadata) {
-    // Messages d'erreur plus clairs pour l'utilisateur
-    if (errorMsg.includes('Sign in') || errorMsg.includes('signed in')) {
-      queue.metadata.send('❌ Cette vidéo nécessite une authentification. Essayez avec un autre lien ou configurez les cookies YouTube.');
-    } else if (errorMsg.includes('extract stream')) {
-      queue.metadata.send('❌ Impossible de lire cette musique. Elle est peut-être restreinte ou indisponible.');
-    } else {
-      queue.metadata.send(`❌ Erreur de lecture: ${errorMsg}`);
-    }
-  }
-});
-
-// ============================================
 // Initialisation du gestionnaire de commandes
 // ============================================
 
 const commandHandler = new CommandHandler(client, '!');
+const curseMiddleware = require('./middlewares/curseMiddleware');
+commandHandler.addMiddleware(curseMiddleware);
 client.commandHandler = commandHandler;
 
 // ============================================
 // Événement: Bot prêt
 // ============================================
 
-client.once('clientReady', async () => {
+client.once('ready', async () => {
   console.log(`\n${'='.repeat(50)}`);
   console.log(`Bot connecté en tant que ${client.user.tag}`);
   console.log(`Date: ${new Date().toLocaleString('fr-FR')}`);
@@ -236,12 +138,8 @@ process.on('unhandledRejection', error => {
 // Connexion et démarrage
 // ============================================
 
-// Fonction principale async pour attendre le chargement des extracteurs
 (async () => {
-  // Attends que les extracteurs soient complètement chargés
-  await loadExtractors();
-  
-  // Ensuite connecte le bot
+  // Connecte le bot
   await client.login(process.env.DISCORD_TOKEN).catch(error => {
     console.error('Erreur de connexion:', error);
     process.exit(1);
@@ -249,5 +147,3 @@ process.on('unhandledRejection', error => {
   
   keepAlive();
 })();
-
-

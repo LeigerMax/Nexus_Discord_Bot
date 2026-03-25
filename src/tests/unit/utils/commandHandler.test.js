@@ -306,6 +306,9 @@ describe('Utils: CommandHandler', () => {
         name: 'test',
         execute: jest.fn().mockResolvedValue({})
       });
+      
+      const curseMiddleware = require('../../../middlewares/curseMiddleware.js');
+      commandHandler.addMiddleware(curseMiddleware);
     });
 
     test('doit exécuter normalement si pas maudit', async () => {

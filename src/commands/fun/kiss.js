@@ -53,8 +53,8 @@ module.exports = {
       // Supprime le message original
       try {
         await message.delete();
-      } catch (err) {
-        console.log('Impossible de supprimer le message:', err.message);
+      } catch {
+        // Ignorer l'erreur si on ne peut pas supprimer le message ping
       }
 
       if (isSecret) {
@@ -78,7 +78,7 @@ module.exports = {
             .setImage(gifUrl)
             .setFooter({ text: 'Aperçu du GIF envoyé' });
           await message.author.send({ embeds: [confirmEmbed] });
-        } catch (_err) {
+        } catch {
           await message.channel.send(`❌ Impossible d'envoyer un message privé à ${mentionedUser}.`);
         }
       } else {

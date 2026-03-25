@@ -21,6 +21,20 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000); // 5 minutes
 
+// Phrases complexes pour la malédiction CHALLENGE
+const CHALLENGE_PHRASES = [
+  "Le chasseur sachant chasser chasse sans son chien dans les bois sombres.",
+  "Si six scies scient six cyprès, six cent six scies scient six cent six cyprès.",
+  "Un chasseur sachant chasser doit savoir chasser sans son chien de chasse.",
+  "Trois tortues trottaient sur un trottoir très étroit.",
+  "Les chaussettes de l'archiduchesse sont-elles sèches, archi-sèches ?",
+  "Un pâtissier qui pâtissait chez un tapissier qui tapissait, dit au tapissier qui tapissait : pourquoi tapisses-tu chez un pâtissier qui pâtisse ?",
+  "Fruits frais, fruits frits, fruits cuits, fruits crus.",
+  "La robe rouge de Rosalie est ravissante.",
+  "Douze douches douces.",
+  "Pruneau cuit, pruneau cru, pruneau cuit, pruneau cru."
+];
+
 // Types de malédictions disponibles
 const CURSES = {
   RANDOM_RESPONSES: {
@@ -142,6 +156,48 @@ const CURSES = {
     description: 'Des mots sont remplacés par des emojis bizarres',
     emoji: '🌈',
     color: 0xFF1493
+  },
+  CHALLENGE: {
+    name: '🧩 Épreuve du Scribe',
+    description: 'Recopie la phrase complexe pour lever le sort (Mute Vocal/Chat)',
+    emoji: '🧩',
+    color: 0xFFA500
+  },
+  POLITE_MODE: {
+    name: '🤵 Mode Majordome',
+    description: 'Oblige à être poli (Monsieur, ... salutations distinguées)',
+    emoji: '🤵',
+    color: 0xFFD700
+  },
+  SHY_MODE: {
+    name: '😳 Mode Timide',
+    description: 'Messages limités à 10 caractères et tronqués',
+    emoji: '😳',
+    color: 0xFFB6C1
+  },
+  EMOJI_ONLY: {
+    name: '😜 Mode Émoticône',
+    description: 'Uniquement des emojis autorisés',
+    emoji: '😜',
+    color: 0xFFFF00
+  },
+  QUESTIONER: {
+    name: '❓ Point d\'Interrogation',
+    description: 'Tous les messages doivent finir par un point d\'interrogation',
+    emoji: '❓',
+    color: 0x4682B4
+  },
+  SELF_DESTRUCT: {
+    name: '🧨 Auto-Destruction',
+    description: 'Les messages se suppriment après 5 secondes',
+    emoji: '🧨',
+    color: 0xFF4500
+  },
+  PARROT: {
+    name: '🦜 Le Perroquet',
+    description: 'Le bot répète tes messages de façon moqueuse',
+    emoji: '🦜',
+    color: 0x00FF7F
   }
 };
 
@@ -164,22 +220,22 @@ const RANDOM_RESPONSES = [
 module.exports = {
   name: 'curse',
   description: 'Lance une malédiction sur un joueur',
-  usage: '!curse [@joueur] [durée] OU !curse hidden [@joueur] [durée] [TYPE] OU !curse types',
+  usage: '!curse [@joueur] [durée] [TYPE] OU !curse hidden [@joueur] [durée] [TYPE] OU !curse types',
   cursedPlayers,
-  
+
   async execute(message, args) {
     try {
       // Mode caché : !curse hidden @joueur durée TYPE_MALEDICTION
       let hiddenMode = false;
       let selectedCurseType = null;
-      
+
       if (args[0] === 'hidden') {
         hiddenMode = true;
         args.shift(); // Retire "hidden" des arguments
-        
+
         // Efface le message de commande immédiatement
-        await message.delete().catch(() => {});
-        
+        await message.delete().catch(() => { });
+
         // Le dernier argument est le type de malédiction
         const curseTypeArg = args[args.length - 1];
         if (curseTypeArg && CURSES[curseTypeArg.toUpperCase()]) {
@@ -187,10 +243,10 @@ module.exports = {
           args.pop(); // Retire le type de malédiction des arguments
         } else {
           // Si pas de type valide, envoie un message privé avec les options
-          const curseList = Object.keys(CURSES).map(key => 
+          const curseList = Object.keys(CURSES).map(key =>
             `\`${key}\` - ${CURSES[key].emoji} ${CURSES[key].name}`
           ).join('\n');
-          
+
           try {
             await message.author.send(
               `❌ **Type de malédiction invalide!**\n\n` +
@@ -203,15 +259,15 @@ module.exports = {
           return;
         }
       }
-      
+
       // Commande pour afficher les types de malédictions (caché)
       if (args[0] === 'types') {
-        await message.delete().catch(() => {});
-        
-        const curseList = Object.keys(CURSES).map(key => 
+        await message.delete().catch(() => { });
+
+        const curseList = Object.keys(CURSES).map(key =>
           `\`${key}\` - ${CURSES[key].emoji} ${CURSES[key].name}\n${CURSES[key].description}`
         ).join('\n\n');
-        
+
         try {
           const embed = new EmbedBuilder()
             .setColor(0x9400D3)
@@ -223,14 +279,14 @@ module.exports = {
             )
             .setFooter({ text: 'Message envoyé en privé pour rester caché' })
             .setTimestamp();
-          
+
           await message.author.send({ embeds: [embed] });
         } catch (err) {
           console.error('Impossible d\'envoyer un MP:', err);
         }
         return;
       }
-      
+
       // Commande pour lever toutes les malédictions (admin only)
       if (args[0] === 'clear') {
         if (!message.member.permissions.has('Administrator')) {
@@ -291,9 +347,17 @@ module.exports = {
         }
 
         targetMember = allVoiceMembers[Math.floor(Math.random() * allVoiceMembers.length)];
-        
+
         if (args[1]) {
-          duration = parseInt(args[1]);
+          const potDuration = parseInt(args[1]);
+          if (!isNaN(potDuration)) {
+            duration = potDuration;
+            if (args[2] && CURSES[args[2].toUpperCase()]) {
+              selectedCurseType = args[2].toUpperCase();
+            }
+          } else if (CURSES[args[1].toUpperCase()]) {
+            selectedCurseType = args[1].toUpperCase();
+          }
         }
       } else {
         // Mode ciblé : mentionne un joueur
@@ -302,16 +366,24 @@ module.exports = {
         if (!targetMember) {
           return message.reply({
             content: '❌ **Erreur**: Tu dois mentionner un joueur ou utiliser `random`!\n' +
-                     '**Exemples**:\n' +
-                     '`!curse @joueur 10` - Maudit un joueur pour 10 minutes\n' +
-                     '`!curse random 5` - Maudit un joueur aléatoire en vocal pour 5 minutes\n' +
-                     '`!curse list` - Affiche les joueurs maudits\n' +
-                     '`!curse clear` - Lève toutes les malédictions (admin)'
+              '**Exemples**:\n' +
+              '`!curse @joueur 10` - Maudit un joueur pour 10 minutes\n' +
+              '`!curse random 5` - Maudit un joueur aléatoire en vocal pour 5 minutes\n' +
+              '`!curse list` - Affiche les joueurs maudits\n' +
+              '`!curse clear` - Lève toutes les malédictions (admin)'
           });
         }
 
         if (args[1]) {
-          duration = parseInt(args[1]);
+          const potDuration = parseInt(args[1]);
+          if (!isNaN(potDuration)) {
+            duration = potDuration;
+            if (args[2] && CURSES[args[2].toUpperCase()]) {
+              selectedCurseType = args[2].toUpperCase();
+            }
+          } else if (CURSES[args[1].toUpperCase()]) {
+            selectedCurseType = args[1].toUpperCase();
+          }
         }
       }
 
@@ -357,7 +429,7 @@ module.exports = {
       if (cursedPlayers.has(targetMember.id)) {
         const curseData = cursedPlayers.get(targetMember.id);
         const timeLeft = Math.ceil((curseData.endTime - Date.now()) / 60000);
-        
+
         if (hiddenMode) {
           try {
             await message.author.send(
@@ -369,7 +441,7 @@ module.exports = {
           }
           return;
         }
-        
+
         return message.reply(
           `❌ ${targetMember.user.username} est déjà maudit!\n` +
           `⏱️ **Temps restant**: ${timeLeft} minute(s)`
@@ -411,10 +483,23 @@ module.exports = {
 
       // Applique la malédiction spécifique
       let extraEffect = '';
-      if (randomCurseType === 'VOICE_MUTE' && targetMember.voice.channel) {
+      let challengePhrase = null;
+      let trapPhrase = null;
+      let startTime = Date.now();
+
+      if (randomCurseType === 'CHALLENGE') {
+        challengePhrase = CHALLENGE_PHRASES[Math.floor(Math.random() * CHALLENGE_PHRASES.length)];
+        // Injection de caractères invisibles (\u200B) pour bloquer le copier-coller simple
+        trapPhrase = challengePhrase.split('').map(char =>
+          Math.random() < 0.2 ? char + '\u200B' : char
+        ).join('');
+        extraEffect = `\n📝 **TA PHRASE À COPIER (INTERDIT DE COPIER-COLLER !)**:\n\`${trapPhrase}\`\n\n*Le chat et le vocal sont bloqués tant que tu ne l'as pas posté !*`;
+      }
+
+      if ((randomCurseType === 'VOICE_MUTE' || randomCurseType === 'CHALLENGE') && targetMember.voice.channel) {
         try {
           await targetMember.voice.setMute(true, `Malédiction - ${duration} min`);
-          extraEffect = '\n🔇 **Le joueur a été muté dans le vocal!**';
+          extraEffect += '\n🔇 **Le joueur a été muté dans le vocal!**';
         } catch (err) {
           console.error('Impossible de mute:', err);
         }
@@ -436,16 +521,16 @@ module.exports = {
             `🤡 ${targetMember} pense qu'il peut échapper à la malédiction`,
             `💀 ${targetMember} est un joueur maudit, évitez-le!`
           ];
-          
+
           if (Math.random() < 0.3) { // 30% de chance toutes les 30s
             const randomMsg = shameMessages[Math.floor(Math.random() * shameMessages.length)];
-            message.channel.send(randomMsg).catch(() => {});
+            message.channel.send(randomMsg).catch(() => { });
           }
         }
 
         // Effet de spam
         if (randomCurseType === 'SPAM' && Date.now() < endTime) {
-          if (Math.random() < 0.2) { // 20% de chance toutes les 30s
+          if (Math.random() < 0.2) { // 20% de chance toutes les 2s (ajusté car intervalle plus court)
             const spamMessages = [
               `${targetMember} PING! 🏓`,
               `Hey ${targetMember}, tu es toujours maudit 👻`,
@@ -453,11 +538,23 @@ module.exports = {
               `${targetMember} Ne m'oublie pas ! 😈`
             ];
             const randomMsg = spamMessages[Math.floor(Math.random() * spamMessages.length)];
-            message.channel.send(randomMsg).catch(() => {});
+            message.channel.send(randomMsg).catch(() => { });
           }
         }
 
-      }, 30000); // Vérifie toutes les 30 secondes
+        // Mute forcé pour VOICE_MUTE et CHALLENGE
+        if ((randomCurseType === 'VOICE_MUTE' || randomCurseType === 'CHALLENGE') && Date.now() < endTime) {
+          try {
+            const currentMember = await message.guild.members.fetch(targetMember.id);
+            if (currentMember.voice.channel && !currentMember.voice.serverMute) {
+              await currentMember.voice.setMute(true, 'Force Mute Malédiction');
+            }
+          } catch {
+            // Ignore les erreurs de mute
+          }
+        }
+
+      }, 2000); // Vérifie toutes les 2 secondes (plus réactif pour le challenge)
 
       cursedPlayers.set(targetMember.id, {
         type: randomCurseType,
@@ -465,6 +562,9 @@ module.exports = {
         interval: curseInterval,
         cursedBy: message.author.id,
         channelId: message.channel.id,
+        challengePhrase: challengePhrase,
+        trapPhrase: trapPhrase,
+        startTime: startTime,
         expiresAt: endTime // Timestamp d'expiration pour le GC
       });
 
@@ -522,7 +622,7 @@ module.exports = {
         if (randomCurseType === 'VOICE_MUTE') {
           const member = await message.guild.members.fetch(targetMember.id).catch(() => null);
           if (member && member.voice.channel) {
-            await member.voice.setMute(false, 'Fin de la malédiction').catch(() => {});
+            await member.voice.setMute(false, 'Fin de la malédiction').catch(() => { });
           }
         }
 

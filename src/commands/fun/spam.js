@@ -121,8 +121,8 @@ module.exports = {
               const msg = await message.channel.messages.fetch(msgId);
               await msg.delete();
               deletedCount++;
-            } catch (_err) {
-              console.log('Message déjà supprimé ou introuvable:', msgId);
+            } catch {
+              // Ignorer si l'utilisateur a bloqué le bot
             }
           }
 

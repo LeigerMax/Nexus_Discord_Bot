@@ -59,7 +59,7 @@ function setBotPresence(client) {
  * @param {Client} client - Client Discord.js
  */
 module.exports = function(client) {
-  client.once('clientReady', () => {
+  client.once('ready', () => {
     setBotPresence(client);
   });
 };

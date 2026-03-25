@@ -4,6 +4,7 @@
  * @module events/cursedMessages
  * @listens messageCreate
  */
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = (client) => {
   client.on('messageCreate', async (message) => {
@@ -21,6 +22,57 @@ module.exports = (client) => {
       
       const curseType = curseCommand.getCurseType(message.author.id);
       
+      // Malédiction: Épreuve du Scribe (Priorité haute, bloque tout le reste)
+      if (curseType === 'CHALLENGE') {
+        const curseData = curseCommand.cursedPlayers.get(message.author.id);
+        const challengePhrase = curseData.challengePhrase;
+        const trapPhrase = curseData.trapPhrase || challengePhrase;
+        
+        // Supprime le message original systématiquement
+        await message.delete().catch(() => {});
+
+        if (message.content.trim() === challengePhrase) {
+          // Anti-triche : Vérifie le temps de saisie (min 4s)
+          const startTime = curseData.startTime || Date.now();
+          if (Date.now() - startTime < 4000) {
+            // Punition : +5 minutes
+            const penaltyMs = 5 * 60 * 1000;
+            curseData.endTime += penaltyMs;
+            curseData.expiresAt += penaltyMs;
+            curseData.startTime = Date.now(); // Reset pour forcer à attendre à nouveau
+            
+            return message.channel.send(`🚫 **TENTATIVE DE TRICHE DÉTECTÉE** ${message.author}!\nLe copier-coller est strictement interdit. Tu reçois une pénalité de **5 minutes** supplémentaires ! ⏲️\n*(Attends au moins 4 secondes avant de valider)*`);
+          }
+
+          // Bravo ! On lève la malédiction
+          clearInterval(curseData.interval);
+          curseCommand.cursedPlayers.delete(message.author.id);
+          
+          // Démute vocal
+          const member = await message.guild.members.fetch(message.author.id).catch(() => null);
+          if (member && member.voice.channel) {
+            await member.voice.setMute(false, 'Réussite du challenge scribe').catch(() => {});
+          }
+
+          const embed = new EmbedBuilder()
+            .setColor(0x00FF00)
+            .setTitle('✨ Épreuve du Scribe Réussie !')
+            .setDescription(`🎉 **${message.author.username}** a recopié la phrase avec succès !\n\n*La malédiction est levée, tu peux à nouveau parler.*`)
+            .setTimestamp();
+          
+          return message.channel.send({ embeds: [embed] });
+        } else {
+          // Échec, on rappelle la phrase (avec un léger throttle de 10s pour éviter le spam du bot)
+          const now = Date.now();
+          if (!curseData.lastReminder || now - curseData.lastReminder > 10000) {
+            curseData.lastReminder = now;
+            curseData.startTime = now; // Reset le chrono au rappel pour éviter les "wait n' paste"
+            return message.channel.send(`❌ **Échec du Scribe**, ${message.author}!\nÉcris exactement :\n\`${trapPhrase}\``);
+          }
+          return;
+        }
+      }
+
       // Malédictions qui altèrent les messages
       const messageAlteringCurses = [
         'MESSAGE_SCRAMBLER',
@@ -32,9 +84,27 @@ module.exports = (client) => {
         'PIRATE_MODE',
         'VOWEL_REMOVER',
         'REVERSE_TEXT',
-        'RANDOM_EMOJI'
+        'RANDOM_EMOJI',
+        'POLITE_MODE',
+        'SHY_MODE',
+        'EMOJI_ONLY',
+        'QUESTIONER'
       ];
       
+      if (curseType === 'PARROT') {
+        const parrotEmojis = ['🦜', '🤡', '🤓', '💅', '🙄'];
+        const randomParrotEmoji = parrotEmojis[Math.floor(Math.random() * parrotEmojis.length)];
+        const mocked = message.content.toLowerCase().split('').map(c => Math.random() < 0.3 ? c.toUpperCase() : c).join('');
+        return message.channel.send(`*${mocked}* ${randomParrotEmoji}`);
+      }
+
+      if (curseType === 'SELF_DESTRUCT') {
+        setTimeout(() => {
+          message.delete().catch(() => {});
+        }, 5000 + Math.random() * 5000); // Entre 5 et 10 secondes
+        return;
+      }
+
       if (!messageAlteringCurses.includes(curseType)) return;
       
       // Sauvegarde le message original
@@ -82,6 +152,35 @@ module.exports = (client) => {
         case 'RANDOM_EMOJI':
           alteredMessage = randomEmojiReplace(originalMessage);
           break;
+          
+        case 'POLITE_MODE':
+          if (originalMessage.startsWith('Monsieur,') && originalMessage.endsWith('Je vous prie d\'agréer mes salutations distinguées')) {
+            return; // On garde le message original tel quel
+          }
+          await message.delete().catch(() => {});
+          return message.channel.send(`🤵 **${message.author.username}**, un peu de tenue ! Un majordome doit commencer par "Monsieur," et finir par "Je vous prie d'agréer mes salutations distinguées".`);
+          
+        case 'SHY_MODE':
+          if (originalMessage.trim().length <= 10) return; // Pas besoin de tronquer si déjà court
+          alteredMessage = originalMessage.substring(0, 10).trim() + "... euh... pardon.";
+          break;
+          
+        case 'EMOJI_ONLY': {
+          const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
+          const contentWithoutEmojis = originalMessage.replace(emojiRegex, '').trim();
+          if (contentWithoutEmojis.length === 0) {
+            return; // Que des emojis, on garde le message
+          }
+          await message.delete().catch(() => {});
+          return message.channel.send(`😜 **${message.author.username}**, ici on ne parle qu'en emojis ! 😜`);
+        }
+        case 'QUESTIONER':
+          if (originalMessage.trim().endsWith('?')) {
+            return; // Déjà une question, on garde le message
+          }
+          alteredMessage = originalMessage.trim() + " ?";
+          break;
+          
       }
       
       // Supprime le message original

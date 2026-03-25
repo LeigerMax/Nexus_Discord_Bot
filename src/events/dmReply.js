@@ -75,7 +75,7 @@ module.exports = {
         
         await message.reply({ embeds: [confirmEmbed] });
         
-      } catch (_error) {
+      } catch {
         // L'erreur est gérée silencieusement - pas besoin de log en production
       }
     });

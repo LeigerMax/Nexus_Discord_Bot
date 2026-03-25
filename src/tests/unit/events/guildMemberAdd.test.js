@@ -115,12 +115,15 @@ describe('Event: guildMemberAdd', () => {
         throw new Error('Cannot generate message');
       });
 
+      let hasThrown = false;
       try {
         await guildMemberAddEvent.execute(mockMember);
-      } catch (_error) {
-        // L'erreur est capturée, test réussi
+      } catch {
+        hasThrown = true;
       }
 
+      // Vérifie que l'erreur a été capturée
+      expect(hasThrown).toBe(true);
       // Vérifie que l'erreur n'a pas empêché le reste du code
       expect(getRandomWelcomeMessage).toHaveBeenCalled();
     });

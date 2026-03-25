@@ -68,7 +68,7 @@ module.exports = {
           
           if (affectAll) {
             // Nettoie tous les timeouts avant de clear
-            for (const [_userId, curseData] of cursedPlayers) {
+            for (const curseData of cursedPlayers.values()) {
               if (curseData.timeout) clearTimeout(curseData.timeout);
             }
             results.cursesRemoved = cursedPlayers.size;

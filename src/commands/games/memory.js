@@ -1,0 +1,140 @@
+const { 
+  EmbedBuilder, 
+  ActionRowBuilder, 
+  ButtonBuilder, 
+  ButtonStyle, 
+  ComponentType 
+} = require('discord.js');
+
+module.exports = {
+  name: 'memory',
+  description: 'Lance une partie de Jeu de Mémoire (4x4)',
+  usage: '!memory',
+  
+  async execute(message, _args) {
+    const emojis = ['🍎', '🍌', '🍒', '🍇', '🍉', '🍓', '🥝', '🍍'];
+    // On double les emojis pour faire des paires et on mélange
+    let boardContent = [...emojis, ...emojis];
+    for (let i = boardContent.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [boardContent[i], boardContent[j]] = [boardContent[j], boardContent[i]];
+    }
+
+    let matched = new Set();
+    let selected = []; // Stocke les positions [index, emoji]
+    let tries = 0;
+    let isGameOver = false;
+    let isWaiting = false; // Pour empêcher de cliquer pendant le délai de non-match
+
+    const createRows = (currentSelected = []) => {
+      const rows = [];
+      for (let i = 0; i < 4; i++) {
+        const row = new ActionRowBuilder();
+        for (let j = 0; j < 4; j++) {
+          const index = i * 4 + j;
+          const isMatched = matched.has(index);
+          const isSelected = currentSelected.some(s => s.index === index);
+          
+          const button = new ButtonBuilder()
+            .setCustomId(`mem_${index}`)
+            .setLabel((isMatched || isSelected) ? ' ' : '?')
+            .setStyle(isMatched ? ButtonStyle.Success : (isSelected ? ButtonStyle.Primary : ButtonStyle.Secondary))
+            .setDisabled(isGameOver || isMatched || isSelected || isWaiting);
+          
+          if (isMatched || isSelected) {
+            button.setEmoji(boardContent[index]);
+          }
+          
+          row.addComponents(button);
+        }
+        rows.push(row);
+      }
+      return rows;
+    };
+
+    const createEmbed = (status = 'Trouve toutes les paires !') => {
+      return new EmbedBuilder()
+        .setColor(isGameOver ? 0x2ECC71 : 0x9B59B6)
+        .setTitle('🧠 JEU DE MÉMOIRE')
+        .setDescription(`**Statut :** ${status}\n\n**Tentatives :** \`${tries}\` | **Paires trouvées :** \`${matched.size / 2} / 8\``)
+        .setFooter({ text: `Partie de ${message.author.username}` })
+        .setTimestamp();
+    };
+
+    const gameMessage = await message.reply({
+      embeds: [createEmbed()],
+      components: createRows()
+    });
+
+    const collector = gameMessage.createMessageComponentCollector({
+      componentType: ComponentType.Button,
+      time: 600000 // 10 minutes
+    });
+
+    collector.on('collect', async (interaction) => {
+      if (interaction.user.id !== message.author.id) {
+        return interaction.reply({ content: '❌ Seul le joueur ayant lancé la partie peut jouer.', ephemeral: true });
+      }
+
+      const index = parseInt(interaction.customId.split('_')[1]);
+      const emoji = boardContent[index];
+
+      selected.push({ index, emoji });
+
+      if (selected.length === 1) {
+        // Premier clic
+        await interaction.update({
+          components: createRows(selected)
+        });
+      } else if (selected.length === 2) {
+        // Deuxième clic
+        tries++;
+        const [first, second] = selected;
+
+        if (first.emoji === second.emoji) {
+          // C'est un match !
+          matched.add(first.index);
+          matched.add(second.index);
+          selected = [];
+
+          if (matched.size === boardContent.length) {
+            isGameOver = true;
+            collector.stop();
+            await interaction.update({
+              embeds: [createEmbed('🏆 VICTOIRE ! Félicitations !')],
+              components: createRows()
+            });
+          } else {
+            await interaction.update({
+              embeds: [createEmbed('✨ Match trouvé ! Continue !')],
+              components: createRows()
+            });
+          }
+        } else {
+          // Pas de match
+          isWaiting = true;
+          await interaction.update({
+            embeds: [createEmbed('❌ Pas le même...')],
+            components: createRows(selected)
+          });
+
+          // Petit délai puis on cache
+          setTimeout(async () => {
+            selected = [];
+            isWaiting = false;
+            await gameMessage.edit({
+              embeds: [createEmbed()],
+              components: createRows()
+            }).catch(() => {});
+          }, 1500);
+        }
+      }
+    });
+
+    collector.on('end', () => {
+      if (!isGameOver) {
+        gameMessage.edit({ components: createRows() }).catch(() => {});
+      }
+    });
+  }
+};

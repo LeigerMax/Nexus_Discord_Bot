@@ -15,7 +15,7 @@ describe('botPresence Event', () => {
         setPresence: jest.fn()
       },
       once: jest.fn((event, callback) => {
-        if (event === 'clientReady') {
+        if (event === 'ready') {
           callback();
         }
       })
@@ -122,10 +122,10 @@ describe('botPresence Event', () => {
       const moduleInit = require('../../../../src/events/botPresence');
       
       expect(() => moduleInit(mockClient)).not.toThrow();
-      expect(mockClient.once).toHaveBeenCalledWith('clientReady', expect.any(Function));
+      expect(mockClient.once).toHaveBeenCalledWith('ready', expect.any(Function));
     });
 
-    it('devrait appeler setBotPresence lors de l\'événement clientReady', () => {
+    it('devrait appeler setBotPresence lors de l\'événement ready', () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
       const moduleInit = require('../../../../src/events/botPresence');
       

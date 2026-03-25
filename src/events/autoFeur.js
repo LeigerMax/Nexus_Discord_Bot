@@ -14,9 +14,8 @@ module.exports = (client) => {
     if (content.endsWith('quoi') || content.endsWith('quoi?') || content === 'quoi') {
       try {
         await message.reply('feur');
-      }
-      catch (_error) {
-        // L'erreur est gérée silencieusement - pas besoin de log en production
+      } catch {
+        // Ignorer silencieusement les erreurs d'envoi
       }
     }
   });

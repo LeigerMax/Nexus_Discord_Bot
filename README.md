@@ -200,9 +200,23 @@ GatewayIntentBits.DirectMessages
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
 | `DISCORD_TOKEN` | Your Discord bot token | ✅ Yes | - |
+| `YOUTUBE_COOKIE` | YouTube cookies for optimization | ⭕ Optional | - |
 | `PORT` | Port for keep-alive web server | ❌ Optional | 8080 |
 | `LOOSER_ID` | User ID for presence tracking | ❌ Optional | - |
 | `ACTIVITY_SALON_ID` | Channel ID for activity logs | ❌ Optional | - |
+
+#### 🍪 YouTube Cookies Configuration (Optionnel)
+
+
+For cloud hosting (Render, Railway, etc.), you may see fallback messages. Configure cookies to optimize:
+
+**See [YOUTUBE_COOKIES_GUIDE.md](YOUTUBE_COOKIES_GUIDE.md) for detailed instructions.**
+
+Quick setup:
+1. Install [Cookie-Editor](https://chrome.google.com/webstore/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm) extension
+2. Login to YouTube and export cookies
+3. Add `YOUTUBE_COOKIE` variable on your hosting platform
+4. Format: `VISITOR_INFO1_LIVE=xxx; CONSENT=xxx; ...`
 
 ### Keep-Alive System
 

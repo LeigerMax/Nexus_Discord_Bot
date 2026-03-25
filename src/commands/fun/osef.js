@@ -78,7 +78,7 @@ module.exports = {
             .setImage(gifUrl)
             .setFooter({ text: 'Aperçu du GIF envoyé' });
           await message.author.send({ embeds: [confirmEmbed] });
-        } catch (_err) {
+        } catch {
           await message.channel.send(`❌ Impossible d'envoyer un message privé à ${mentionedUser}.`);
         }
       } else {

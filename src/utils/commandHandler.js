@@ -1,6 +1,6 @@
 /**
  * @file Command Handler Utility
- * @description Gestionnaire de commandes qui charge automatiquement toutes les commandes et gère leur exécution avec système de cooldown
+ * @description Gestionnaire de commandes qui charge automatiquement toutes les commandes et gère leur exécution avec un système de middleware
  * @module utils/commandHandler
  * @requires node:fs
  * @requires node:path
@@ -14,6 +14,15 @@ class CommandHandler {
     this.client = client;
     this.prefix = prefix;
     this.commands = new Map();
+    this.middlewares = [];
+  }
+
+  /**
+   * Ajoute un middleware à la chaine d'exécution
+   * @param {Function} middleware - Fonction asynchrone prenant (context, next)
+   */
+  addMiddleware(middleware) {
+    this.middlewares.push(middleware);
   }
 
   /**
@@ -62,18 +71,14 @@ class CommandHandler {
     const suggestions = [];
 
     for (const cmdName of commandNames) {
-      // Distance de Levenshtein simplifiée
       const distance = this.levenshteinDistance(input, cmdName);
       
-      // Si la distance est faible (3 ou moins) ou si le début correspond
       if (distance <= 3 || cmdName.startsWith(input) || input.startsWith(cmdName)) {
         suggestions.push({ name: cmdName, distance });
       }
     }
 
-    // Trie par distance (les plus proches en premier)
     suggestions.sort((a, b) => a.distance - b.distance);
-    
     return suggestions.map(s => s.name);
   }
 
@@ -85,14 +90,8 @@ class CommandHandler {
    */
   levenshteinDistance(a, b) {
     const matrix = [];
-
-    for (let i = 0; i <= b.length; i++) {
-      matrix[i] = [i];
-    }
-
-    for (let j = 0; j <= a.length; j++) {
-      matrix[0][j] = j;
-    }
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
 
     for (let i = 1; i <= b.length; i++) {
       for (let j = 1; j <= a.length; j++) {
@@ -107,29 +106,44 @@ class CommandHandler {
         }
       }
     }
-
     return matrix[b.length][a.length];
   }
 
   /**
+   * Exécute la chaine de middlewares et la commande finale
+   * @param {Object} context - Le contexte de la commande
+   */
+  async executeMiddlewares(context) {
+    let index = -1;
+    
+    const runner = async (i) => {
+      if (i <= index) throw new Error('next() called multiple times');
+      index = i;
+      
+      // Si on a passé tous les middlewares, on exécute la vraie commande
+      if (i === this.middlewares.length) {
+        return await context.command.execute(context.message, context.args);
+      }
+      
+      const middleware = this.middlewares[i];
+      await middleware(context, () => runner(i + 1));
+    };
+    
+    await runner(0);
+  }
+
+  /**
    * Traite un message et exécute la commande si elle existe
-   * @param {Message} message - Le message Discord
+   * @param {Object} message - Le message Discord
    */
   async handleMessage(message) {
-    // Ignore les messages des bots
     if (message.author.bot) return;
-
-    // Vérifie si le message commence par le préfixe
     if (!message.content.startsWith(this.prefix)) return;
 
-    // Parse le message
     const args = message.content.slice(this.prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
-
-    // Récupère la commande
     const command = this.commands.get(commandName);
     
-    // Si la commande n'existe pas, suggère des alternatives
     if (!command) {
       const suggestions = this.findSimilarCommands(commandName);
       if (suggestions.length > 0) {
@@ -139,96 +153,23 @@ class CommandHandler {
           allowedMentions: { repliedUser: false }
         });
       }
-      return; // Pas de suggestions, ignore silencieusement
+      return; 
     }
 
-    // Vérifie si le joueur est maudit
-    const curseCommand = this.commands.get('curse');
-    if (curseCommand?.isCursed(message.author.id)) {
-      const curseType = curseCommand.getCurseType(message.author.id);
-      
-      // Malédiction: Ignoré
-      if (curseType === 'IGNORED') {
-        return; // Ignore complètement le message
-      }
-      
-      // Malédiction: Bloqué
-      if (curseType === 'BLOCKED') {
-        return message.reply('🚫 Tu es maudit! Aucune commande ne fonctionne pour toi...');
-      }
-      
-      // Malédiction: Réponses aléatoires
-      if (curseType === 'RANDOM_RESPONSES') {
-        return message.reply(curseCommand.getRandomResponse());
-      }
-      
-      // Malédiction: Messages déformés (inverse la commande)
-      if (curseType === 'GARBLED') {
-        const garbledMsg = message.content.split('').reverse().join('');
-        return message.reply(`🔀 Ta commande a été déformée: \`${garbledMsg}\``);
-      }
-      
-      // Malédiction: Mode lent
-      if (curseType === 'SLOW_MODE') {
-        message.reply('🐌 Traitement en cours... *lentement*');
-        await new Promise(resolve => setTimeout(resolve, 10000)); // 10 secondes
-      }
-      
-      // Malédiction: Commandes inversées
-      if (curseType === 'REVERSED') {
-        // Si la commande mentionne quelqu'un, inverse la cible vers le maudit
-        if (message.mentions.users.size > 0) {
-          // Liste des commandes qui peuvent être inversées
-          const reversibleCommands = ['curse', 'mute', 'spam', 'slap', 'hug', 'kiss'];
-          
-          if (reversibleCommands.includes(commandName)) {
-            // Remplace la première mention par celle du joueur maudit
-            const newArgs = args.slice();
-            newArgs[0] = `<@${message.author.id}>`;
-            
-            message.channel.send(`🔄 **Commande inversée!** ${message.author}, tu voulais cibler quelqu'un mais c'est toi la cible maintenant! 😈`);
-            
-            // Exécute la commande avec la cible inversée
-            try {
-              await command.execute(message, newArgs);
-              return;
-            } catch (error) {
-              console.error(`Erreur lors de l'exécution inversée de ${commandName}:`, error);
-              return message.reply('🔄 L\'inversion de la commande a échoué... Tu as de la chance cette fois!');
-            }
-          }
-        }
-        
-        // Pour les autres commandes sans cible, juste un message
-        return message.reply(`🔄 Commande inversée! Je fais l'opposé de \`${commandName}\`... ou rien du tout! 😈`);
-      }
-      
-      // Les autres malédictions (PUBLIC_SHAME, SPAM, VOICE_MUTE, WORST_LUCK) 
-      // n'empêchent pas l'exécution mais modifient le comportement
-    }
+    const context = {
+      message,
+      args,
+      command,
+      commandName,
+      client: this.client,
+      commands: this.commands,
+      prefix: this.prefix
+    };
 
     try {
-      // Exécute la commande
-      await command.execute(message, args);
-      
-      // Si le joueur est maudit avec WORST_LUCK, modifie les résultats après exécution
-      if (curseCommand?.isCursed(message.author.id)) {
-        const curseType = curseCommand.getCurseType(message.author.id);
-        
-        if (curseType === 'WORST_LUCK') {
-          // Pour les commandes de hasard, on informe que le résultat était le pire
-          const randomCommands = ['dice', 'roll', 'coin', 'random', 'roulette'];
-          if (randomCommands.includes(commandName)) {
-            setTimeout(() => {
-              message.channel.send(`💀 ${message.author} est maudit! Le résultat était forcément le pire possible... 😈`);
-            }, 500);
-          }
-        }
-      }
-      
+      await this.executeMiddlewares(context);
     } catch (error) {
       console.error(`Erreur lors de l'exécution de la commande ${commandName}:`, error);
-      
       try {
         await message.reply({
           content: 'Une erreur est survenue lors de l\'exécution de cette commande.'
@@ -238,8 +179,6 @@ class CommandHandler {
       }
     }
   }
-
-
 }
 
 module.exports = CommandHandler;
