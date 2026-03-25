@@ -10,7 +10,7 @@ const express = require('express');
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('Le bot est en ligne ! avec la version 0.1.4');
+  res.send('Le bot est en ligne ! avec la version 0.2.0');
 });
 
 /**
