@@ -11,7 +11,7 @@ module.exports = {
   description: 'Lance une partie de Jeu de Mémoire (4x4)',
   usage: '!memory',
   
-  async execute(message, args) {
+  async execute(message, _args) {
     const emojis = ['🍎', '🍌', '🍒', '🍇', '🍉', '🍓', '🥝', '🍍'];
     // On double les emojis pour faire des paires et on mélange
     let boardContent = [...emojis, ...emojis];

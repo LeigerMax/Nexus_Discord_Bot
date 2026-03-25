@@ -12,7 +12,7 @@ module.exports = {
   description: 'Lance une partie de Morpion (Solo contre le bot ou Multi)',
   usage: '!morpion [@joueur]',
   
-  async execute(message, args) {
+  async execute(message, _args) {
     const opponent = message.mentions.users.first();
     const isSolo = !opponent || opponent.id === message.client.user.id || opponent.bot;
     

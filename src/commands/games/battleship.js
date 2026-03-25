@@ -12,7 +12,7 @@ module.exports = {
   description: 'Lance une partie de Bataille Navale avancée (8x8)',
   usage: '!battleship [@joueur]',
   
-  async execute(message, args) {
+  async execute(message, _args) {
     const opponent = message.mentions.users.first();
     const isSolo = !opponent || opponent.id === message.client.user.id || opponent.bot;
     

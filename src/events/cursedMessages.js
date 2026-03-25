@@ -165,7 +165,7 @@ module.exports = (client) => {
           alteredMessage = originalMessage.substring(0, 10).trim() + "... euh... pardon.";
           break;
           
-        case 'EMOJI_ONLY':
+        case 'EMOJI_ONLY': {
           const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
           const contentWithoutEmojis = originalMessage.replace(emojiRegex, '').trim();
           if (contentWithoutEmojis.length === 0) {
@@ -173,7 +173,7 @@ module.exports = (client) => {
           }
           await message.delete().catch(() => {});
           return message.channel.send(`😜 **${message.author.username}**, ici on ne parle qu'en emojis ! 😜`);
-          
+        }
         case 'QUESTIONER':
           if (originalMessage.trim().endsWith('?')) {
             return; // Déjà une question, on garde le message

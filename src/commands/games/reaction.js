@@ -12,7 +12,7 @@ module.exports = {
   description: 'Lance un test de réaction multijoueur (tout le serveur)',
   usage: '!reaction',
   
-  async execute(message, args) {
+  async execute(message, _args) {
     let isTriggered = false;
     let isGameOver = false;
     let startTime = 0;

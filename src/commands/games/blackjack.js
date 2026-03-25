@@ -12,7 +12,7 @@ module.exports = {
   description: 'Lance une partie de Blackjack (Solo ou Multi contre le croupier)',
   usage: '!blackjack [@joueurs]',
   
-  async execute(message, args) {
+  async execute(message, _args) {
     const mentions = message.mentions.users;
     const playerUsers = [message.author];
     mentions.forEach(user => {

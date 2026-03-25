@@ -549,7 +549,7 @@ module.exports = {
             if (currentMember.voice.channel && !currentMember.voice.serverMute) {
               await currentMember.voice.setMute(true, 'Force Mute Malédiction');
             }
-          } catch (err) {
+          } catch {
             // Ignore les erreurs de mute
           }
         }

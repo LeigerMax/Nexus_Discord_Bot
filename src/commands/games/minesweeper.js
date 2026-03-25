@@ -53,13 +53,9 @@ module.exports = {
       }
     }
     
-    const getEmoji = (val) => {
-      if (val === -1) return '💣';
-      const numbers = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣'];
-      return numbers[val] || '❓';
-    };
+
     
-    const createRows = (isFinished = false, win = false) => {
+    const createRows = (isFinished = false, _win = false) => {
       const rows = [];
       for (let r = 0; r < size; r++) {
         const row = new ActionRowBuilder();

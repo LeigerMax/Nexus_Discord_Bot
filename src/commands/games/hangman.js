@@ -6,7 +6,7 @@ module.exports = {
   description: 'Lance une partie de Pendu flash',
   usage: '!hangman',
   
-  async execute(message, args) {
+  async execute(message, _args) {
     // Gestion du multijoueur (mentions)
     const mentions = message.mentions.users;
     const allowedUserIds = new Set([message.author.id]);
