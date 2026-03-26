@@ -147,8 +147,7 @@ process.on('unhandledRejection', error => {
 // ============================================
 
 (async () => {
-  keepAlive();
-  console.log("🚀 Serveur de maintien en vie lancé, connexion à Discord en cours...");
+
 
   // Vérification de sécurité
   if (!process.env.DISCORD_TOKEN) {
@@ -162,4 +161,7 @@ process.on('unhandledRejection', error => {
   } catch (error) {
     console.error('❌ Erreur de connexion Discord:', error.message);
   }
+
+  keepAlive();
+  console.log("🚀 Serveur de maintien en vie lancé, connexion à Discord en cours...");
 })();
