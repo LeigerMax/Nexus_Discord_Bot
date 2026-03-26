@@ -9,7 +9,15 @@
  * @version 0.1.4
  */
 
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+
+console.log("--- DEBUG ENV ---");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("TOKEN PRESENT:", process.env.DISCORD_TOKEN ? "OUI (longueur: " + process.env.DISCORD_TOKEN.length + ")" : "NON");
+console.log("-----------------");
+
 const { Client, GatewayIntentBits } = require('discord.js');
 const path = require('node:path');
 const CommandHandler = require('./utils/commandHandler');
