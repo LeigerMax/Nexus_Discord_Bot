@@ -10,7 +10,7 @@
  */
 
 if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
+  require('dotenv').config();
 }
 
 console.log("--- DEBUG ENV ---");
@@ -37,7 +37,7 @@ const client = new Client({
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.DirectMessages
   ],
-  partials: ['CHANNEL'] 
+  partials: ['CHANNEL']
 });
 
 // ============================================
@@ -59,11 +59,11 @@ client.once('ready', async () => {
   console.log(`Date: ${new Date().toLocaleString('fr-FR')}`);
   console.log(`Serveurs: ${client.guilds.cache.size}`);
   console.log(`${'='.repeat(50)}\n`);
-  
+
   // Configure la présence du bot
   const botConfig = require('./config/botConfig.json');
   const { ActivityType } = require('discord.js');
-  
+
   try {
     const { status, activities } = botConfig.presence;
     const activityTypeMap = {
@@ -73,7 +73,7 @@ client.once('ready', async () => {
       'STREAMING': ActivityType.Streaming,
       'COMPETING': ActivityType.Competing
     };
-    
+
     client.user.setPresence({
       status: status || 'online',
       activities: activities.map(activity => ({
@@ -89,11 +89,11 @@ client.once('ready', async () => {
   // Charge toutes les commandes
   const commandsPath = path.join(__dirname, 'commands');
   commandHandler.loadCommands(commandsPath);
-  
+
   // Charge les événements
   const eventsPath = path.join(__dirname, 'events');
   const eventFiles = require('node:fs').readdirSync(eventsPath).filter(file => file.endsWith('.js'));
-  
+
   console.log('\nChargement des événements...');
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
@@ -118,7 +118,7 @@ client.once('ready', async () => {
       console.error(`❌ Erreur lors du chargement de l'événement ${file}:`, error);
     }
   }
-  
+
   console.log('\n✅ Bot prêt à recevoir des commandes!\n');
 });
 
@@ -147,15 +147,18 @@ process.on('unhandledRejection', error => {
 // ============================================
 
 // 1. On lance le serveur web immédiatement (SANS await)
-keepAlive(); 
+keepAlive();
+
+client.on('debug', console.log);
+client.on('warn', console.log);
 
 // 2. On lance la connexion Discord (SANS await au début)
 client.login(process.env.DISCORD_TOKEN)
-    .then(() => {
-        console.log("⏳ Requête de connexion envoyée à Discord avec succès.");
-    })
-    .catch(error => {
-        console.error('❌ Erreur fatale de connexion Discord:', error.message);
-    });
+  .then(() => {
+    console.log("⏳ Requête de connexion envoyée à Discord avec succès.");
+  })
+  .catch(error => {
+    console.error('❌ Erreur fatale de connexion Discord:', error.message);
+  });
 
 console.log("🚀 Démarrage parallèle lancé (Express + Discord)...");
