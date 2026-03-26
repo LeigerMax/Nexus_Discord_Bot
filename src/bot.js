@@ -139,14 +139,19 @@ process.on('unhandledRejection', error => {
 // ============================================
 
 (async () => {
-
   keepAlive();
   console.log("🚀 Serveur de maintien en vie lancé, connexion à Discord en cours...");
 
+  // Vérification de sécurité
+  if (!process.env.DISCORD_TOKEN) {
+    console.error("❌ ERREUR: La variable DISCORD_TOKEN est absente des variables d'environnement !");
+    return; // On ne tente pas le login si c'est vide
+  }
+
   // Connecte le bot
-  await client.login(process.env.DISCORD_TOKEN).catch(error => {
-    console.error('Erreur de connexion:', error);
-    process.exit(1);
-  });
-  
+  try {
+    await client.login(process.env.DISCORD_TOKEN);
+  } catch (error) {
+    console.error('❌ Erreur de connexion Discord:', error.message);
+  }
 })();
