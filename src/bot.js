@@ -139,11 +139,14 @@ process.on('unhandledRejection', error => {
 // ============================================
 
 (async () => {
+
+  keepAlive();
+  console.log("🚀 Serveur de maintien en vie lancé, connexion à Discord en cours...");
+
   // Connecte le bot
   await client.login(process.env.DISCORD_TOKEN).catch(error => {
     console.error('Erreur de connexion:', error);
     process.exit(1);
   });
   
-  keepAlive();
 })();

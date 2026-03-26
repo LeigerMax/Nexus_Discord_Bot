@@ -64,7 +64,7 @@ describe('KeepAlive Service', () => {
     keepAlive();
 
     expect(mockApp.listen).toHaveBeenCalledWith(
-      8080,
+      10000,
       '0.0.0.0',
       expect.any(Function)
     );
