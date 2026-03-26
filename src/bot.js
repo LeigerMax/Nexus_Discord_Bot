@@ -22,6 +22,7 @@ const { Client, GatewayIntentBits } = require('discord.js');
 const path = require('node:path');
 const CommandHandler = require('./utils/commandHandler');
 const keepAlive = require('./services/keepAlive');
+const https = require('node:https'); // Pour le test de connectivité
 
 // ============================================
 // Initialisation du client Discord
@@ -37,7 +38,11 @@ const client = new Client({
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.DirectMessages
   ],
-  partials: ['CHANNEL']
+  partials: ['CHANNEL'],
+  // Force IPv4 pour éviter les hangs DNS sur certains serveurs (Node 18+)
+  rest: {
+    family: 4
+  }
 });
 
 // ============================================
@@ -146,19 +151,62 @@ process.on('unhandledRejection', error => {
 // Connexion et démarrage
 // ============================================
 
-// 1. On lance le serveur web immédiatement (SANS await)
-keepAlive();
+/**
+ * Test de connectivité à l'API Discord avant le login
+ */
+async function checkDiscordConnectivity() {
+  return new Promise((resolve) => {
+    console.log("🔍 Test de connectivité à l'API Discord...");
+    const req = https.get('https://discord.com/api/v10/gateway', (res) => {
+      console.log(`📡 Réponse de l'API: ${res.statusCode}`);
+      resolve(res.statusCode === 200);
+    });
 
-client.on('debug', console.log);
-client.on('warn', console.log);
+    req.on('error', (err) => {
+      console.error("❌ Erreur de connectivité réseau:", err.message);
+      resolve(false);
+    });
 
-// 2. On lance la connexion Discord (SANS await au début)
-client.login(process.env.DISCORD_TOKEN)
-  .then(() => {
-    console.log("⏳ Requête de connexion envoyée à Discord avec succès.");
-  })
-  .catch(error => {
-    console.error('❌ Erreur fatale de connexion Discord:', error.message);
+    req.setTimeout(5000, () => {
+      console.error("❌ Timeout: Impossible de joindre Discord après 5s");
+      req.destroy();
+      resolve(false);
+    });
   });
+}
 
-console.log("🚀 Démarrage parallèle lancé (Express + Discord)...");
+async function start() {
+  // 1. Lance le serveur keep-alive
+  keepAlive();
+
+  // 2. Test de connectivité
+  const isConnected = await checkDiscordConnectivity();
+  if (!isConnected) {
+    console.warn("⚠️ Attention: L'API Discord semble injoignable. Tentative de login quand même...");
+  }
+
+  // 3. Configuration des logs de debug
+  client.on('debug', (info) => {
+    if (info.includes('heartbeat') || info.includes('latency')) return; // Filtre les logs trop fréquents
+    console.log(`[DEBUG] ${info}`);
+  });
+  
+  client.on('warn', info => console.warn(`[WARN] ${info}`));
+
+  // 4. Connexion
+  console.log("⏳ Tentative de connexion à Discord...");
+  try {
+    const token = process.env.DISCORD_TOKEN;
+    if (!token) throw new Error("DISCORD_TOKEN manquant");
+
+    await client.login(token);
+    console.log("✅ client.login() a réussi!");
+  } catch (error) {
+    console.error('❌ Erreur fatale de connexion Discord:', error.message);
+    if (error.code) console.error(`Code d'erreur: ${error.code}`);
+    process.exit(1);
+  }
+}
+
+console.log("🚀 Lancement du bot en mode parallèle...");
+start();
