@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
  * Garde le bot actif en répondant aux requêtes HTTP
  */
 function keepAlive() {
-  const PORT = process.env.PORT || 8080;
+  const PORT = process.env.PORT || 10000;
   
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`\n${'='.repeat(50)}`);
