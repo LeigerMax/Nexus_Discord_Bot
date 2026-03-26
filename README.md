@@ -1,11 +1,8 @@
 # Discord Bot
 
 ![CI](https://github.com/LeigerMax/Discord_Bot/workflows/CI%20-%20Tests%20%26%20Linting/badge.svg)
-![Coverage](https://img.shields.io/codecov/c/github/LeigerMax/Discord_Bot)
 
 A feature-rich Discord bot with fun commands, admin tools, and an advanced curse system for enhanced server entertainment.
-
-**Developed by:** [@LeigerMax](https://github.com/LeigerMax)
 
 ---
 
@@ -18,10 +15,7 @@ A feature-rich Discord bot with fun commands, admin tools, and an advanced curse
   - [Admin Commands](#admin-commands)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Usage](#usage)
 - [Curse System](#curse-system)
-- [Events](#events)
-- [Contributing](#contributing)
 - [License](#license)
 
 ---
@@ -438,32 +432,6 @@ Then implement the behavior in:
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🎉 Features Showcase
-
-### Interactive Help System
-- Category-based navigation with dropdown menus
-- Real-time command counting
-- Detailed command descriptions with usage examples
-
-### Enforced Voice Mute
-- Prevents users from unmuting themselves
-- Sends mocking GIFs when unmute attempts are detected
-- Auto-removal after timer expires
-
-### Auto-Message System
-- Schedule recurring messages in any channel
-- Easy start/stop controls
-- One auto-message per channel
-
-### Advanced Curse System
-- 20 unique curse types
-- Hidden mode for stealth cursing
-- Message alteration in real-time
-- Command redirection
-- Time-based automatic removal
 
 ---
 
