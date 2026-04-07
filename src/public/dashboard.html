@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Dashboard - Configuration du Bot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .yt-list {
+            margin-top: 20px;
+        }
+
+        .yt-item {
+            background: var(--bg-dark);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .yt-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div
+                    style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                    N</div>
+                <h2 data-i18n="dashboard.title">Nexus Dashboard</h2>
+            </div>
+
+            <div class="nav-links">
+                <div class="nav-item active" onclick="showHub()" id="nav-hub">
+                    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg></div>
+                    <span data-i18n="dashboard.nav.servers">Serveurs</span>
+                </div>
+
+                <div id="server-nav" style="display: none; margin-top: 1.5rem;">
+                    <p data-i18n="dashboard.nav.configuration"
+                        style="padding: 0 1rem; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                        Configuration</p>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-general')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1.01H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1.01H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1.01z">
+                                </path>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.general">Général</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-players')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 00-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 010 7.75"></path>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.players">Joueurs</span>
+                    </div>
+
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-welcome')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M18 8a3 3 0 00-3-3H5a3 3 0 00-3 3v8a3 3 0 003 3h12a3 3 0 003-3V8z"></path>
+                                <path d="M10 12l-4-4v8l4-4z"></path>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.welcome">Bienvenue</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-security')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.security">Sécurité</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-monitoring')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.monitoring">Surveillance</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-curses')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 21L3 3M21 3L3 21"></path>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.curses">Curses</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-automates')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                                <circle cx="12" cy="5" r="2"></circle>
+                                <path d="M12 7v4M8 11v-1a4 4 0 0110 0v1"></path>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.automates">Automates</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-audit')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.audit">Audit</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-youtube')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <polyline points="8 21 12 17 16 21"></polyline>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.youtube">YouTube</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-stats')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
+                        <span data-i18n="dashboard.nav.stats">Stats Live</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-tempchannels')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></div>
+                        <span data-i18n="dashboard.nav.vocal_temp">Vocal Temp</span>
+                    </div>
+                    <div class="nav-item tab-btn" onclick="switchTab('tab-tickets')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg></div>
+                        <span data-i18n="dashboard.nav.tickets">Tickets</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <p data-i18n="dashboard.nav.info"
+                        style="padding: 0 1rem; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                        Informations</p>
+                    <div class="nav-item" onclick="switchTab('tab-changelog')">
+                        <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg></div>
+                        <span data-i18n="dashboard.nav.changelog">Changelog</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div>Version: <span id="bot-version">0.0.0</span></div>
+                <a href="https://github.com/LeigerMax/Nexus_Discord_Bot" target="_blank">
+                    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path
+                            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+                        </path>
+                    </svg>
+                    <span data-i18n="dashboard.nav.github">GitHub Project</span>
+                </a>
+                <a href="/logout" class="btn-logout" data-i18n="dashboard.nav.logout">Déconnexion</a>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <select id="ui-lang-select" onchange="changeUILanguage(this.value)" style="width: 100%; padding: 5px; border-radius: 4px; background: var(--bg-dark); color: var(--text); border: 1px solid var(--border);">
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="en">🇺🇸 English</option>
+                    </select>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <h2>Nexus</h2>
+            <button class="btn btn-secondary" onclick="toggleSidebar()">☰</button>
+        </div>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Bandeau de mise à jour -->
+            <div id="update-banner" class="alert alert-info" style="display: none; margin-bottom: 2rem; border-left: 5px solid #00ff00; background: rgba(0, 255, 0, 0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong data-i18n="dashboard.updates.banner_title" style="color: #00ff00;">🚀 Nouvelle version disponible !</strong>
+                        <p id="update-text" style="margin: 0; font-size: 0.9rem;"></p>
+                    </div>
+                    <a id="update-link" href="#" target="_blank" class="btn btn-primary" data-i18n="dashboard.updates.view_btn" style="padding: 5px 15px; font-size: 0.8rem;">Voir les nouveautés</a>
+                </div>
+            </div>
+
+            <!-- Section Hub -->
+            <div id="guild-selector">
+                <h1 data-i18n="dashboard.hub.welcome">Bienvenue,</h1>
+                <p data-i18n="dashboard.hub.select_server" style="color: var(--text-muted); margin-bottom: 2rem;">Sélectionnez un serveur à configurer.</p>
+                <div id="guild-list" class="guild-list"></div>
+            </div>
+
+            <div id="config-section" style="display: none;">
+                <div class="card"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <div>
+                        <h1 id="guild-name">Configuration</h1>
+                        <p id="guild-id-badge" style="font-size: 0.8rem; color: var(--text-muted);">ID: -</p>
+                    </div>
+                    <button class="btn btn-secondary" onclick="showHub()" data-i18n="dashboard.hub.back">← Retour au Hub</button>
+                </div>
+
+                <form id="config-form">
+
+
+                    <!-- Tab: Général -->
+                    <div id="tab-general" class="config-tab-content active">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.general.title">Paramètres Généraux</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.general.description">Réglages de base du bot pour ce serveur. Modifiez le préfixe de
+                                commande ou activez les réponses automatiques amusantes (Auto-Feur).</p>
+                            <div class="form-row">
+                                <div class="form-group"><label data-i18n="dashboard.tabs.general.prefix">⚡ Préfixe</label><input type="text" id="prefix"
+                                        maxlength="5"></div>
+                                <div class="form-group"><label data-i18n="dashboard.tabs.general.auto_feur">🎭 Auto-Feur</label><label class="switch"><input
+                                            type="checkbox" id="autoFeur"><span class="slider"></span></label></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label data-i18n="dashboard.tabs.general.mute_duration">⏱️ Durée Mute Roulette (s)</label><input type="number"
+                                        id="rouletteMuteDuration" min="1"></div>
+                                <div class="form-group"><label data-i18n="dashboard.tabs.general.bot_language">🌐 Langue du Bot</label>
+                                    <select id="bot-language">
+                                        <option value="fr">Français</option>
+                                        <option value="en">English</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label data-i18n="dashboard.tabs.general.random_taunts">😈 Moqueries Aléatoires</label><label class="switch"><input
+                                            type="checkbox" id="randomTaunts"><span class="slider"></span></label></div>
+                                <div class="form-group"><label data-i18n="dashboard.tabs.general.random_taunts_chance">🎲 Probabilité (% par message)</label><input type="number"
+                                        id="randomTauntsChance" min="0" max="100" step="0.1"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Joueurs -->
+                    <div id="tab-players" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.players.title">Gestion des Joueurs</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.players.description">Définissez les privilèges spéciaux du serveur. Les Kings sont
+                                immunisés contre les effets du bot, tandis que les Loosers sont les cibles prioritaires
+                                des malédictions et tirages.</p>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.players.kings">👑 Kings</label>
+                                <div id="kings-list" class="multiselect"></div>
+                            </div>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.players.loosers">🤡 Loosers</label>
+                                <div id="loosers-list" class="multiselect"></div>
+                            </div>
+                            <div class="form-group checkbox-group" style="margin-top: 1rem;">
+                                <input type="checkbox" id="weeklyRotation">
+                                <label for="weeklyRotation" data-i18n="dashboard.tabs.players.weekly_rotation">Rotation hebdomadaire automatique du Looser</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Bienvenue -->
+                    <div id="tab-welcome" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.welcome.title">Système de Bienvenue</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.welcome.description">Souhaitez la bienvenue aux nouveaux membres automatiquement dans
+                                le salon de votre choix avec un message personnalisé.</p>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.welcome.enable">Activer le système</label><label class="switch"><input
+                                        type="checkbox" id="welcomeEnabled"><span class="slider"></span></label></div>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.welcome.channel">Salon d'accueil</label><select
+                                    id="welcomeChannelId"></select></div>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.welcome.message">Message</label><textarea id="welcomeMessage"
+                                    rows="5"></textarea></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Sécurité -->
+                    <div id="tab-security" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.security.title">Sécurité & Anti-Raid</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.security.description">Protégez votre serveur contre les invasions massives. Le système
+                                détecte les arrivées trop rapides et prend des mesures automatiques (Kick/Ban).</p>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.security.enable">Activer l'Anti-Raid</label><label class="switch"><input
+                                        type="checkbox" id="antiraidEnabled"><span class="slider"></span></label></div>
+                            <div class="form-row">
+                                <div class="form-group"><label data-i18n="dashboard.tabs.security.limit">Limite</label><input type="number" id="antiraidLimit">
+                                </div>
+                                <div class="form-group"><label data-i18n="dashboard.tabs.security.window">Fénêtre (s)</label><input type="number"
+                                        id="antiraidWindow"></div>
+                            </div>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.security.action">Action Punitive</label><select id="antiraidAction">
+                                    <option value="kick" data-i18n="dashboard.tabs.security.kick">Expulser (Kick)</option>
+                                    <option value="ban" data-i18n="dashboard.tabs.security.ban">Bannir (Ban)</option>
+                                </select></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Surveillance -->
+                    <div id="tab-monitoring" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.monitoring.title">Surveillance de Présence</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.monitoring.description">Soyez averti dès que certains membres se connectent ou se
+                                déconnectent. Idéal pour ne pas rater l'arrivée d'un ami ou d'un Looser surveillé.</p>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.monitoring.enable">Activer la surveillance</label><label class="switch"><input
+                                        type="checkbox" id="monitoringEnabled"><span class="slider"></span></label>
+                            </div>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.monitoring.members">Membres à surveiller</label>
+                                <div id="monitoring-list" class="multiselect"></div>
+                            </div>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.monitoring.channel">Salon d'alerte</label><select
+                                    id="monitoringChannelId"></select></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Curses -->
+                    <div id="tab-curses" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.curses.title">Gestion des Malédictions</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.curses.description">Le bot dispose de nombreuses malédictions amusantes (Mute vocal,
+                                Spam, Inversion de texte, etc.). Désactivez ici celles que vous jugez trop intrusives.
+                            </p>
+                            <div class="form-group" style="margin-bottom: 2rem;">
+                                <label data-i18n="dashboard.tabs.curses.default_duration">⏱️ Durée par défaut des malédictions (en secondes)</label>
+                                <input type="number" id="curseDefaultDuration" min="1" style="max-width: 200px;">
+                            </div>
+                            <div id="curse-types-list" class="curse-grid"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Automates -->
+                    <div id="tab-automates" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.automates.title">Messages Automatisés</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.automates.description">Gérez les messages répétitifs activés via la commande `!auto`.
+                                Vous pouvez les arrêter ici sans avoir besoin de commandes Discord.</p>
+                            <div id="auto-messages-list" class="auto-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: YouTube -->
+                    <div id="tab-youtube" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.youtube.title">Notifications YouTube Multi-Chaines 📺</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.youtube.description">Alertez vos membres dès qu'une de vos chaînes préférées publie
+                                une nouvelle vidéo. Saisissez un `@handle` ou un lien YouTube pour ajouter une chaîne.
+                            </p>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.youtube.enable">Activer le module</label><label class="switch"><input
+                                        type="checkbox" id="ytEnabled"><span class="slider"></span></label></div>
+                            <div class="card" style="background: var(--bg-darker); border: 1px dashed var(--border);">
+                                <label data-i18n="dashboard.tabs.youtube.add_label">Ajouter une chaîne</label>
+                                <div style="display: flex; gap: 10px; margin-top: 10px;"><input type="text"
+                                        id="yt-add-input" placeholder="@mcp ou URL"><button type="button"
+                                        class="btn btn-primary" onclick="resolveAndAddYT()" data-i18n="dashboard.tabs.youtube.add_btn">Ajouter</button></div>
+                                <p id="yt-resolve-status"
+                                    style="font-size: 0.8rem; margin-top: 8px; color: var(--text-muted);"></p>
+                            </div>
+                            <div id="yt-channels-list" class="yt-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Audit -->
+                    <div id="tab-audit" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.audit.title">Logs de Modération Audit (v1.0.0)</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.audit.description">Tracez automatiquement toutes les actions cruciales du serveur.
+                                Les modifications, suppressions et mouvements vocaux seront envoyés dans un salon dédié
+                                en temps réel.</p>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.audit.enable">Activer le système d'Audit</label><label
+                                    class="switch"><input type="checkbox" id="auditEnabled"><span
+                                        class="slider"></span></label></div>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.audit.channel">Salon des Logs d'Audit</label><select
+                                    id="auditChannelId"></select></div>
+                            <p data-i18n="dashboard.tabs.audit.privacy_warning" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">⚠️
+                                **Confidentialité** : Les messages supprimés ou modifiés peuvent être sensibles.
+                                Assurez-vous que seul le staff a accès à ce salon.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Stats -->
+                    <div id="tab-stats" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.stats.title">Stats de Serveur en Live</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.stats.description">Affichez les statistiques de votre serveur en temps réel dans les noms de salons vocaux (verrouillés).</p>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.stats.enable">Activer les Stats Live</label><label class="switch"><input type="checkbox" id="statsEnabled"><span class="slider"></span></label></div>
+                            <div class="form-row">
+                                <div class="form-group"><label data-i18n="dashboard.tabs.stats.total_label">Salon : Total Membres</label><select id="statsTotalChannelId"></select></div>
+                                <div class="form-group"><label data-i18n="dashboard.tabs.stats.online_label">Salon : En Ligne</label><select id="statsOnlineChannelId"></select></div>
+                            </div>
+                            <p data-i18n="dashboard.tabs.stats.note" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Note: Le bot renommera ces salons automatiquement toutes les 10 minutes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Vocal Temp -->
+                    <div id="tab-tempchannels" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.vocal_temp.title">Salons Vocaux Temporaires</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.vocal_temp.description">Créez automatiquement des salons privés quand un membre rejoint un salon "Hub".</p>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.vocal_temp.enable">Activer les Salons Temp</label><label class="switch"><input type="checkbox" id="tempChannelsEnabled"><span class="slider"></span></label></div>
+                            <div class="form-row">
+                                <div class="form-group"><label data-i18n="dashboard.tabs.vocal_temp.hub_label">Salon Hub (Vocal)</label><select id="tempHubChannelId"></select></div>
+                                <div class="form-group"><label data-i18n="dashboard.tabs.vocal_temp.category_label">Catégorie cible</label><select id="tempCategoryId"></select></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Tickets -->
+                    <div id="tab-tickets" class="config-tab-content">
+                        <div class="card">
+                            <h3 data-i18n="dashboard.tabs.tickets.title">Système de Tickets</h3>
+                            <p class="tab-description" data-i18n="dashboard.tabs.tickets.description">Permettez aux membres d'ouvrir des tickets de support privés avec l'équipe.</p>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.tickets.enable">Activer les Tickets</label><label class="switch"><input type="checkbox" id="ticketsEnabled"><span class="slider"></span></label></div>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.tickets.category_label">Catégorie des Tickets</label><select id="ticketsCategoryId"></select></div>
+                            <div class="form-group"><label data-i18n="dashboard.tabs.tickets.staff_roles_label">Rôles Staff (Accès aux tickets)</label>
+                                <div id="staff-roles-list" class="multiselect"></div>
+                            </div>
+                            <p data-i18n="dashboard.tabs.tickets.note" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">Utilisez `!ticket-setup` sur Discord pour envoyer le message initial.</p>
+                        </div>
+                    </div>
+
+                    <div class="actions"
+                        style="margin-top: 2rem; display: flex; justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <button type="submit" class="btn btn-primary" data-i18n="dashboard.actions.save"
+                            style="box-shadow: 0 10px 15px -3px rgba(88, 101, 242, 0.4);">Enregistrer les modifications 💾</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tab: Changelog -->
+            <div id="tab-changelog" class="config-tab-content">
+                <div class="card">
+                    <h1 style="margin-bottom: 2.5rem;" data-i18n="dashboard.nav.changelog">Journal des Modifications</h1>
+                    <div id="changelog-container"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" data-i18n="dashboard.actions.success_toast">✅ Action réussie !</div>
+
+    <script>
+        let currentGuildId = null;
+        let ytChannels = [];
+        let allGuildChannels = [];
+        let currentTranslations = {};
+        let currentLang = localStorage.getItem('nexus_lang') || 'fr';
+
+        async function loadTranslations(lang) {
+            try {
+                const res = await fetch(`/locales/${lang}.json`);
+                currentTranslations = await res.json();
+                applyTranslations();
+                document.getElementById('ui-lang-select').value = lang;
+                currentLang = lang;
+                localStorage.setItem('nexus_lang', lang);
+                fetchChangelog(); // Refresh changelog with new language
+            } catch (err) {
+                console.error('Failed to load translations', err);
+            }
+        }
+
+        function applyTranslations() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const text = getNestedValue(currentTranslations, key);
+                if (text) el.innerText = text;
+            });
+        }
+
+        function getNestedValue(obj, path) {
+            return path.split('.').reduce((prev, curr) => (prev ? prev[curr] : undefined), obj);
+        }
+
+        function changeUILanguage(lang) {
+            loadTranslations(lang);
+        }
+
+        const CURSE_TYPES = {
+            RANDOM_RESPONSES: '🎲 Réponses Aléatoires', IGNORED: '👻 Ignoré', BLOCKED: '🚫 Bloqué',
+            WORST_LUCK: '💀 Malchance', PUBLIC_SHAME: '📢 Honte Publique', GARBLED: '🔀 Messages Déformés',
+            VOICE_MUTE: '🔇 Mute Vocal', SPAM: '💥 Spam de Mentions', REVERSED: '🔄 Commandes Inversées',
+            SLOW_MODE: '🐌 Mode Lent', MESSAGE_SCRAMBLER: '🔀 Mélangeur de Mots', MESSAGE_OPPOSER: '🔄 Opposé',
+            CLOWN_MODE: '🤡 Mode Clown', UWU_MODE: '😺 Mode UwU', YODA_MODE: '🗣️ Mode Yoda',
+            CAPS_LOCK: '📢 CAPS LOCK', PIRATE_MODE: '🏴‍☠️ Mode Pirate', VOWEL_REMOVER: '🎯 Suppression Voyelles'
+        };
+
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        async function fetchChangelog() {
+            const res = await fetch(`/api/changelog?lang=${currentLang}`);
+            const data = await res.json();
+            document.getElementById('bot-version').innerText = data.current;
+            const container = document.getElementById('changelog-container');
+            container.innerHTML = '';
+            Object.entries(data.changelog).sort((a, b) => b[0].localeCompare(a[0])).forEach(([ver, details]) => {
+                const features = details.features || [];
+                const fixes = details.fixes || [];
+                const entry = document.createElement('div');
+                entry.className = 'changelog-entry';
+                entry.innerHTML = `<div class="changelog-date">${details.date} • ${ver}</div><ul class="changelog-list">${features.map(f => `<li>${f}</li>`).join('')}${fixes.map(f => `<li>(Fix) ${f}</li>`).join('')}</ul>`;
+                container.appendChild(entry);
+            });
+        }
+
+        async function showChangelog() {
+            const res = await fetch('/api/changelog');
+            const data = await res.json();
+            const container = document.getElementById('changelog-container');
+            container.innerHTML = '';
+            const fixesTitle = getNestedValue(currentTranslations, 'version.fixes_title') || 'Corrections :';
+
+            Object.entries(data.changelog).forEach(([ver, details]) => {
+                const section = document.createElement('div');
+                section.className = 'changelog-item';
+                section.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin: 0; color: var(--accent-primary);">${ver}</h3>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">${details.date}</span>
+                    </div>
+                    <ul style="padding-left: 1.2rem;">
+                        ${details.features.map(f => `<li>${f}</li>`).join('')}
+                    </ul>
+                    ${details.fixes.length ? `
+                        <h4 style="font-size: 0.9rem; margin-top: 1rem; color: var(--text-muted);">${fixesTitle}</h4>
+                        <ul style="padding-left: 1.2rem; font-size: 0.9rem; color: var(--text-muted);">
+                            ${details.fixes.map(f => `<li>${f}</li>`).join('')}
+                        </ul>
+                    ` : ''}
+                `;
+                container.appendChild(section);
+            });
+        }
+
+        async function checkUpdate() {
+            try {
+                const res = await fetch('/api/update');
+                const data = await res.json();
+                if (data.isNew) {
+                    const banner = document.getElementById('update-banner');
+                    const text = document.getElementById('update-text');
+                    const link = document.getElementById('update-link');
+                    const format = getNestedValue(currentTranslations, 'dashboard.updates.desc') || 'La version {version} ({name}) est disponible.';
+                    text.innerText = format.replace('{version}', data.latest).replace('{name}', data.name);
+                    link.href = data.url;
+                    banner.style.display = 'block';
+                }
+            } catch (err) {}
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
+            const targetBtn = Array.from(document.querySelectorAll('.nav-item')).find(btn => btn.getAttribute('onclick')?.includes(`'${id}'`));
+            if (targetBtn) targetBtn.classList.add('active');
+
+            if (id === 'tab-changelog') {
+                document.getElementById('guild-selector').style.display = 'none';
+                document.getElementById('config-section').style.display = 'none';
+                document.getElementById('server-nav').style.display = 'none';
+                document.getElementById('tab-changelog').classList.add('active');
+                fetchChangelog();
+                checkUpdate();
+            } else {
+                document.getElementById('guild-selector').style.display = 'none';
+                document.getElementById('config-section').style.display = 'block';
+                document.getElementById('tab-changelog').classList.remove('active');
+                document.querySelectorAll('.config-tab-content').forEach(c => c.classList.remove('active'));
+                const content = document.getElementById(id);
+                if (content) content.classList.add('active');
+            }
+            if (id === 'tab-automates') fetchAutoMessages();
+            if (window.innerWidth <= 900) toggleSidebar();
+        }
+
+        function showHub() {
+            document.getElementById('guild-selector').style.display = 'block';
+            document.getElementById('config-section').style.display = 'none';
+            document.getElementById('tab-changelog').classList.remove('active');
+            document.getElementById('server-nav').style.display = 'none';
+            document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
+            document.getElementById('nav-hub').classList.add('active');
+            fetchGuilds();
+        }
+
+        async function fetchGuilds() {
+            const res = await fetch('/api/guilds');
+            const guilds = await res.json();
+            const list = document.getElementById('guild-list');
+            list.innerHTML = '';
+            guilds.forEach(guild => {
+                const card = document.createElement('div');
+                card.className = 'guild-card';
+                card.onclick = () => showServerConfig(guild.id, guild.name);
+                const icon = guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png';
+                card.innerHTML = `<img src="${icon}" class="guild-icon"><div><div style="font-weight:700">${guild.name}</div><div style="font-size:0.75rem;color:var(--text-muted)">ID: ${guild.id}</div></div>`;
+                list.appendChild(card);
+            });
+        }
+
+        async function resolveAndAddYT() {
+            const input = document.getElementById('yt-add-input').value;
+            const status = document.getElementById('yt-resolve-status');
+            if (!input) return;
+            status.innerText = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.resolving') || '🔍 Résolution de la chaîne...';
+            const res = await fetch('/api/youtube/resolve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: input }) });
+            const data = await res.json();
+            if (data.success) {
+                const msg = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.added') || '✅ Chaîne ajoutée (ID: {id})';
+                status.innerText = msg.replace('{id}', data.channelId);
+                ytChannels.push({ id: data.channelId, discordChannelId: '', customMessage: '' });
+                renderYTChannels();
+                document.getElementById('yt-add-input').value = '';
+            } else { status.innerText = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.not_found') || '❌ Canal introuvable.'; }
+        }
+
+        function renderYTChannels() {
+            const list = document.getElementById('yt-channels-list');
+            const emptyTxt = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.empty') || 'Aucun flux configuré.';
+            list.innerHTML = ytChannels.length === 0 ? `<p>${emptyTxt}</p>` : '';
+            const idLabel = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.chan_id_label') || 'ID Chaîne';
+            const deleteBtn = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.delete_btn') || 'Supprimer';
+            const discordChanLabel = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.discord_chan_label') || 'Salon Discord';
+            const msgLabel = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.msg_label') || 'Message';
+            const msgPlaceholder = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.msg_placeholder') || '🔴 Nouvelle vidéo !';
+            ytChannels.forEach((chan, idx) => {
+                const div = document.createElement('div');
+                div.className = 'yt-item';
+                div.innerHTML = `
+                    <div class="yt-item-header">
+                        <div>
+                            <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; display:block; margin-bottom:4px;">${idLabel}</span>
+                            <span class="channel-id-badge">${chan.id}</span>
+                        </div>
+                        <button type="button" class="btn-delete" onclick="removeYT(${idx})">${deleteBtn}</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>${discordChanLabel}</label><select onchange="updateYT(${idx}, 'discordChannelId', this.value)"><option value="">Sélectionner</option>${allGuildChannels.map(c => `<option value="${c.id}" ${chan.discordChannelId === c.id ? 'selected' : ''}># ${c.name}</option>`).join('')}</select></div>
+                        <div class="form-group"><label>${msgLabel}</label><input type="text" value="${chan.customMessage || ''}" onchange="updateYT(${idx}, 'customMessage', this.value)" placeholder="${msgPlaceholder}"></div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+        function removeYT(idx) { ytChannels.splice(idx, 1); renderYTChannels(); }
+        function updateYT(idx, f, v) { ytChannels[idx][f] = v; }
+
+        async function showServerConfig(guildId, guildName) {
+            currentGuildId = guildId;
+            document.getElementById('guild-name').innerText = guildName;
+            document.getElementById('guild-id-badge').innerText = `ID: ${guildId}`;
+            document.getElementById('guild-selector').style.display = 'none';
+            document.getElementById('config-section').style.display = 'block';
+            document.getElementById('server-nav').style.display = 'block';
+            switchTab('tab-general');
+            const res = await fetch(`/api/config/${guildId}`);
+            const { config, members, channels, roles } = await res.json();
+            allGuildChannels = channels;
+            ytChannels = config.youtube?.channels || [];
+            renderMemberList('kings-list', members, config.kings || []);
+            renderMemberList('loosers-list', members, config.loosers || []);
+            renderMemberList('monitoring-list', members, config.monitoring?.targetIds || []);
+            renderYTChannels();
+
+            document.getElementById('prefix').value = config.prefix || '!';
+            document.getElementById('autoFeur').checked = config.features?.autoFeur ?? true;
+            document.getElementById('randomTaunts').checked = config.features?.randomTaunts ?? false;
+            document.getElementById('randomTauntsChance').value = config.features?.randomTauntsChance || 1.0;
+            document.getElementById('welcomeEnabled').checked = config.welcome?.enabled || false;
+            document.getElementById('welcomeMessage').value = config.welcome?.message || '';
+            document.getElementById('antiraidEnabled').checked = config.antiraid?.enabled || false;
+            document.getElementById('antiraidLimit').value = config.antiraid?.joinLimit || 5;
+            document.getElementById('antiraidWindow').value = config.antiraid?.joinWindow || 10;
+            document.getElementById('antiraidAction').value = config.antiraid?.action || 'kick';
+            document.getElementById('monitoringEnabled').checked = config.monitoring?.enabled || false;
+            document.getElementById('weeklyRotation').checked = config.weeklyRotation || false;
+            document.getElementById('ytEnabled').checked = config.youtube?.enabled || false;
+            document.getElementById('auditEnabled').checked = config.audit?.enabled || false;
+            document.getElementById('rouletteMuteDuration').value = config.rouletteMuteDuration || 300;
+            document.getElementById('curseDefaultDuration').value = config.curseSettings?.defaultDuration || 300;
+            document.getElementById('bot-language').value = config.language || 'fr';
+
+            // Sélecteurs de salons textuels
+            setSelByType('welcomeChannelId', config.welcome?.channelId, 0);       // Text
+            setSelByType('monitoringChannelId', config.monitoring?.channelId, 0); // Text
+            setSelByType('auditChannelId', config.audit?.channelId, 0);           // Text
+
+            const curseList = document.getElementById('curse-types-list');
+            curseList.innerHTML = '';
+            Object.entries(CURSE_TYPES).forEach(([id, name]) => {
+                const div = document.createElement('div');
+                div.className = 'curse-item';
+                div.innerHTML = `<input type="checkbox" value="${id}" ${config.curseSettings?.disabledTypes?.includes(id) ? 'checked' : ''}><span>${name}</span>`;
+                curseList.appendChild(div);
+            });
+
+            // Stats
+            document.getElementById('statsEnabled').checked = config.stats?.enabled || false;
+            setSelByType('statsTotalChannelId', config.stats?.totalChannelId, 2); // Voice
+            setSelByType('statsOnlineChannelId', config.stats?.onlineChannelId, 2); // Voice
+
+            // Temp Channels
+            document.getElementById('tempChannelsEnabled').checked = config.tempChannels?.enabled || false;
+            setSelByType('tempHubChannelId', config.tempChannels?.hubChannelId, 2); // Voice
+            setSelByType('tempCategoryId', config.tempChannels?.categoryId, 4); // Category
+
+            // Tickets
+            document.getElementById('ticketsEnabled').checked = config.tickets?.enabled || false;
+            setSelByType('ticketsCategoryId', config.tickets?.categoryId, 4); // Category
+            renderRoleList('staff-roles-list', roles, config.tickets?.staffRoleIds || []);
+        }
+
+        // Helper pour peupler les sélecteurs par type
+        const setSelByType = (id, sid, type) => {
+            const s = document.getElementById(id);
+            const aucunTxt = getNestedValue(currentTranslations, 'dashboard.actions.none_option') || 'Aucun';
+            s.innerHTML = `<option value="">${aucunTxt}</option>`;
+            allGuildChannels.filter(c => c.type === type).forEach(c => {
+                const o = document.createElement('option');
+                o.value = c.id;
+                o.innerText = `# ${c.name}`;
+                if (c.id === sid) o.selected = true;
+                s.appendChild(o);
+            });
+        };
+
+        function renderRoleList(eid, roles, sids) {
+            const c = document.getElementById(eid);
+            c.innerHTML = '';
+            roles.forEach(r => {
+                const di = document.createElement('div');
+                di.className = 'multiselect-item';
+                di.innerHTML = `<input type="checkbox" value="${r.id}" ${sids.includes(r.id) ? 'checked' : ''}><span style="color: ${r.color}">${r.name}</span>`;
+                c.appendChild(di);
+            });
+        }
+
+        async function fetchAutoMessages() {
+            const res = await fetch(`/api/auto-messages/${currentGuildId}`);
+            const autos = await res.json();
+            const list = document.getElementById('auto-messages-list');
+            list.innerHTML = autos.length === 0 ? '<p>Aucun automate actif.</p>' : '';
+            autos.forEach(a => { const div = document.createElement('div'); div.className = 'auto-card'; div.innerHTML = `<div><strong>#${a.channelId}</strong><br><small>${a.message}</small></div><button type="button" class="btn btn-secondary" onclick="stopAuto('${a.channelId}')">Stop</button>`; list.appendChild(div); });
+        }
+        async function stopAuto(cid) { await fetch('/api/auto-messages/stop', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ channelId: cid }) }); fetchAutoMessages(); }
+
+        function renderMemberList(eid, ms, sids) {
+            const c = document.getElementById(eid);
+            c.innerHTML = '';
+            ms.forEach(m => { const di = document.createElement('div'); di.className = 'multiselect-item'; di.innerHTML = `<input type="checkbox" value="${m.id}" ${sids.includes(m.id) ? 'checked' : ''}><span>${m.displayName || m.username}</span>`; c.appendChild(di); });
+        }
+
+        document.getElementById('config-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const config = {
+                prefix: document.getElementById('prefix').value || '!',
+                kings: Array.from(document.querySelectorAll('#kings-list input:checked')).map(c => c.value),
+                loosers: Array.from(document.querySelectorAll('#loosers-list input:checked')).map(c => c.value),
+                weeklyRotation: document.getElementById('weeklyRotation').checked,
+                welcome: { enabled: document.getElementById('welcomeEnabled').checked, channelId: document.getElementById('welcomeChannelId').value, message: document.getElementById('welcomeMessage').value },
+                antiraid: { enabled: document.getElementById('antiraidEnabled').checked, joinLimit: parseInt(document.getElementById('antiraidLimit').value), joinWindow: parseInt(document.getElementById('antiraidWindow').value), action: document.getElementById('antiraidAction').value },
+                monitoring: { enabled: document.getElementById('monitoringEnabled').checked, targetIds: Array.from(document.querySelectorAll('#monitoring-list input:checked')).map(c => c.value), channelId: document.getElementById('monitoringChannelId').value },
+                audit: { enabled: document.getElementById('auditEnabled').checked, channelId: document.getElementById('auditChannelId').value },
+                curseSettings: {
+                    disabledTypes: Array.from(document.querySelectorAll('#curse-types-list input:checked')).map(c => c.value),
+                    defaultDuration: parseInt(document.getElementById('curseDefaultDuration').value) || 300
+                },
+                rouletteMuteDuration: parseInt(document.getElementById('rouletteMuteDuration').value) || 300,
+                youtube: { enabled: document.getElementById('ytEnabled').checked, channels: ytChannels },
+                stats: { enabled: document.getElementById('statsEnabled').checked, totalChannelId: document.getElementById('statsTotalChannelId').value, onlineChannelId: document.getElementById('statsOnlineChannelId').value },
+                tempChannels: { enabled: document.getElementById('tempChannelsEnabled').checked, hubChannelId: document.getElementById('tempHubChannelId').value, categoryId: document.getElementById('tempCategoryId').value },
+                tickets: { enabled: document.getElementById('ticketsEnabled').checked, categoryId: document.getElementById('ticketsCategoryId').value, staffRoleIds: Array.from(document.querySelectorAll('#staff-roles-list input:checked')).map(c => c.value) },
+                features: { 
+                    autoFeur: document.getElementById('autoFeur').checked,
+                    randomTaunts: document.getElementById('randomTaunts').checked,
+                    randomTauntsChance: parseFloat(document.getElementById('randomTauntsChance').value) || 1.0
+                },
+                language: document.getElementById('bot-language').value
+            };
+            const r = await fetch(`/api/config/${currentGuildId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) });
+            if (r.ok) showToast();
+        };
+
+        function showToast() { const t = document.getElementById('toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+        fetchGuilds();
+        loadTranslations(currentLang);
+    </script>
+</body>
+
+</html>

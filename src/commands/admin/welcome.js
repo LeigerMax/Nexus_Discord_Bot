@@ -7,8 +7,10 @@
  */
 
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const i18n = require('../../services/i18nService');
 
 module.exports = {
+    name: 'welcome',
     data: new SlashCommandBuilder()
         .setName('welcome')
         .setDescription('Gérer le système de bienvenue')
@@ -19,10 +21,21 @@ module.exports = {
                 .setDescription('Tester un message de bienvenue')
         ),
     
-    async execute(interaction) {
-        if (interaction.options.getSubcommand() === 'test') {
-            const welcomeMessage = getRandomWelcomeMessage(interaction.user);
-            await interaction.reply({ content: welcomeMessage, ephemeral: true });
+    async execute(messageOrInteraction, args, context) {
+        const { t } = context;
+        // Détecte s'il s'agit d'une interaction ou d'un message (v1.1.0)
+        const isInteraction = typeof messageOrInteraction.reply !== 'function' ? false : (messageOrInteraction.isChatInputCommand ? messageOrInteraction.isChatInputCommand() : false);
+        const user = isInteraction ? messageOrInteraction.user : messageOrInteraction.author;
+
+        if (isInteraction) {
+            if (messageOrInteraction.options.getSubcommand() === 'test') {
+                const welcomeMessage = getRandomWelcomeMessage(user, t);
+                await messageOrInteraction.reply({ content: welcomeMessage, ephemeral: true });
+            }
+        } else {
+            // Commande préfixée
+            const welcomeMessage = getRandomWelcomeMessage(user, t);
+            await messageOrInteraction.reply(welcomeMessage);
         }
     },
 };
@@ -30,23 +43,20 @@ module.exports = {
 /**
  * Fonction pour obtenir un message de bienvenue aléatoire
  * @param {*} member 
- * @returns 
+ * @param {Function} t - Fonction de traduction
+ * @returns {string}
  */
-function getRandomWelcomeMessage(member) {
-    const messages = [
-        `Oh non... ${member} vient de débarquer. Qui a laissé la porte ouverte ? 🙄`,
-        `Tiens, ${member} a trouvé le serveur. Quelqu'un peut lui expliquer qu'on est complets ? 😒`,
-        `${member} vient d'arriver ! On fait semblant d'être contents ou... ? 🤔`,
-        `Attention tout le monde, ${member} est là ! Cachez vos memes de qualité ! 😏`,
-        `${member} a rejoint le serveur. RIP notre tranquillité. ⚰️`,
-        `Bienvenue ${member} ! T'as pas mieux à faire de ta vie ? 😂`,
-        `${member} vient de se connecter. Quelqu'un peut lui montrer la sortie ? 🚪`,
-        `Oh super, ${member} est arrivé. Comme si on avait besoin de plus de chaos ici... 🤦`,
-        `${member} a décidé de nous rejoindre. Courage à nous tous ! 💀`,
-        `Toc toc, qui est là ? C'est ${member}. Malheureusement, on ne peut pas faire semblant de ne pas être là... 😅`,
-    ];
+function getRandomWelcomeMessage(member, t) {
+    // Si t n'est pas fourni (cas de l'event guildMemberAdd), on le crée
+    if (!t) {
+        const locale = i18n.getGuildLocale(member.guild?.id);
+        t = (key, params) => i18n.t(key, locale, params);
+    }
+
+    const messages = t('welcome.messages');
+    const randomTemplate = messages[Math.floor(Math.random() * messages.length)];
     
-    return messages[Math.floor(Math.random() * messages.length)];
+    return randomTemplate.replace('{user}', member.toString());
 }
 
 exports.getRandomWelcomeMessage = getRandomWelcomeMessage;

@@ -5,6 +5,7 @@
  * @listens messageCreate
  */
 const { EmbedBuilder } = require('discord.js');
+const i18n = require('../services/i18nService');
 
 module.exports = (client) => {
   client.on('messageCreate', async (message) => {
@@ -22,6 +23,9 @@ module.exports = (client) => {
       
       const curseType = curseCommand.getCurseType(message.author.id);
       
+      let locale = 'fr';
+      if (message.guild) locale = i18n.getGuildLocale(message.guild.id);
+      
       // Malédiction: Épreuve du Scribe (Priorité haute, bloque tout le reste)
       if (curseType === 'CHALLENGE') {
         const curseData = curseCommand.cursedPlayers.get(message.author.id);
@@ -35,13 +39,12 @@ module.exports = (client) => {
           // Anti-triche : Vérifie le temps de saisie (min 4s)
           const startTime = curseData.startTime || Date.now();
           if (Date.now() - startTime < 4000) {
-            // Punition : +5 minutes
             const penaltyMs = 5 * 60 * 1000;
             curseData.endTime += penaltyMs;
             curseData.expiresAt += penaltyMs;
             curseData.startTime = Date.now(); // Reset pour forcer à attendre à nouveau
             
-            return message.channel.send(`🚫 **TENTATIVE DE TRICHE DÉTECTÉE** ${message.author}!\nLe copier-coller est strictement interdit. Tu reçois une pénalité de **5 minutes** supplémentaires ! ⏲️\n*(Attends au moins 4 secondes avant de valider)*`);
+            return message.channel.send(i18n.t('events.cursed_messages.cheat_detected', locale, { user: `<@${message.author.id}>` }));
           }
 
           // Bravo ! On lève la malédiction
@@ -56,8 +59,8 @@ module.exports = (client) => {
 
           const embed = new EmbedBuilder()
             .setColor(0x00FF00)
-            .setTitle('✨ Épreuve du Scribe Réussie !')
-            .setDescription(`🎉 **${message.author.username}** a recopié la phrase avec succès !\n\n*La malédiction est levée, tu peux à nouveau parler.*`)
+            .setTitle(i18n.t('events.cursed_messages.success_title', locale))
+            .setDescription(i18n.t('events.cursed_messages.success_desc', locale, { user: message.author.username }))
             .setTimestamp();
           
           return message.channel.send({ embeds: [embed] });
@@ -67,7 +70,7 @@ module.exports = (client) => {
           if (!curseData.lastReminder || now - curseData.lastReminder > 10000) {
             curseData.lastReminder = now;
             curseData.startTime = now; // Reset le chrono au rappel pour éviter les "wait n' paste"
-            return message.channel.send(`❌ **Échec du Scribe**, ${message.author}!\nÉcris exactement :\n\`${trapPhrase}\``);
+            return message.channel.send(i18n.t('events.cursed_messages.fail', locale, { user: `<@${message.author.id}>`, phrase: trapPhrase }));
           }
           return;
         }
@@ -158,7 +161,7 @@ module.exports = (client) => {
             return; // On garde le message original tel quel
           }
           await message.delete().catch(() => {});
-          return message.channel.send(`🤵 **${message.author.username}**, un peu de tenue ! Un majordome doit commencer par "Monsieur," et finir par "Je vous prie d'agréer mes salutations distinguées".`);
+          return message.channel.send(i18n.t('events.cursed_messages.polite_mode', locale, { user: message.author.username }));
           
         case 'SHY_MODE':
           if (originalMessage.trim().length <= 10) return; // Pas besoin de tronquer si déjà court
@@ -172,7 +175,7 @@ module.exports = (client) => {
             return; // Que des emojis, on garde le message
           }
           await message.delete().catch(() => {});
-          return message.channel.send(`😜 **${message.author.username}**, ici on ne parle qu'en emojis ! 😜`);
+          return message.channel.send(i18n.t('events.cursed_messages.emoji_only', locale, { user: message.author.username }));
         }
         case 'QUESTIONER':
           if (originalMessage.trim().endsWith('?')) {
@@ -187,7 +190,7 @@ module.exports = (client) => {
       await message.delete().catch(() => {});
       
       // Envoie le message altéré
-      await message.channel.send(`**${message.author.username}** a dit : ${alteredMessage}`);
+      await message.channel.send(i18n.t('events.cursed_messages.said', locale, { user: message.author.username, msg: alteredMessage }));
       
     } catch (error) {
       console.error('Erreur dans cursedMessages:', error);

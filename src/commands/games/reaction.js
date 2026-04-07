@@ -12,7 +12,8 @@ module.exports = {
   description: 'Lance un test de réaction multijoueur (tout le serveur)',
   usage: '!reaction',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     let isTriggered = false;
     let isGameOver = false;
     let startTime = 0;
@@ -36,8 +37,8 @@ module.exports = {
     };
 
     const gameMessage = await message.reply({
-      embeds: [createEmbed('⚡ TEST DE RÉACTION', 'Préparez-vous... Le bouton va changer ! ⏳')],
-      components: [createRow('Attendez...', ButtonStyle.Secondary)]
+      embeds: [createEmbed(t('reaction.title'), t('reaction.wait_status'))],
+      components: [createRow(t('reaction.wait_btn'), ButtonStyle.Secondary)]
     });
 
     const collector = gameMessage.createMessageComponentCollector({
@@ -54,8 +55,8 @@ module.exports = {
       startTime = Date.now();
       
       await gameMessage.edit({
-        embeds: [createEmbed('🔥 CLIQUEZ !! 🔥', 'C\'EST MAINTENANT ! ⚡', 0x2ECC71)],
-        components: [createRow('CLIQUEZ ICI !', ButtonStyle.Success)]
+        embeds: [createEmbed(t('reaction.trigger_title'), t('reaction.trigger_status'), 0x2ECC71)],
+        components: [createRow(t('reaction.trigger_btn'), ButtonStyle.Success)]
       }).catch(() => {});
     }, delay);
 
@@ -69,8 +70,8 @@ module.exports = {
         collector.stop('false_start');
         
         return interaction.update({
-          embeds: [createEmbed('❌ FAUX DÉPART !', `**${interaction.user.username}** a cliqué trop tôt ! La partie est annulée.`, 0xE74C30)],
-          components: [createRow('Trop tôt !', ButtonStyle.Danger, true)]
+          embeds: [createEmbed(t('reaction.false_start_title'), t('reaction.false_start_desc', { user: interaction.user.username }), 0xE74C30)],
+          components: [createRow(t('reaction.false_start_btn'), ButtonStyle.Danger, true)]
         });
       } else {
         // Gagné !
@@ -80,8 +81,8 @@ module.exports = {
         const reactionTime = endTime - startTime;
 
         return interaction.update({
-          embeds: [createEmbed('🏆 GAGNÉ !', `**${interaction.user.username}** a été le plus rapide !\n\n**Temps de réaction :** \`${reactionTime} ms\` ⏱️`, 0xF1C40F)],
-          components: [createRow('Terminé !', ButtonStyle.Secondary, true)]
+          embeds: [createEmbed(t('reaction.win_title'), t('reaction.win_desc', { user: interaction.user.username, time: reactionTime }), 0xF1C40F)],
+          components: [createRow(t('reaction.win_btn'), ButtonStyle.Secondary, true)]
         });
       }
     });
@@ -89,8 +90,8 @@ module.exports = {
     collector.on('end', (collected, reason) => {
       if (reason === 'time' && !isGameOver) {
         gameMessage.edit({
-          embeds: [createEmbed('⏰ TEMPS ÉCOULÉ', 'Personne n\'a cliqué à temps...', 0x95A5A6)],
-          components: [createRow('Expiré', ButtonStyle.Secondary, true)]
+          embeds: [createEmbed(t('reaction.timeout_title'), t('reaction.timeout_status'), 0x95A5A6)],
+          components: [createRow(t('reaction.timeout_btn'), ButtonStyle.Secondary, true)]
         }).catch(() => {});
       }
     });

@@ -13,18 +13,19 @@ module.exports = {
   description: 'Affiche les derniers messages supprimés',
   usage: '!showdeleted [nombre] [@utilisateur]',
   
-  async execute(message, args) {
+  async execute(message, args, context) {
+    const { t } = context;
     try {
       // Vérifie les permissions
       if (!message.member.permissions.has('ManageMessages')) {
-        return message.reply('❌ Tu n\'as pas la permission de voir les messages supprimés!');
+        return message.reply(t('showdeleted.no_permission'));
       }
 
       // Récupère l'event messageDelete pour accéder aux données
       const messageDeleteEvent = message.client.eventHandlers?.get('messageDelete');
       
       if (!messageDeleteEvent || !messageDeleteEvent.getDeletedMessages) {
-        return message.reply('❌ Le système de tracking des messages supprimés n\'est pas disponible!');
+        return message.reply(t('showdeleted.unavailable'));
       }
 
       // Parse les arguments
@@ -44,16 +45,18 @@ module.exports = {
       const deletedMessages = messageDeleteEvent.getDeletedMessages(limit, targetUser?.id);
 
       if (deletedMessages.length === 0) {
-        return message.reply('✨ Aucun message supprimé récemment!');
+        return message.reply(t('showdeleted.none_found'));
       }
 
       // Crée l'embed principal
       const embed = new EmbedBuilder()
         .setColor(0xFF6600)
-        .setTitle('🗑️ Messages Supprimés')
+        .setTitle(t('showdeleted.embed_title'))
         .setDescription(
-          `Affichage des **${deletedMessages.length}** derniers messages supprimés` +
-          (targetUser ? ` de ${targetUser.username}` : '')
+          t('showdeleted.embed_desc', { 
+            count: deletedMessages.length, 
+            user: targetUser ? ` de ${targetUser.username}` : '' 
+          })
         )
         .setTimestamp();
 
@@ -76,31 +79,31 @@ module.exports = {
           content = content.substring(0, 200) + '...';
         }
 
-        let fieldValue = `**Auteur**: ${msg.author.username}\n`;
-        fieldValue += `**Canal**: ${msg.channel.name}\n`;
-        fieldValue += `**Il y a**: ${timeStr}\n`;
-        fieldValue += `**Contenu**: ${content || '[Aucun texte]'}`;
+        let fieldValue = `${t('showdeleted.field_author')}: ${msg.author.username}\n`;
+        fieldValue += `${t('showdeleted.field_channel')}: ${msg.channel.name}\n`;
+        fieldValue += `${t('showdeleted.field_time')}: ${timeStr}\n`;
+        fieldValue += `${t('showdeleted.field_content')}: ${content || t('showdeleted.field_no_text')}`;
 
         if (msg.attachments.length > 0) {
-          fieldValue += `\n📎 **${msg.attachments.length}** pièce(s) jointe(s)`;
+          fieldValue += `\n📎 **${msg.attachments.length}** ${t('showdeleted.field_attachments')}`;
         }
 
         embed.addFields({
-          name: `Message ${i + 1}`,
+          name: t('showdeleted.field_name', { index: i + 1 }),
           value: fieldValue,
           inline: false
         });
       }
 
       if (deletedMessages.length > 10) {
-        embed.setFooter({ text: `${deletedMessages.length - 10} message(s) supplémentaire(s) non affichés` });
+        embed.setFooter({ text: t('showdeleted.footer_more', { count: deletedMessages.length - 10 }) });
       }
 
       await message.reply({ embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande showdeleted:', error);
-      message.reply('❌ Une erreur est survenue lors de la récupération des messages supprimés.');
+      message.reply(t('common.error'));
     }
   }
 };

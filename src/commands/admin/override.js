@@ -13,12 +13,13 @@ module.exports = {
   description: '[KING ONLY] Force l\'arrêt de toutes les malédictions, mutes et sanctions',
   usage: '!override <curse|mute|roulettemute|all> [@utilisateur|all]',
   
-  async execute(message, args) {
+  async execute(message, args, context) {
+    const { t } = context;
     try {
       // Vérifie que c'est le KING (lecture dynamique de process.env)
       const KING_ID = process.env.KING_ID;
       if (message.author.id !== KING_ID) {
-        return message.reply('👑 Cette commande est réservée au ROI du serveur!');
+        return message.reply(t('override.no_king'));
       }
 
       const action = args[0]?.toLowerCase();
@@ -26,19 +27,19 @@ module.exports = {
 
       if (!action) {
         return message.reply({
-          content: '⚔️ **COMMANDE KING - OVERRIDE**\n\n' +
-                   '**Syntaxe**: `!override <type> <cible>`\n\n' +
-                   '**Types disponibles**:\n' +
-                   '`curse` - Lève les malédictions\n' +
-                   '`mute` - Démute forcé\n' +
-                   '`roulettemute` - Arrête roulettemute\n' +
-                   '`all` - Tout arrêter\n\n' +
-                   '**Cibles**:\n' +
-                   '`@utilisateur` - Pour un utilisateur spécifique\n' +
-                   '`all` - Pour tous les utilisateurs\n\n' +
-                   '**Exemples**:\n' +
-                   '`!override curse @User` - Lève la malédiction de User\n' +
-                   '`!override all all` - Arrête tout pour tout le monde'
+          content: t('override.help_title') + '\n\n' +
+                   t('override.help_syntax') + '\n\n' +
+                   t('override.help_types') + '\n' +
+                   t('override.help_type_curse') + '\n' +
+                   t('override.help_type_mute') + '\n' +
+                   t('override.help_type_roulette') + '\n' +
+                   t('override.help_type_all') + '\n\n' +
+                   t('override.help_targets') + '\n' +
+                   t('override.help_target_user') + '\n' +
+                   t('override.help_target_all') + '\n\n' +
+                   t('override.help_examples') + '\n' +
+                   t('override.help_example1') + '\n' +
+                   t('override.help_example2')
         });
       }
 
@@ -54,7 +55,7 @@ module.exports = {
       // Récupère les modules via commandHandler
       const commands = message.client.commandHandler?.commands;
       if (!commands) {
-        return message.reply('❌ Erreur: Impossible d\'accéder aux commandes.');
+        return message.reply(t('override.access_error'));
       }
       
       const curseCommand = commands.get('curse');
@@ -94,7 +95,7 @@ module.exports = {
               try {
                 const member = await message.guild.members.fetch(userId).catch(() => null);
                 if (member && member.voice.channel) {
-                  await member.voice.setMute(false, 'Override par le KING');
+                  await member.voice.setMute(false, t('override.audit_reason'));
                 }
                 if (muteData.interval) clearInterval(muteData.interval);
               } catch (err) {
@@ -110,7 +111,7 @@ module.exports = {
               
               const member = await message.guild.members.fetch(mentionedUser.id).catch(() => null);
               if (member && member.voice.channel) {
-                await member.voice.setMute(false, 'Override par le KING');
+                await member.voice.setMute(false, t('override.audit_reason'));
               }
               
               mutedMembers.delete(mentionedUser.id);
@@ -130,7 +131,7 @@ module.exports = {
               try {
                 const member = await message.guild.members.fetch(userId).catch(() => null);
                 if (member && member.voice.channel) {
-                  await member.voice.setMute(false, 'Override par le KING');
+                  await member.voice.setMute(false, t('override.audit_reason'));
                 }
                 if (muteData.interval) clearInterval(muteData.interval);
               } catch (err) {
@@ -146,7 +147,7 @@ module.exports = {
               
               const member = await message.guild.members.fetch(mentionedUser.id).catch(() => null);
               if (member && member.voice.channel) {
-                await member.voice.setMute(false, 'Override par le KING');
+                await member.voice.setMute(false, t('override.audit_reason'));
               }
               
               mutedMembers.delete(mentionedUser.id);
@@ -159,24 +160,24 @@ module.exports = {
       // Message de résultat
       const embed = new EmbedBuilder()
         .setColor(0xFFD700)
-        .setTitle('👑 OVERRIDE KING ACTIVÉ')
+        .setTitle(t('override.result_title'))
         .setDescription(
-          `**Cible**: ${affectAll ? 'Tous les utilisateurs' : mentionedUser.username}\n` +
-          `**Action**: ${action.toUpperCase()}\n\n` +
-          `**Résultats**:\n` +
-          `🔮 Malédictions levées: **${results.cursesRemoved}**\n` +
-          `🔇 Mutes arrêtés: **${results.mutesRemoved}**\n` +
-          `🎲 Roulette mutes arrêtés: **${results.rouletteMutesRemoved}**\n\n` +
-          `✅ Toutes les sanctions ont été annulées par ordre royal!`
+          t('override.result_target', { target: affectAll ? t('override.result_target_all') : mentionedUser.username }) + '\n' +
+          t('override.result_action', { action: action.toUpperCase() }) + '\n\n' +
+          '**Résultats**:\n' +
+          t('override.result_label_curses', { count: results.cursesRemoved }) + '\n' +
+          t('override.result_label_mutes', { count: results.mutesRemoved }) + '\n' +
+          t('override.result_label_roulette', { count: results.rouletteMutesRemoved }) + '\n\n' +
+          t('override.result_success')
         )
         .setTimestamp()
-        .setFooter({ text: `Exécuté par ${message.author.username}` });
+        .setFooter({ text: t('override.result_footer', { user: message.author.username }) });
 
       await message.reply({ embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande override:', error);
-      message.reply('❌ Une erreur est survenue lors de l\'override.');
+      message.reply(t('common.error'));
     }
   }
 };

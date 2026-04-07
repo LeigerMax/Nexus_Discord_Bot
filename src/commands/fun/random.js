@@ -10,7 +10,8 @@ module.exports = {
   description: 'Choisit une option au hasard parmi celles fournies',
   usage: '!random <option1> <option2> [option3] ... ou !random "option avec espaces" "autre option"',
   
-  execute(message, args) {
+  execute(message, args, context) {
+    const { t } = context;
     try {
       // Parse les arguments en gérant les guillemets
       const parsedArgs = parseArgs(args.join(' '));
@@ -18,21 +19,19 @@ module.exports = {
       // Validation: au moins 2 options
       if (parsedArgs.length < 2) {
         return message.reply({
-          content: '❌ **Erreur**: Tu dois fournir au moins 2 options!\n' +
-                   '**Exemple**: `!random pizza burger tacos`\n' +
-                   '**Avec espaces**: `!random "option 1" "option 2"`'
+          content: `${t('random.min_options')}\n${t('random.example')}\n${t('random.with_spaces')}`
         });
       }
 
       // Validation: nombre maximum d'options (évite le spam)
       if (parsedArgs.length > 25) {
-        return message.reply('❌ **Erreur**: Maximum 25 options autorisées!');
+        return message.reply(t('random.max_options'));
       }
 
       // Validation: options non vides
       const validOptions = parsedArgs.filter(opt => opt.trim().length > 0);
       if (validOptions.length < 2) {
-        return message.reply('❌ **Erreur**: Les options ne peuvent pas être vides!');
+        return message.reply(t('random.empty_options'));
       }
 
       // Sélection aléatoire
@@ -41,14 +40,14 @@ module.exports = {
       // Réponse formatée
       const optionsList = validOptions.map(opt => `• ${opt}`).join('\n');
       message.reply({
-        content: `🎲 **Random Choice**\n\n` +
-                 `**Options** (${validOptions.length}):\n${optionsList}\n\n` +
-                 `✨ **Je choisis**: **${choice}**`
+        content: `**${t('random.title')}**\n\n` +
+                 `${t('random.options_label', { count: validOptions.length })}\n${optionsList}\n\n` +
+                 `${t('random.choice_label')}: **${choice}**`
       });
 
     } catch (error) {
       console.error('Erreur dans la commande random:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

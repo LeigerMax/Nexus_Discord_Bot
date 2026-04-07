@@ -12,12 +12,13 @@ module.exports = {
   description: 'Lance une partie de Bataille Navale avancée (8x8)',
   usage: '!battleship [@joueur]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     const opponent = message.mentions.users.first();
     const isSolo = !opponent || opponent.id === message.client.user.id || opponent.bot;
     
     if (!isSolo && opponent.id === message.author.id) {
-      return message.reply('❌ Tu ne peux pas jouer contre toi-même !');
+      return message.reply(t('battleship.self_error'));
     }
 
     const player1 = message.author;
@@ -25,10 +26,10 @@ module.exports = {
 
     const SIZE = 8;
     const SHIPS_CONFIG = [
-      { name: 'Porte-avion', size: 5 },
-      { name: 'Croiseur', size: 4 },
-      { name: 'Destroyer', size: 3 },
-      { name: 'Sous-marin', size: 2 }
+      { key: 'carrier', name: t('battleship.ships.carrier'), size: 5 },
+      { key: 'cruiser', name: t('battleship.ships.cruiser'), size: 4 },
+      { key: 'destroyer', name: t('battleship.ships.destroyer'), size: 3 },
+      { key: 'submarine', name: t('battleship.ships.submarine'), size: 2 }
     ];
 
     const gameState = {
@@ -36,7 +37,7 @@ module.exports = {
       p2: { user: player2, board: Array(SIZE).fill().map(() => Array(SIZE).fill(0)), ships: [], ready: isSolo, currentShipIdx: 0, pending: { col: null, line: null, orient: null } },
       phase: 'setup',
       turn: 'p1',
-      logs: ['⚓ Partie lancée !'],
+      logs: [t('battleship.logs.start')],
       selectedRow: null
     };
 
@@ -100,21 +101,25 @@ module.exports = {
       const ship = SHIPS_CONFIG[p.currentShipIdx];
       return new EmbedBuilder()
         .setColor(0x3498DB)
-        .setTitle(`🏗️ PLACEMENT : ${p.user.username}`)
-        .setDescription(`${renderBoard(p.board)}\n\nBateau : **${ship ? ship.name : 'Tous placés !'}** (${ship ? ship.size : 0} cases)\nPosition : \`${p.pending.col || '?'}${p.pending.line || '?'}\` (${p.pending.orient === 'H' ? '→' : p.pending.orient === 'V' ? '↓' : '?'})`)
-        .setFooter({ text: 'Ce message est privé.' });
+        .setTitle(t('battleship.setup.title', { user: p.user.username }))
+        .setDescription(
+          `${renderBoard(p.board)}\n\n` +
+          `${t('battleship.setup.ship_label')} : **${ship ? ship.name : t('battleship.setup.all_placed')}** (${ship ? ship.size : 0} cases)\n` +
+          `${t('battleship.setup.pos_label')} : \`${p.pending.col || '?'}${p.pending.line || '?'}\` (${p.pending.orient === 'H' ? '→' : p.pending.orient === 'V' ? '↓' : '?'})`
+        )
+        .setFooter({ text: t('battleship.setup.footer') });
     };
 
     const createSetupRows = (pKey) => {
       const p = gameState[pKey];
       const done = p.currentShipIdx >= SHIPS_CONFIG.length;
       return [
-        new ActionRowBuilder().addComponents(new StringSelectMenuBuilder().setCustomId(`bn_col_${pKey}`).setPlaceholder('Colonne (A-H)').setDisabled(done).addOptions('ABCDEFGH'.split('').map(l => ({ label: l, value: l })))),
-        new ActionRowBuilder().addComponents(new StringSelectMenuBuilder().setCustomId(`bn_line_${pKey}`).setPlaceholder('Ligne (1-8)').setDisabled(done).addOptions('12345678'.split('').map(l => ({ label: l, value: l })))),
-        new ActionRowBuilder().addComponents(new StringSelectMenuBuilder().setCustomId(`bn_orient_${pKey}`).setPlaceholder('Orientation').setDisabled(done).addOptions([{ label: '→ Horizontal', value: 'H' }, { label: '↓ Vertical', value: 'V' }])),
+        new ActionRowBuilder().addComponents(new StringSelectMenuBuilder().setCustomId(`bn_col_${pKey}`).setPlaceholder(t('battleship.setup.placeholder_col')).setDisabled(done).addOptions('ABCDEFGH'.split('').map(l => ({ label: l, value: l })))),
+        new ActionRowBuilder().addComponents(new StringSelectMenuBuilder().setCustomId(`bn_line_${pKey}`).setPlaceholder(t('battleship.setup.placeholder_row')).setDisabled(done).addOptions('12345678'.split('').map(l => ({ label: l, value: l })))),
+        new ActionRowBuilder().addComponents(new StringSelectMenuBuilder().setCustomId(`bn_orient_${pKey}`).setPlaceholder(t('battleship.setup.placeholder_orient')).setDisabled(done).addOptions([{ label: t('battleship.setup.orient_h'), value: 'H' }, { label: t('battleship.setup.orient_v'), value: 'V' }])),
         new ActionRowBuilder().addComponents(
-          new ButtonBuilder().setCustomId(`bn_confirm_${pKey}`).setLabel(done ? '✅ PRÊT !' : '📌 Placer').setStyle(done ? ButtonStyle.Success : ButtonStyle.Primary).setDisabled(!done && (!p.pending.col || !p.pending.line || !p.pending.orient)),
-          new ButtonBuilder().setCustomId(`bn_random_${pKey}`).setLabel('🎲 Aléatoire').setStyle(ButtonStyle.Secondary).setDisabled(done)
+          new ButtonBuilder().setCustomId(`bn_confirm_${pKey}`).setLabel(done ? t('battleship.setup.btn_ready') : t('battleship.setup.btn_place')).setStyle(done ? ButtonStyle.Success : ButtonStyle.Primary).setDisabled(!done && (!p.pending.col || !p.pending.line || !p.pending.orient)),
+          new ButtonBuilder().setCustomId(`bn_random_${pKey}`).setLabel(t('battleship.setup.btn_random')).setStyle(ButtonStyle.Secondary).setDisabled(done)
         )
       ];
     };
@@ -122,12 +127,17 @@ module.exports = {
     // --- MESSAGE PRINCIPAL ---
     const mainEmbed = () => new EmbedBuilder()
       .setColor(0x3498DB)
-      .setTitle('🚢 BATAILLE NAVALE')
-      .setDescription(`**${player1}** ${gameState.p1.ready ? '✅' : '⏳'} vs **${player2}** ${gameState.p2.ready ? '✅' : '⏳'}\n\nClique pour placer tes bateaux !`);
+      .setTitle(t('battleship.battle.title'))
+      .setDescription(t('battleship.battle.main_desc', { 
+        p1: player1, 
+        s1: gameState.p1.ready ? '✅' : '⏳',
+        p2: player2,
+        s2: gameState.p2.ready ? '✅' : '⏳'
+      }));
 
     const mainMessage = await message.reply({ 
       embeds: [mainEmbed()], 
-      components: [new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('bn_start_setup').setLabel('🏗️ Placer mes bateaux').setStyle(ButtonStyle.Primary))] 
+      components: [new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('bn_start_setup').setLabel(t('battleship.setup.btn_start')).setStyle(ButtonStyle.Primary))] 
     });
 
     const collector = mainMessage.createMessageComponentCollector({ time: 1200000 });
@@ -141,11 +151,11 @@ module.exports = {
       const opP = cur === 'p1' ? 'p2' : 'p1';
       return new EmbedBuilder()
         .setColor(0xE67E22)
-        .setTitle('🚀 BATAILLE NAVALE')
+        .setTitle(t('battleship.battle.title'))
         .setDescription(
-          `Tour de : **${gameState[cur].user.username}**\n\n` +
-          `**🛡️ Ma Grille :**\n${renderBoard(gameState[pKey].board)}\n` +
-          `**🎯 Grille Adverse :**\n${renderBoard(gameState[opP].board, true)}\n` +
+          `${t('battleship.battle.turn_label')} : **${gameState[cur].user.username}**\n\n` +
+          `**${t('battleship.battle.my_grid')} :**\n${renderBoard(gameState[pKey].board)}\n` +
+          `**${t('battleship.battle.op_grid')} :**\n${renderBoard(gameState[opP].board, true)}\n` +
           (extraInfo ? `${extraInfo}\n` : '') +
           `📋 ${gameState.logs.slice(-2).join('\n📋 ')}`
         )
@@ -174,14 +184,14 @@ module.exports = {
         ...'EFGH'.split('').map((l, i) => new ButtonBuilder().setCustomId(`bn_fire_${selectedRow}_${i+4}`).setLabel(l).setStyle(ButtonStyle.Danger))
       ),
       new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId('bn_back_rows').setLabel('⬅️ Retour').setStyle(ButtonStyle.Secondary),
-        new ButtonBuilder().setCustomId('bn_view_self').setLabel('👁️ Ma Grille').setStyle(ButtonStyle.Secondary)
+        new ButtonBuilder().setCustomId('bn_back_rows').setLabel(t('battleship.battle.btn_back')).setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder().setCustomId('bn_view_self').setLabel(t('battleship.battle.btn_view_self')).setStyle(ButtonStyle.Secondary)
       )
     ];
 
     const showRowSelection = async (pKey, interaction = null) => {
       gameState.selectedRow = null;
-      const embed = buildBattleEmbed(pKey || gameState.turn, '👇 **Choisis une LIGNE :**');
+      const embed = buildBattleEmbed(pKey || gameState.turn, t('battleship.battle.choose_row'));
       const components = buildRowButtons();
       if (interaction) await interaction.update({ embeds: [embed], components }).catch(() => {});
       else await mainMessage.edit({ embeds: [embed], components }).catch(() => {});
@@ -189,7 +199,7 @@ module.exports = {
 
     const showColSelection = async (pKey, row, interaction) => {
       gameState.selectedRow = row;
-      const embed = buildBattleEmbed(pKey, `✅ Ligne **${row + 1}** → 👇 **Colonne :**`);
+      const embed = buildBattleEmbed(pKey, t('battleship.battle.choose_col', { row: row + 1 }));
       const components = buildColButtons(row);
       await interaction.update({ embeds: [embed], components }).catch(() => {});
     };
@@ -202,19 +212,22 @@ module.exports = {
 
       if (cell === 0) {
         gameState[opKey].board[r][c] = 2;
-        gameState.logs.push(`💨 ${gameState[pKey].user.username} → ${String.fromCharCode(65+c)}${r+1} : À l'eau !`);
+        gameState.logs.push(t('battleship.logs.miss', { user: gameState[pKey].user.username, coord: `${String.fromCharCode(65+c)}${r+1}` }));
       } else {
         gameState[opKey].board[r][c] = 3;
         const ship = gameState[opKey].ships.find(s => s.coords.some(co => co.r === r && co.c === c));
         ship.coords.find(co => co.r === r && co.c === c).hit = true;
-        if (ship.coords.every(co => co.hit)) gameState.logs.push(`💥 ${gameState[pKey].user.username} COULE le **${ship.name}** !`);
-        else gameState.logs.push(`🔥 ${gameState[pKey].user.username} TOUCHÉ !`);
+        if (ship.coords.every(co => co.hit)) gameState.logs.push(t('battleship.logs.sunk', { user: gameState[pKey].user.username, ship: ship.name }));
+        else gameState.logs.push(t('battleship.logs.hit', { user: gameState[pKey].user.username }));
       }
 
       if (gameState[opKey].ships.every(s => s.coords.every(co => co.hit))) {
         const winEmbed = new EmbedBuilder().setColor(0x2ECC71)
-          .setTitle('🏆 VICTOIRE !')
-          .setDescription(`**${gameState[pKey].user.username}** remporte la bataille !\n\n**Grille de ${gameState[opKey].user.username} :**\n${renderBoard(gameState[opKey].board)}`);
+          .setTitle(t('battleship.battle.win_title'))
+          .setDescription(
+            t('battleship.battle.win_desc', { user: gameState[pKey].user.username, opponent: gameState[opKey].user.username }) +
+            `\n${renderBoard(gameState[opKey].board)}`
+          );
         await mainMessage.edit({ embeds: [winEmbed], components: [] });
         collector.stop();
         return 'win';
@@ -240,8 +253,8 @@ module.exports = {
 
       // === SETUP ===
       if (i.customId === 'bn_start_setup') {
-        if (!pKey) return i.reply({ content: '❌ Tu ne joues pas.', ephemeral: true });
-        if (gameState[pKey].ready) return i.reply({ content: '✅ Déjà prêt.', ephemeral: true });
+        if (!pKey) return i.reply({ content: t('battleship.not_playing'), ephemeral: true });
+        if (gameState[pKey].ready) return i.reply({ content: t('battleship.already_ready'), ephemeral: true });
 
         const setupMsg = await i.reply({ embeds: [createSetupEmbed(pKey)], components: createSetupRows(pKey), ephemeral: true, fetchReply: true });
         const setupCollector = setupMsg.createMessageComponentCollector({ time: 600000 });
@@ -267,7 +280,7 @@ module.exports = {
               for (let j = 0; j < ship.size; j++) {
                 if (!isValid(r+(horiz?0:j), c+(horiz?j:0)) || p.board[r+(horiz?0:j)][c+(horiz?j:0)] !== 0) { can = false; break; }
               }
-              if (!can) return si.reply({ content: '❌ Emplacement invalide !', ephemeral: true });
+              if (!can) return si.reply({ content: t('battleship.invalid_placement'), ephemeral: true });
               const coords = [];
               for (let j = 0; j < ship.size; j++) {
                 const nr = r+(horiz?0:j), nc = c+(horiz?j:0);
@@ -280,7 +293,7 @@ module.exports = {
             } else {
               p.ready = true;
               setupCollector.stop();
-              await si.update({ content: '✅ Prêt !', embeds: [], components: [] });
+              await si.update({ content: t('battleship.already_ready'), embeds: [], components: [] });
               if (gameState.p1.ready && gameState.p2.ready) {
                 gameState.phase = 'battle';
                 await showRowSelection('p1');
@@ -297,11 +310,11 @@ module.exports = {
 
       // === BATAILLE ===
       if (gameState.phase !== 'battle') return;
-      if (!pKey) return i.reply({ content: '❌ Tu ne joues pas.', ephemeral: true });
+      if (!pKey) return i.reply({ content: t('battleship.not_playing'), ephemeral: true });
 
       // Vue défensive (seul message éphémère restant)
       if (i.customId === 'bn_view_self') {
-        return i.reply({ content: `**🛡️ Ta Grille :**\n${renderBoard(gameState[pKey].board)}`, ephemeral: true });
+        return i.reply({ content: `**${t('battleship.battle.my_grid')} :**\n${renderBoard(gameState[pKey].board)}`, ephemeral: true });
       }
 
       // Retour aux lignes
@@ -311,14 +324,14 @@ module.exports = {
 
       // Clic sur une LIGNE
       if (i.customId.startsWith('bn_row_')) {
-        if (pKey !== gameState.turn) return i.reply({ content: '❌ Pas ton tour !', ephemeral: true });
+        if (pKey !== gameState.turn) return i.reply({ content: t('battleship.not_your_turn'), ephemeral: true });
         const row = parseInt(i.customId.split('_')[2]);
         return showColSelection(pKey, row, i);
       }
 
       // Clic sur une COLONNE → TIR !
       if (i.customId.startsWith('bn_fire_')) {
-        if (pKey !== gameState.turn) return i.reply({ content: '❌ Pas ton tour !', ephemeral: true });
+        if (pKey !== gameState.turn) return i.reply({ content: t('battleship.not_your_turn'), ephemeral: true });
         const parts = i.customId.split('_');
         const row = parseInt(parts[2]);
         const col = parseInt(parts[3]);

@@ -13,20 +13,28 @@ module.exports = {
   description: 'Vérifie l\'état de ton écran',
   usage: '!monitor [@utilisateur]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     try {
       // Vérifie si un utilisateur est mentionné, sinon utilise l'auteur
       const targetUser = message.mentions.users.first() || message.author;
       
-      // États possibles de l'écran
-      const states = [
-        { emoji: '🖥️', status: 'Écran nickel', description: 'Comme neuf, aucune trace', color: 0x00FF00, chance: 35 },
-        { emoji: '🖥️', status: 'Trace de doigt', description: 'Quelqu\'un a pointé l\'écran', color: 0x99FF99, chance: 20 },
-        { emoji: '🪟', status: 'Fissure légère', description: 'Coin supérieur droit touché', color: 0xFFFF00, chance: 20 },
-        { emoji: '💥', status: 'Écran fissuré', description: 'Impact au centre, toile d\'araignée', color: 0xFF9900, chance: 15 },
-        { emoji: '🔨', status: 'Écran explosé', description: 'Rage quit avec objet contondant', color: 0xFF0000, chance: 8 },
-        { emoji: '☠️', status: 'Écran KO', description: 'Coup de poing critique détecté', color: 0x8B0000, chance: 2 }
+      // États possibles de l'écran (Poids et Emojis conservés, Textes traduits)
+      const statesConfig = [
+        { emoji: '🖥️', color: 0x00FF00, chance: 35 },
+        { emoji: '🖥️', color: 0x99FF99, chance: 20 },
+        { emoji: '🪟', color: 0xFFFF00, chance: 20 },
+        { emoji: '💥', color: 0xFF9900, chance: 15 },
+        { emoji: '🔨', color: 0xFF0000, chance: 8 },
+        { emoji: '☠️', color: 0x8B0000, chance: 2 }
       ];
+
+      const translatedStates = t('monitor.states');
+      const states = statesConfig.map((config, index) => ({
+        ...config,
+        status: translatedStates[index].status,
+        description: translatedStates[index].desc
+      }));
 
       // Sélection pondérée
       const totalChance = states.reduce((sum, state) => sum + state.chance, 0);
@@ -43,20 +51,20 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setColor(selectedState.color)
-        .setTitle('🖥️ État de l\'Écran')
+        .setTitle(t('monitor.title'))
         .setDescription(
-          `**Joueur**: ${targetUser.username}\n\n` +
+          `**${t('wifi.label_player')}**: ${targetUser.username}\n\n` +
           `${selectedState.emoji} **${selectedState.status}**\n` +
           `*${selectedState.description}*`
         )
-        .setFooter({ text: 'Inspection visuelle terminée' })
+        .setFooter({ text: t('monitor.footer') })
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande monitor:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

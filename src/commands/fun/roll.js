@@ -13,7 +13,8 @@ module.exports = {
   description: 'Lance un nombre aléatoire entre 1 et 100',
   usage: '!roll',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     try {
       // Génère un nombre aléatoire entre 1 et 100
       const result = Math.floor(Math.random() * 100) + 1;
@@ -30,16 +31,16 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setColor(color)
-        .setTitle('🎲 Lancer de Nombre')
-        .setDescription(`🎯 **Tu as obtenu**: **${result}** / 100`)
-        .setFooter({ text: `Lancé par ${message.author.username}` })
+        .setTitle(t('roll.title'))
+        .setDescription(`🎯 ${t('roll.result_label', { result })} / 100`)
+        .setFooter({ text: t('common.requested_by', { user: message.author.username }) })
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande roll:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

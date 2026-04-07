@@ -13,20 +13,28 @@ module.exports = {
   description: 'Vérifie l\'état de ton clavier',
   usage: '!keyboard [@utilisateur]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     try {
       // Vérifie si un utilisateur est mentionné, sinon utilise l'auteur
       const targetUser = message.mentions.users.first() || message.author;
       
-      // États possibles du clavier
-      const states = [
-        { emoji: '⌨️', status: 'Clavier intact', description: 'Aucun dégât détecté', color: 0x00FF00, chance: 30 },
-        { emoji: '⌨️', status: 'Touches collantes', description: '1 touche coincée (probablement du soda)', color: 0x99FF99, chance: 20 },
-        { emoji: '⌨️', status: '3 touches arrachées', description: 'W, A, S ou D manquent à l\'appel', color: 0xFFFF00, chance: 20 },
-        { emoji: '⌨️', status: 'Barre espace fissurée', description: 'Tu jump trop fort', color: 0xFF9900, chance: 15 },
-        { emoji: '🔥', status: 'Clavier en feu', description: 'Il chauffe grave', color: 0xFF0000, chance: 10 },
-        { emoji: '💀', status: 'Clavier détruit (RIP)', description: 'Coup de poing critique confirmé', color: 0x8B0000, chance: 5 }
+      // États possibles du clavier (Poids et Emojis conservés, Textes traduits)
+      const statesConfig = [
+        { emoji: '⌨️', color: 0x00FF00, chance: 30 },
+        { emoji: '⌨️', color: 0x99FF99, chance: 20 },
+        { emoji: '⌨️', color: 0xFFFF00, chance: 20 },
+        { emoji: '⌨️', color: 0xFF9900, chance: 15 },
+        { emoji: '🔥', color: 0xFF0000, chance: 10 },
+        { emoji: '💀', color: 0x8B0000, chance: 5 }
       ];
+
+      const translatedStates = t('keyboard.states');
+      const states = statesConfig.map((config, index) => ({
+        ...config,
+        status: translatedStates[index].status,
+        description: translatedStates[index].desc
+      }));
 
       // Sélection pondérée
       const totalChance = states.reduce((sum, state) => sum + state.chance, 0);
@@ -43,20 +51,20 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setColor(selectedState.color)
-        .setTitle('⌨️ État du Clavier')
+        .setTitle(t('keyboard.title'))
         .setDescription(
-          `**Joueur**: ${targetUser.username}\n\n` +
+          `**${t('wifi.label_player')}**: ${targetUser.username}\n\n` +
           `${selectedState.emoji} **${selectedState.status}**\n` +
           `*${selectedState.description}*`
         )
-        .setFooter({ text: 'Diagnostic complet effectué' })
+        .setFooter({ text: t('keyboard.footer') })
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande keyboard:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

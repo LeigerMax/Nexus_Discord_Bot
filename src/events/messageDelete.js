@@ -6,6 +6,8 @@
  * @requires discord.js
  */
 
+const auditService = require('../services/auditService');
+
 // Stockage en mémoire des messages supprimés (max 100 derniers)
 const deletedMessages = [];
 const MAX_DELETED_MESSAGES = 100;
@@ -74,7 +76,9 @@ module.exports = (client) => {
 
       // Note: Les messages supprimés sont stockés en mémoire
       // et peuvent être consultés avec la commande !showdeleted
-      // Aucun message automatique n'est envoyé lors de la suppression
+      
+      // Log Audit (v1.0.0)
+      await auditService.logDelete(message);
 
     } catch (error) {
       console.error('Erreur dans l\'event messageDelete:', error);

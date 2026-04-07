@@ -11,7 +11,8 @@ module.exports = {
   description: 'Lance une partie de démineur flash (5x5)',
   usage: '!minesweeper [mines]',
   
-  async execute(message, args) {
+  async execute(message, args, context) {
+    const { t } = context;
     const size = 5;
     const numMines = parseInt(args[0]) || 4;
     
@@ -53,8 +54,6 @@ module.exports = {
       }
     }
     
-
-    
     const createRows = (isFinished = false, _win = false) => {
       const rows = [];
       for (let r = 0; r < size; r++) {
@@ -90,17 +89,17 @@ module.exports = {
     
     const embed = new EmbedBuilder()
       .setColor(0x3498DB)
-      .setTitle('💣 DÉMINEUR FLASH')
-      .setDescription(`Trouve toutes les cases libres sans toucher les **${actualMines}** mines !
-
-**Comment jouer :**
-- Cliquez sur un bouton **[ ? ]** pour révéler une case.
-- 🟦 = Case vide (aucune mine autour).
-- 1️⃣, 2️⃣... = Nombre de mines dans les 8 cases adjacentes.
-- 💣 = MINE ! La partie s'arrête si vous en touchez une.
-
-*Objectif : Révéler toutes les cases qui ne contiennent pas de mine.*`)
-      .setFooter({ text: `Partie de ${message.author.username}` })
+      .setTitle(t('minesweeper.title'))
+      .setDescription(
+        t('minesweeper.desc_initial', { mines: actualMines }) + '\n\n' +
+        t('minesweeper.how_to_label') + '\n' +
+        t('minesweeper.how_to_step1') + '\n' +
+        t('minesweeper.how_to_step2') + '\n' +
+        t('minesweeper.how_to_step3') + '\n' +
+        t('minesweeper.how_to_step4') + '\n\n' +
+        t('minesweeper.how_to_objective')
+      )
+      .setFooter({ text: t('minesweeper.footer', { user: message.author.username }) })
       .setTimestamp();
       
     const gameMessage = await message.reply({
@@ -115,7 +114,7 @@ module.exports = {
     
     collector.on('collect', async (interaction) => {
       if (interaction.user.id !== message.author.id) {
-        return interaction.reply({ content: '❌ Ce n\'est pas ta partie !', ephemeral: true });
+        return interaction.reply({ content: t('minesweeper.not_your_game'), ephemeral: true });
       }
       
       const [, r, c] = interaction.customId.split('_').map(Number);
@@ -125,8 +124,8 @@ module.exports = {
         collector.stop('lost');
         const lostEmbed = EmbedBuilder.from(embed)
           .setColor(0xFF0000)
-          .setTitle('💥 BOUM !')
-          .setDescription(`Tu as touché une mine en [${r+1}, ${c+1}] ! Dommage...`);
+          .setTitle(t('minesweeper.lost_title'))
+          .setDescription(t('minesweeper.lost_desc', { r: r + 1, c: c + 1 }));
           
         return interaction.update({
           embeds: [lostEmbed],
@@ -164,8 +163,8 @@ module.exports = {
         collector.stop('win');
         const winEmbed = EmbedBuilder.from(embed)
           .setColor(0x00FF00)
-          .setTitle('🏆 VICTOIRE !')
-          .setDescription(`Félicitations ! Tu as déminé tout le terrain sans encombre !`);
+          .setTitle(t('minesweeper.win_title'))
+          .setDescription(t('minesweeper.win_desc'));
           
         return interaction.update({
           embeds: [winEmbed],
@@ -182,7 +181,7 @@ module.exports = {
     collector.on('end', (collected, reason) => {
       if (reason === 'time') {
         gameMessage.edit({ 
-          content: '⏰ Temps écoulé pour cette partie !',
+          content: t('minesweeper.timeout_msg'),
           components: createRows(true, false) 
         }).catch(() => {});
       }

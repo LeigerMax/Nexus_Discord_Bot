@@ -7,11 +7,10 @@
  */
 
 const { EmbedBuilder } = require('discord.js');
+const storageService = require('../../services/storageService');
+const i18n = require('../../services/i18nService');
 
-// Configuration anti-raid par serveur
-const antiRaidConfig = new Map();
-
-// Tracking des joins récents
+// Tracking des joins récents (garde uniquement en mémoire vive)
 const recentJoins = new Map();
 
 // Garbage collector: nettoie les anciennes entrées toutes les 10 minutes
@@ -32,185 +31,197 @@ module.exports = {
   description: 'Configure le système anti-raid du serveur',
   usage: '!antiraid <on|off|config|status>',
   
-  async execute(message, args) {
+  async execute(message, args, context) {
+    const { t, locale } = context;
     try {
       // Vérifie les permissions
       if (!message.member.permissions.has('Administrator')) {
-        return message.reply('❌ Tu dois être administrateur pour configurer l\'anti-raid!');
+        return message.reply(t('antiraid.no_admin'));
       }
 
       const subCommand = args[0]?.toLowerCase();
 
       if (!subCommand || subCommand === 'status') {
-        return this.showStatus(message);
+        return this.showStatus(message, t);
       }
 
       switch (subCommand) {
         case 'on':
-          return this.enableAntiRaid(message);
+          return await this.enableAntiRaid(message, t);
         
         case 'off':
-          return this.disableAntiRaid(message);
+          return await this.disableAntiRaid(message, t);
         
         case 'config':
-          return this.configureAntiRaid(message, args.slice(1));
+          return await this.configureAntiRaid(message, args.slice(1), t);
         
         default:
           return message.reply({
-            content: '❌ Sous-commande invalide!\n' +
-                     '**Commandes disponibles**:\n' +
-                     '`!antiraid on` - Active l\'anti-raid\n' +
-                     '`!antiraid off` - Désactive l\'anti-raid\n' +
-                     '`!antiraid config <option> <valeur>` - Configure l\'anti-raid\n' +
-                     '`!antiraid status` - Affiche la configuration actuelle\n\n' +
-                     '**Options de config**:\n' +
-                     '`joinLimit <nombre>` - Nombre de joins max en X secondes (défaut: 5)\n' +
-                     '`joinWindow <secondes>` - Fenêtre de temps pour les joins (défaut: 10)\n' +
-                     '`action <kick|ban>` - Action à effectuer (défaut: kick)\n' +
-                     '`autoLock <true|false>` - Verrouille automatiquement le serveur (défaut: true)'
+            content: t('antiraid.invalid_subcommand') + '\n' +
+                     t('antiraid.available_commands') + '\n' +
+                     `\`!antiraid on\` - ${t('antiraid.help_on')}\n` +
+                     `\`!antiraid off\` - ${t('antiraid.help_off')}\n` +
+                     `\`!antiraid config <option> <valeur>\` - ${t('antiraid.help_config')}\n` +
+                     `\`!antiraid status\` - ${t('antiraid.help_status')}\n\n` +
+                     t('antiraid.config_options') + '\n' +
+                     '`joinLimit <nombre>` - (défaut: 5)\n' +
+                     '`joinWindow <secondes>` - (défaut: 10)\n' +
+                     '`action <kick|ban>` - (défaut: kick)\n' +
+                     '`autoLock <true|false>` - (défaut: true)'
           });
       }
 
     } catch (error) {
       console.error('Erreur dans la commande antiraid:', error);
-      message.reply('❌ Une erreur est survenue.');
+      message.reply(t('common.error'));
     }
   },
 
-  enableAntiRaid(message) {
+  async enableAntiRaid(message, t) {
     const guildId = message.guild.id;
+    let fullConfig = storageService.get(guildId) || {};
     
-    if (!antiRaidConfig.has(guildId)) {
-      antiRaidConfig.set(guildId, {
-        enabled: true,
-        joinLimit: 5,
-        joinWindow: 10000, // 10 secondes
-        action: 'kick',
-        autoLock: true,
-        locked: false
-      });
-    } else {
-      const config = antiRaidConfig.get(guildId);
-      config.enabled = true;
-      config.locked = false;
-    }
+    fullConfig.antiraid = fullConfig.antiraid || {
+      enabled: true,
+      joinLimit: 5,
+      joinWindow: 10000,
+      action: 'kick',
+      autoLock: true,
+      locked: false
+    };
+
+    fullConfig.antiraid.enabled = true;
+    fullConfig.antiraid.locked = false;
+
+    await storageService.set(guildId, fullConfig);
 
     const embed = new EmbedBuilder()
       .setColor(0x00FF00)
-      .setTitle('🛡️ Anti-Raid Activé')
-      .setDescription('Le système anti-raid est maintenant actif!')
+      .setTitle(t('antiraid.enabled_title'))
+      .setDescription(t('antiraid.enabled_desc'))
       .addFields(
-        { name: '⚙️ Configuration', value: this.getConfigText(antiRaidConfig.get(guildId)) }
+        { name: t('antiraid.config_label'), value: this.getConfigText(fullConfig.antiraid, t) }
       )
       .setTimestamp();
 
     return message.reply({ embeds: [embed] });
   },
 
-  disableAntiRaid(message) {
+  async disableAntiRaid(message, t) {
     const guildId = message.guild.id;
-    const config = antiRaidConfig.get(guildId);
+    let fullConfig = storageService.get(guildId);
     
-    if (config) {
-      config.enabled = false;
-      config.locked = false;
+    if (fullConfig && fullConfig.antiraid) {
+      fullConfig.antiraid.enabled = false;
+      fullConfig.antiraid.locked = false;
+      await storageService.set(guildId, fullConfig);
     }
 
-    return message.reply('✅ Système anti-raid désactivé!');
+    return message.reply(t('antiraid.disabled'));
   },
 
-  async configureAntiRaid(message, args) {
+  async configureAntiRaid(message, args, t) {
     const guildId = message.guild.id;
+    let fullConfig = storageService.get(guildId) || {};
     
-    if (!antiRaidConfig.has(guildId)) {
-      antiRaidConfig.set(guildId, {
-        enabled: false,
-        joinLimit: 5,
-        joinWindow: 10000,
-        action: 'kick',
-        autoLock: true,
-        locked: false
-      });
-    }
+    fullConfig.antiraid = fullConfig.antiraid || {
+      enabled: false,
+      joinLimit: 5,
+      joinWindow: 10000,
+      action: 'kick',
+      autoLock: true,
+      locked: false
+    };
 
-    const config = antiRaidConfig.get(guildId);
+    const config = fullConfig.antiraid;
     const option = args[0]?.toLowerCase();
     const value = args[1];
 
     if (!option) {
-      return message.reply('❌ Spécifie une option à configurer! Utilise `!antiraid` pour voir la liste.');
+      return message.reply(t('antiraid.config_specify_option'));
     }
 
     switch (option) {
       case 'joinlimit': {
-        const limit = Number.parseInt(value, 10);
+        const limit = parseInt(value, 10);
         if (!limit || limit < 1 || limit > 20) {
-          return message.reply('❌ La limite de joins doit être entre 1 et 20!');
+          return message.reply(t('antiraid.config_joinlimit_error'));
         }
         config.joinLimit = limit;
-        return message.reply(`✅ Limite de joins définie à **${limit}** utilisateurs.`);
+        await message.reply(t('antiraid.config_joinlimit_success', { limit }));
+        break;
       }
 
       case 'joinwindow': {
-        const window = Number.parseInt(value, 10);
-        if (!window || window < 5 || window > 60) {
-          return message.reply('❌ La fenêtre de temps doit être entre 5 et 60 secondes!');
+        const window = parseInt(value, 10);
+        if (!window || window < 1) {
+          return message.reply(t('antiraid.config_joinwindow_error'));
         }
         config.joinWindow = window * 1000;
-        return message.reply(`✅ Fenêtre de temps définie à **${window}** secondes.`);
+        await message.reply(t('antiraid.config_joinwindow_success', { window }));
+        break;
       }
 
       case 'action':
         if (value !== 'kick' && value !== 'ban') {
-          return message.reply('❌ L\'action doit être `kick` ou `ban`!');
+          return message.reply(t('antiraid.config_action_error'));
         }
         config.action = value;
-        return message.reply(`✅ Action anti-raid définie à **${value}**.`);
+        await message.reply(t('antiraid.config_action_success', { action: value }));
+        break;
 
       case 'autolock':
         if (value !== 'true' && value !== 'false') {
-          return message.reply('❌ AutoLock doit être `true` ou `false`!');
+          return message.reply(t('antiraid.config_autolock_error'));
         }
         config.autoLock = value === 'true';
-        return message.reply(`✅ Verrouillage automatique ${config.autoLock ? 'activé' : 'désactivé'}.`);
+        await message.reply(t('antiraid.config_autolock_success', { status: config.autoLock ? 'ON' : 'OFF' }));
+        break;
 
       default:
-        return message.reply('❌ Option invalide! Utilise `!antiraid` pour voir les options disponibles.');
+        return message.reply(t('antiraid.config_invalid_option'));
     }
+
+    await storageService.set(guildId, fullConfig);
   },
 
-  showStatus(message) {
+  showStatus(message, t) {
     const guildId = message.guild.id;
-    const config = antiRaidConfig.get(guildId);
+    const fullConfig = storageService.get(guildId);
+    const config = fullConfig?.antiraid;
 
     const embed = new EmbedBuilder()
       .setColor(config?.enabled ? 0x00FF00 : 0xFF0000)
-      .setTitle('🛡️ Statut Anti-Raid')
+      .setTitle(t('antiraid.status_title'))
       .setDescription(
         config?.enabled 
-          ? '✅ **Système actif**' + (config.locked ? ' 🔒 **SERVEUR VERROUILLÉ**' : '')
-          : '❌ **Système désactivé**'
+          ? t('antiraid.status_active') + (config.locked ? t('antiraid.status_locked') : '')
+          : t('antiraid.status_disabled')
       )
       .setTimestamp();
 
     if (config) {
       embed.addFields(
-        { name: '⚙️ Configuration', value: this.getConfigText(config) }
+        { name: t('antiraid.config_label'), value: this.getConfigText(config, t) }
       );
     }
 
     return message.reply({ embeds: [embed] });
   },
 
-  getConfigText(config) {
-    return `**Limite**: ${config.joinLimit} joins en ${config.joinWindow / 1000}s\n` +
-           `**Action**: ${config.action}\n` +
-           `**Auto-Lock**: ${config.autoLock ? 'Oui' : 'Non'}`;
+  getConfigText(config, t) {
+    return t('antiraid.config_text_limit', { limit: config.joinLimit, window: config.joinWindow / 1000 }) + '\n' +
+           t('antiraid.config_text_action', { action: config.action }) + '\n' +
+           t('antiraid.config_text_autolock', { status: config.autoLock ? 'YES' : 'NO' });
   },
 
   // Fonction appelée par l'event guildMemberAdd
   async checkRaid(guild, member) {
-    const config = antiRaidConfig.get(guild.id);
+    const locale = i18n.getGuildLocale(guild.id);
+    const t = (key, params) => i18n.t(key, locale, params);
+
+    const fullConfig = storageService.get(guild.id);
+    const config = fullConfig?.antiraid;
     
     if (!config || !config.enabled || config.locked) return;
 
@@ -240,9 +251,9 @@ module.exports = {
           if (!targetMember) continue;
 
           if (config.action === 'ban') {
-            await targetMember.ban({ reason: 'Anti-Raid: Détection de raid' });
+            await targetMember.ban({ reason: t('antiraid.raid_detected_title') });
           } else {
-            await targetMember.kick('Anti-Raid: Détection de raid');
+            await targetMember.kick(t('antiraid.raid_detected_title'));
           }
         } catch (err) {
           console.error('Erreur action anti-raid:', err);
@@ -252,6 +263,7 @@ module.exports = {
       // Verrouille le serveur si activé
       if (config.autoLock) {
         config.locked = true;
+        await storageService.set(guild.id, fullConfig);
         
         // Trouve un salon pour notifier
         const channels = guild.channels.cache.filter(c => c.type === 0);
@@ -260,12 +272,12 @@ module.exports = {
         if (notifChannel) {
           const embed = new EmbedBuilder()
             .setColor(0xFF0000)
-            .setTitle('🚨 RAID DÉTECTÉ!')
+            .setTitle(t('antiraid.raid_detected_title'))
             .setDescription(
-              `**${filtered.length}** membres ont rejoint en ${config.joinWindow / 1000} secondes!\n\n` +
-              `✅ Action effectuée: **${config.action}**\n` +
-              `🔒 Serveur verrouillé automatiquement\n\n` +
-              `Utilise \`!antiraid off\` puis \`!antiraid on\` pour déverrouiller.`
+              t('antiraid.raid_detected_desc', { count: filtered.length, window: config.joinWindow / 1000 }) + '\n\n' +
+              t('antiraid.raid_action_performed', { action: config.action }) + '\n' +
+              t('antiraid.raid_autolock_notif') + '\n\n' +
+              t('antiraid.raid_unlock_instruction')
             )
             .setTimestamp();
 
@@ -280,6 +292,7 @@ module.exports = {
 
   // Export de la config pour l'event
   getConfig(guildId) {
-    return antiRaidConfig.get(guildId);
+    const fullConfig = storageService.get(guildId);
+    return fullConfig?.antiraid;
   }
 };

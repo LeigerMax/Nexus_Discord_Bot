@@ -13,15 +13,15 @@ module.exports = {
   description: 'Spam un joueur avec des mentions puis supprime tout',
   usage: '!spam @utilisateur [durée_en_secondes]',
   
-  async execute(message, args) {
+  async execute(message, args, context) {
+    const { t } = context;
     try {
       // Vérifie qu'un utilisateur est mentionné
       const mentionedUser = message.mentions.users.first();
       
       if (!mentionedUser) {
         return message.reply({
-          content: '❌ **Erreur**: Tu dois mentionner un utilisateur!\n' +
-                   '**Exemple**: `!spam @utilisateur` ou `!spam @utilisateur 30`'
+          content: t('hug.mention_error').replace('!hug', '!spam')
         });
       }
 
@@ -31,11 +31,8 @@ module.exports = {
       
       if (timeArg) {
         const parsedTime = parseInt(timeArg);
-        if (parsedTime < 5) {
-          return message.reply('❌ **Erreur**: La durée minimum est de 5 secondes!');
-        }
-        if (parsedTime > 300) {
-          return message.reply('❌ **Erreur**: La durée maximum est de 300 secondes (5 minutes)!');
+        if (parsedTime < 1) {
+          return message.reply(t('spam.error_min_duration'));
         }
         durationInSeconds = parsedTime;
       }
@@ -45,9 +42,13 @@ module.exports = {
       // Confirmation avant le spam
       const confirmEmbed = new EmbedBuilder()
         .setColor(0xFF6600)
-        .setTitle('⚠️ Spam en cours!')
-        .setDescription(`🎯 **Cible**: ${mentionedUser.username}\n👤 **Lancé par**: ${message.author.username}\n⏱️ **Durée**: ${durationInSeconds} secondes\n💬 **Spam canal**: Toutes les 2s\n📩 **GIF DM**: Toutes les 10s\n🗑️ **Nettoyage**: Automatique après ${durationInSeconds}s`)
-        .setFooter({ text: 'Attention, ça va chauffer! 🔥' });
+        .setTitle(t('spam.confirm_title'))
+        .setDescription(t('spam.confirm_desc', { 
+          target: mentionedUser.username, 
+          author: message.author.username, 
+          duration: durationInSeconds 
+        }))
+        .setFooter({ text: t('spam.confirm_footer') });
 
       await message.reply({ embeds: [confirmEmbed] });
 
@@ -62,19 +63,8 @@ module.exports = {
         console.log('Impossible de supprimer le message original:', err.message);
       }
 
-      // Messages de spam variés
-      const spamTexts = [
-        `${mentionedUser} 👀`,
-        `Hey ${mentionedUser}! 👋`,
-        `${mentionedUser} regarde! 👁️`,
-        `Coucou ${mentionedUser}! 🎉`,
-        `${mentionedUser} t'es là? 🤔`,
-        `${mentionedUser}!!!`,
-        `Ping ${mentionedUser} 🔔`,
-        `${mentionedUser} réponds! 📢`,
-        `Yo ${mentionedUser}! 🎮`,
-        `${mentionedUser} wake up! ⏰`
-      ];
+      // Messages de spam variés (traduits)
+      const spamTexts = t('spam.texts', { target: mentionedUser.toString() });
 
       // GIFs pour les DM
       const spamGifs = [
@@ -94,9 +84,9 @@ module.exports = {
           const randomGif = spamGifs[Math.floor(Math.random() * spamGifs.length)];
           const gifEmbed = new EmbedBuilder()
             .setColor(0xFF0000)
-            .setDescription(`🔥 **SPAM ATTACK!** 🔥\nFrom: ${message.author.username}`)
+            .setDescription(t('spam.dm_desc', { author: message.author.username }))
             .setImage(randomGif)
-            .setFooter({ text: 'Tu es en train de te faire spammer! 😈' });
+            .setFooter({ text: t('spam.dm_footer') });
           
           await mentionedUser.send({ embeds: [gifEmbed] });
         } catch (err) {
@@ -122,15 +112,15 @@ module.exports = {
               await msg.delete();
               deletedCount++;
             } catch {
-              // Ignorer si l'utilisateur a bloqué le bot
+              // Ignorer si le message a déjà été supprimé ou si permissions insuffisantes
             }
           }
 
           // Message de fin
           const endEmbed = new EmbedBuilder()
             .setColor(0x00FF00)
-            .setDescription(`✅ Spam terminé!\n🗑️ ${deletedCount} messages supprimés`)
-            .setFooter({ text: `Victime: ${mentionedUser.username} • Par: ${message.author.username}` });
+            .setDescription(t('spam.end_desc', { count: deletedCount }))
+            .setFooter({ text: t('spam.end_footer', { target: mentionedUser.username, author: message.author.username }) });
 
           const finalMsg = await message.channel.send({ embeds: [endEmbed] });
           
@@ -154,7 +144,7 @@ module.exports = {
 
     } catch (error) {
       console.error('Erreur dans la commande spam:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

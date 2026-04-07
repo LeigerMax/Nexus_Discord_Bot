@@ -8,6 +8,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const storageService = require('../services/storageService');
 
 class CommandHandler {
   constructor(client, prefix) {
@@ -122,7 +123,7 @@ class CommandHandler {
       
       // Si on a passé tous les middlewares, on exécute la vraie commande
       if (i === this.middlewares.length) {
-        return await context.command.execute(context.message, context.args);
+        return await context.command.execute(context.message, context.args, context);
       }
       
       const middleware = this.middlewares[i];
@@ -138,24 +139,38 @@ class CommandHandler {
    */
   async handleMessage(message) {
     if (message.author.bot) return;
-    if (!message.content.startsWith(this.prefix)) return;
 
-    const args = message.content.slice(this.prefix.length).trim().split(/ +/);
+    // Récupère la configuration du serveur (préfixe et langue)
+    let prefix = this.prefix;
+    let locale = 'fr';
+    if (message.guild) {
+      const config = storageService.get(message.guild.id);
+      if (config) {
+        if (config.prefix) prefix = config.prefix;
+        if (config.language) locale = config.language;
+      }
+    }
+
+    if (!message.content.startsWith(prefix)) return;
+
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
     const command = this.commands.get(commandName);
     
     if (!command) {
       const suggestions = this.findSimilarCommands(commandName);
       if (suggestions.length > 0) {
-        const suggestionsList = suggestions.slice(0, 5).map(cmd => `\`${this.prefix}${cmd}\``).join(', ');
+        const i18n = require('../services/i18nService');
+        const suggestionsList = suggestions.slice(0, 5).map(cmd => `\`${prefix}${cmd}\``).join(', ');
         return message.reply({
-          content: `❌ Commande \`${commandName}\` introuvable.\n💡 **Suggestions**: ${suggestionsList}\n\nUtilise \`${this.prefix}help\` pour voir toutes les commandes.`,
+          content: `❌ ${i18n.t('common.error_find_command', locale, { command: commandName })}\n💡 **Suggestions**: ${suggestionsList}\n\n${i18n.t('common.help_suggestion', locale, { prefix })}`,
           allowedMentions: { repliedUser: false }
         });
       }
       return; 
     }
 
+    const i18n = require('../services/i18nService');
     const context = {
       message,
       args,
@@ -163,7 +178,9 @@ class CommandHandler {
       commandName,
       client: this.client,
       commands: this.commands,
-      prefix: this.prefix
+      prefix: prefix,
+      locale: locale,
+      t: (key, params) => i18n.t(key, locale, params)
     };
 
     try {

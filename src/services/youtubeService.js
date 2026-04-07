@@ -1,0 +1,166 @@
+/**
+ * @file YouTube Notification Service (Multi-Channel Support)
+ * @description Surveille les flux RSS de plusieurs chaînes YouTube et poste des notifications sur Discord.
+ * @module services/youtubeService
+ */
+
+const axios = require('axios');
+const storageService = require('./storageService');
+
+class YoutubeService {
+  constructor(client) {
+    this.client = client;
+    this.interval = 15 * 60 * 1000; // 15 minutes
+    this.timer = null;
+  }
+
+  /**
+   * Tente de résoudre une URL YouTube ou un handle en channelId technique (UC...)
+   * @param {string} input URL, @handle ou ID
+   * @returns {Promise<string|null>}
+   */
+  static async resolveChannelId(input) {
+    if (!input) return null;
+    input = input.trim();
+
+    // 1. Si c'est déjà un ID valide (commence par UC)
+    if (input.startsWith('UC') && input.length === 24) return input;
+
+    // 2. Si c'est une URL ou un handle, on tente de fetch la page
+    let url = input;
+    if (input.startsWith('@')) {
+      url = `https://www.youtube.com/${input}`;
+    } else if (!input.startsWith('http')) {
+      url = `https://www.youtube.com/@${input}`;
+    }
+
+    try {
+      const response = await axios.get(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0 Safari/537.36' }
+      });
+      
+      // Extraction de l'ID via le tag meta identifier ou browse_id
+      const match = response.data.match(/"browse_id":"(UC[a-zA-Z0-9_-]{22})"/);
+      if (match) return match[1];
+
+      const metaMatch = response.data.match(/<meta itemprop="identifier" content="(UC[a-zA-Z0-9_-]{22})">/);
+      if (metaMatch) return metaMatch[1];
+
+      return null;
+    } catch (error) {
+      console.error(`[YouTube] Échec de résolution pour ${input}:`, error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Démarre le service de surveillance
+   */
+  start() {
+    console.log('🚀 Service YouTube démarré (Support multi-chaînes)');
+    this.checkAll();
+    this.timer = setInterval(() => this.checkAll(), this.interval);
+  }
+
+  /**
+   * Arrête le service
+   */
+  stop() {
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  async checkAll() {
+    const guilds = this.client.guilds.cache;
+    
+    for (const [guildId, guild] of guilds) {
+      const config = storageService.get(guildId);
+      
+      if (!config?.youtube?.enabled) continue;
+
+      // Migration rétrocompatible
+      if (!config.youtube.channels && config.youtube.channelId) {
+        config.youtube.channels = [{
+          id: config.youtube.channelId,
+          discordChannelId: config.youtube.discordChannelId,
+          customMessage: config.youtube.customMessage,
+          lastVideoId: config.youtube.lastVideoId
+        }];
+        delete config.youtube.channelId;
+        delete config.youtube.discordChannelId;
+        delete config.youtube.customMessage;
+        delete config.youtube.lastVideoId;
+        await storageService.set(guildId, config);
+      }
+
+      if (!config.youtube.channels || config.youtube.channels.length === 0) continue;
+
+      for (const channelConfig of config.youtube.channels) {
+        try {
+          await this.checkChannel(guild, channelConfig);
+        } catch (error) {
+          console.error(`[YouTube] Erreur pour ${channelConfig.id} sur ${guild.name}:`, error.message);
+        }
+      }
+    }
+  }
+
+  async checkChannel(guild, channelConfig) {
+    if (!channelConfig.id || !channelConfig.discordChannelId) return;
+
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelConfig.id}`;
+    
+    const response = await axios.get(rssUrl).catch(() => null);
+    if (!response || !response.data) return;
+
+    const videoIdMatch = response.data.match(/<yt:videoId>(.*?)<\/yt:videoId>/);
+    const titleMatch = response.data.match(/<title>(.*?)<\/title>/g); 
+    const authorMatch = response.data.match(/<name>(.*?)<\/name>/); // Nom de la chaîne
+
+    if (!videoIdMatch) return;
+
+    const latestVideoId = videoIdMatch[1];
+    const videoTitle = titleMatch && titleMatch[1] ? titleMatch[1].replace(/<\/?title>/g, '') : 'Nouvelle vidéo';
+    const authorName = authorMatch ? authorMatch[1] : 'YouTube';
+
+    // Initialisation silencieuse
+    if (!channelConfig.lastVideoId) {
+      channelConfig.lastVideoId = latestVideoId;
+      const fullConfig = storageService.get(guild.id);
+      // On met à jour l'ID dans le bon objet du tableau
+      const idx = fullConfig.youtube.channels.findIndex(c => c.id === channelConfig.id);
+      if (idx !== -1) {
+        fullConfig.youtube.channels[idx].lastVideoId = latestVideoId;
+        await storageService.set(guild.id, fullConfig);
+      }
+      return;
+    }
+
+    if (latestVideoId !== channelConfig.lastVideoId) {
+      console.log(`[YouTube] Nouvelle vidéo détectée pour ${authorName}: ${latestVideoId}`);
+      
+      const discordChannel = guild.channels.cache.get(channelConfig.discordChannelId);
+      if (discordChannel) {
+        const videoUrl = `https://www.youtube.com/watch?v=${latestVideoId}`;
+        let messageText = channelConfig.customMessage || '🔴 Nouvelle vidéo : **{title}**\n👉 {link}';
+        
+        messageText = messageText
+          .replace(/{link}/g, videoUrl)
+          .replace(/{title}/g, videoTitle)
+          .replace(/{author}/g, authorName)
+          .replace(/{channel}/g, channelConfig.id);
+
+        await discordChannel.send(messageText);
+      }
+
+      channelConfig.lastVideoId = latestVideoId;
+      const fullConfig = storageService.get(guild.id);
+      const idx = fullConfig.youtube.channels.findIndex(c => c.id === channelConfig.id);
+      if (idx !== -1) {
+        fullConfig.youtube.channels[idx].lastVideoId = latestVideoId;
+        await storageService.set(guild.id, fullConfig);
+      }
+    }
+  }
+}
+
+module.exports = YoutubeService;

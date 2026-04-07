@@ -8,115 +8,127 @@
 
 const { EmbedBuilder } = require('discord.js');
 
-// Stockage des intervalles actifs
+// Stockage des intervalles actifs (Map<channelId, { interval: NodeJS.Timeout, message: string, intervalSeconds: number, startTime: number, guildId: string }>)
 const activeIntervals = new Map();
-
-// Garbage collector: nettoie les intervalles inactifs toutes les 10 minutes
-setInterval(() => {
-  for (const [key, intervalData] of activeIntervals) {
-    if (intervalData.lastActivity && Date.now() - intervalData.lastActivity > 24 * 60 * 60 * 1000) {
-      clearInterval(intervalData.interval);
-      activeIntervals.delete(key);
-    }
-  }
-}, 10 * 60 * 1000);
 
 module.exports = {
   name: 'auto',
   description: 'Envoie un message automatiquement tous les X secondes',
   usage: '!auto <temps_en_secondes> <message> OU !auto stop',
   
-  async execute(message, args) {
+  // Exposer les intervalles pour le Dashboard
+  getIntervals() {
+    const list = [];
+    for (const [channelId, data] of activeIntervals) {
+      list.push({
+        channelId,
+        guildId: data.guildId,
+        message: data.message,
+        interval: data.intervalSeconds,
+        startTime: data.startTime
+      });
+    }
+    return list;
+  },
+
+  // Arrêter un intervalle depuis le Dashboard
+  stopInterval(channelId) {
+    if (activeIntervals.has(channelId)) {
+      const data = activeIntervals.get(channelId);
+      clearInterval(data.interval);
+      activeIntervals.delete(channelId);
+      return true;
+    }
+    return false;
+  },
+
+  async execute(message, args, context) {
+    const { t } = context;
     try {
       // Vérifie les permissions
       if (!message.member.permissions.has('Administrator')) {
-        return message.reply('❌ Tu dois être administrateur pour utiliser cette commande!');
+        return message.reply(t('auto.no_admin'));
       }
+
+      const channelId = message.channel.id;
 
       // Commande pour arrêter l'auto-message
       if (args[0] === 'stop') {
-        const channelId = message.channel.id;
-        
-        if (activeIntervals.has(channelId)) {
-          clearInterval(activeIntervals.get(channelId));
-          activeIntervals.delete(channelId);
-          
+        if (this.stopInterval(channelId)) {
           const embed = new EmbedBuilder()
             .setColor(0xFF0000)
-            .setDescription('⏹️ Message automatique arrêté!');
+            .setDescription(t('auto.stopped'));
           
           return message.reply({ embeds: [embed] });
         } else {
-          return message.reply('❌ Aucun message automatique actif dans ce salon!');
+          return message.reply(t('auto.no_active'));
         }
       }
 
       // Vérifie les arguments
       if (args.length < 2) {
         return message.reply({
-          content: '❌ **Erreur**: Utilisation incorrecte!\n' +
-                   '**Exemple**: `!auto 60 Ceci est un rappel automatique`\n' +
-                   '**Arrêter**: `!auto stop`'
+          content: t('auto.incorrect_usage') + '\n' +
+                   t('auto.example') + '\n' +
+                   t('auto.stop_hint')
         });
       }
 
-      const interval = parseInt(args[0]);
+      const intervalSeconds = parseInt(args[0]);
       const autoMessage = args.slice(1).join(' ');
 
       // Validation du temps
-      if (Number.isNaN(interval) || interval < 10) {
-        return message.reply('❌ Le temps doit être un nombre supérieur ou égal à 10 secondes!');
-      }
-
-      if (interval > 3600) {
-        return message.reply('❌ Le temps maximum est de 3600 secondes (1 heure)!');
+      if (Number.isNaN(intervalSeconds) || intervalSeconds < 1) {
+        return message.reply(t('auto.time_error'));
       }
 
       // Validation du message
       if (autoMessage.length < 1) {
-        return message.reply('❌ Le message ne peut pas être vide!');
+        return message.reply(t('auto.empty_error'));
       }
 
       if (autoMessage.length > 500) {
-        return message.reply('❌ Le message est trop long (max 500 caractères)!');
+        return message.reply(t('auto.too_long_error'));
       }
-
-      const channelId = message.channel.id;
 
       // Arrête l'ancien intervalle s'il existe
-      if (activeIntervals.has(channelId)) {
-        clearInterval(activeIntervals.get(channelId));
-      }
+      this.stopInterval(channelId);
 
       // Crée le nouvel intervalle
-      const intervalId = setInterval(() => {
+      const intervalObj = setInterval(() => {
         const embed = new EmbedBuilder()
           .setColor(0x5865F2)
           .setDescription(`🔔 ${autoMessage}`)
-          .setFooter({ text: `Message automatique • Tous les ${interval}s` })
+          .setFooter({ text: t('auto.embed_footer', { seconds: intervalSeconds }) })
           .setTimestamp();
 
         message.channel.send({ embeds: [embed] }).catch(err => {
           console.error('Erreur lors de l\'envoi du message automatique:', err);
-          clearInterval(intervalId);
-          activeIntervals.delete(channelId);
+          this.stopInterval(channelId);
         });
-      }, interval * 1000);
+      }, intervalSeconds * 1000);
 
-      activeIntervals.set(channelId, intervalId);
+      // Enregistre l'intervalle avec métadonnées
+      activeIntervals.set(channelId, {
+        interval: intervalObj,
+        message: autoMessage,
+        intervalSeconds: intervalSeconds,
+        startTime: Date.now(),
+        guildId: message.guild.id
+      });
 
       // Confirmation
       const confirmEmbed = new EmbedBuilder()
         .setColor(0x00FF00)
-        .setTitle('✅ Message automatique activé!')
-        .setDescription(`**Message**: ${autoMessage}\n**Intervalle**: Tous les ${interval} secondes`)
-        .setFooter({ text: 'Utilisez !auto stop pour arrêter' });
+        .setTitle(t('auto.enabled_title'))
+        .setDescription(t('auto.enabled_desc', { message: autoMessage, seconds: intervalSeconds }))
+        .setFooter({ text: t('auto.stop_instr') });
 
       await message.reply({ embeds: [confirmEmbed] });
 
     } catch (error) {
       console.error('Erreur dans la commande auto:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

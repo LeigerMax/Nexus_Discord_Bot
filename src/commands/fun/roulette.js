@@ -13,12 +13,13 @@ module.exports = {
   description: 'Sélectionne un joueur aléatoire du vocal et le déconnecte',
   usage: '!roulette',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     try {
       // Vérifie que l'utilisateur est dans un salon vocal
       if (!message.member.voice.channel) {
         return message.reply({
-          content: '❌ **Erreur**: Tu dois être dans un salon vocal pour utiliser cette commande!'
+          content: t('roulette.no_voice')
         });
       }
 
@@ -28,11 +29,11 @@ module.exports = {
       const members = voiceChannel.members.filter(member => !member.user.bot);
       
       if (members.size === 0) {
-        return message.reply('❌ Aucun joueur dans le salon vocal!');
+        return message.reply(t('roulette.no_players'));
       }
 
       if (members.size === 1) {
-        return message.reply('❌ Tu es seul dans le vocal! Il faut au moins 2 joueurs.');
+        return message.reply(t('roulette.alone'));
       }
 
       // Sélectionne un membre aléatoire
@@ -41,9 +42,9 @@ module.exports = {
       // Crée un embed pour annoncer le résultat
       const embed = new EmbedBuilder()
         .setColor(0xFF0000)
-        .setTitle('🎲 Roulette Russe')
-        .setDescription(`**${members.size}** joueurs dans le vocal...\n\n🔫 **${randomMember.user.username}** a été sélectionné!\n👤 **Lancé par**: ${message.author.username}`)
-        .setFooter({ text: 'Déconnexion en cours...' })
+        .setTitle(t('roulette.embed_title'))
+        .setDescription(t('roulette.embed_desc', { count: members.size, user: randomMember.user.username, by: message.author.username }))
+        .setFooter({ text: t('roulette.embed_footer') })
         .setTimestamp();
 
       await message.channel.send({ embeds: [embed] });
@@ -53,22 +54,22 @@ module.exports = {
 
       // Déconnecte le membre sélectionné
       try {
-        await randomMember.voice.disconnect('Roulette russe');
+        await randomMember.voice.disconnect(t('roulette.audit_reason'));
         
         const successEmbed = new EmbedBuilder()
           .setColor(0x00FF00)
-          .setDescription(`✅ **${randomMember.user.username}** a été déconnecté du vocal!`)
+          .setDescription(t('roulette.success_desc', { user: randomMember.user.username }))
           .setTimestamp();
         
         await message.channel.send({ embeds: [successEmbed] });
       } catch (err) {
         console.error('Erreur lors de la déconnexion:', err);
-        return message.reply('❌ Impossible de déconnecter le membre. Vérifiez les permissions du bot.');
+        return message.reply(t('roulette.permission_error'));
       }
 
     } catch (error) {
       console.error('Erreur dans la commande roulette:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

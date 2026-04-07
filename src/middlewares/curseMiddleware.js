@@ -5,7 +5,7 @@
  */
 
 module.exports = async (context, next) => {
-  const { message, commandName, commands } = context;
+  const { message, commandName, commands, t } = context;
   
   const curseCommand = commands.get('curse');
   if (!curseCommand?.isCursed(message.author.id)) {
@@ -21,13 +21,13 @@ module.exports = async (context, next) => {
   
   // Malédiction: Bloqué
   if (curseType === 'BLOCKED') {
-    return message.reply('🚫 Tu es maudit! Aucune commande ne fonctionne pour toi...');
+    return message.reply(t('middlewares.curse.blocked'));
   }
 
   // Malédiction: Épreuve du Scribe (Bloque les commandes pour forcer le recopiage de la phrase)
   if (curseType === 'CHALLENGE') {
     const curseData = curseCommand.cursedPlayers.get(message.author.id);
-    return message.reply(`🧩 **Épreuve du Scribe en cours !**\nTu ne peux pas utiliser de commandes tant que tu n'as pas recopié la phrase suivante :\n\`${curseData.challengePhrase}\``);
+    return message.reply(t('middlewares.curse.challenge', { phrase: curseData.challengePhrase }));
   }
   
   // Malédiction: Réponses aléatoires
@@ -38,12 +38,12 @@ module.exports = async (context, next) => {
   // Malédiction: Messages déformés (inverse la commande)
   if (curseType === 'GARBLED') {
     const garbledMsg = message.content.split('').reverse().join('');
-    return message.reply(`🔀 Ta commande a été déformée: \`${garbledMsg}\``);
+    return message.reply(t('middlewares.curse.garbled', { msg: garbledMsg }));
   }
   
   // Malédiction: Mode lent
   if (curseType === 'SLOW_MODE') {
-    message.reply('🐌 Traitement en cours... *lentement*');
+    message.reply(t('middlewares.curse.slow'));
     await new Promise(resolve => setTimeout(resolve, 10000)); // 10 secondes
   }
   
@@ -56,18 +56,18 @@ module.exports = async (context, next) => {
         context.args = context.args.slice();
         context.args[0] = `<@${message.author.id}>`;
         
-        message.channel.send(`🔄 **Commande inversée!** ${message.author}, tu voulais cibler quelqu'un mais c'est toi la cible maintenant! 😈`);
+        message.channel.send(t('middlewares.curse.reversed_target', { user: `<@${message.author.id}>` }));
         
         try {
           await next(); // Proceed to actual command execution
         } catch (error) {
           console.error(`Erreur lors de l'exécution inversée de ${commandName}:`, error);
-          message.reply('🔄 L\'inversion de la commande a échoué... Tu as de la chance cette fois!');
+          message.reply(t('middlewares.curse.reversed_failed'));
         }
         return;
       }
     }
-    return message.reply(`🔄 Commande inversée! Je fais l'opposé de \`${commandName}\`... ou rien du tout! 😈`);
+    return message.reply(t('middlewares.curse.reversed_general', { cmd: commandName }));
   }
 
   // Pre-execution finie pour les autres malédictions
@@ -78,7 +78,7 @@ module.exports = async (context, next) => {
     const randomCommands = ['dice', 'roll', 'coin', 'random', 'roulette'];
     if (randomCommands.includes(commandName)) {
       setTimeout(() => {
-        message.channel.send(`💀 ${message.author} est maudit! Le résultat était forcément le pire possible... 😈`);
+        message.channel.send(t('middlewares.curse.worst_luck', { user: `<@${message.author.id}>` }));
       }, 500);
     }
   }

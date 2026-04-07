@@ -13,42 +13,50 @@ module.exports = {
   description: 'Vérifie si ton cerveau est allumé',
   usage: '!brain [@utilisateur]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     try {
       // Vérifie si un utilisateur est mentionné, sinon utilise l'auteur
       const targetUser = message.mentions.users.first() || message.author;
       
-      // États possibles du cerveau
-      const states = [
-        { emoji: '🧠✅', status: 'Brain: ON', description: 'Plays smart, pense avant d\'agir', color: 0x00FF00 },
-        { emoji: '🧠❌', status: 'Brain: OFF', description: 'Push solo, no brain comme Miguel', color: 0xFF0000 },
-        { emoji: '🧠⚡', status: 'Brain: LAG', description: 'Aucune info ne passe', color: 0xFFFF00 },
-        { emoji: '🧠💤', status: 'Brain: AFK', description: 'Mode auto-pilote activé', color: 0x808080 },
-        { emoji: '🧠🔥', status: 'Brain: OVERLOAD', description: '200 IQ plays incoming', color: 0xFF6600 },
-        { emoji: '🧠🐌', status: 'Brain: SLOW', description: 'Prend son temps pour comprendre', color: 0x996633 },
-        { emoji: '🧠🎲', status: 'Brain: RANDOM', description: 'Décisions imprévisibles', color: 0x9966FF },
-        { emoji: '🧠☕', status: 'Brain: NEED COFFEE', description: 'Pas réveillé, fonctionne à 10%', color: 0x8B4513 }
+      // États possibles du cerveau (Couleurs et Emojis conservés, Textes traduits)
+      const statesConfig = [
+        { emoji: '🧠✅', color: 0x00FF00 },
+        { emoji: '🧠❌', color: 0xFF0000 },
+        { emoji: '🧠⚡', color: 0xFFFF00 },
+        { emoji: '🧠💤', color: 0x808080 },
+        { emoji: '🧠🔥', color: 0xFF6600 },
+        { emoji: '🧠🐌', color: 0x996633 },
+        { emoji: '🧠🎲', color: 0x9966FF },
+        { emoji: '🧠☕', color: 0x8B4513 }
       ];
+
+      const translatedStates = t('brain.states');
+      const states = statesConfig.map((config, index) => ({
+        ...config,
+        status: translatedStates[index].status,
+        description: translatedStates[index].desc
+      }));
 
       // Sélectionne un état aléatoire
       const selectedState = states[Math.floor(Math.random() * states.length)];
 
       const embed = new EmbedBuilder()
         .setColor(selectedState.color)
-        .setTitle('🧠 État du Cerveau')
+        .setTitle(t('brain.title'))
         .setDescription(
-          `**Joueur**: ${targetUser.username}\n\n` +
+          `**${t('wifi.label_player')}**: ${targetUser.username}\n\n` +
           `${selectedState.emoji} **${selectedState.status}**\n` +
           `*${selectedState.description}*`
         )
-        .setFooter({ text: 'Scan neuronal effectué' })
+        .setFooter({ text: t('brain.footer') })
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande brain:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

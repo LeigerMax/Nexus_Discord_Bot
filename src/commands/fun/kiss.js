@@ -16,21 +16,21 @@ module.exports = {
   description: 'Envoie un GIF de bisou à un utilisateur',
   usage: '!kiss @utilisateur [secret]',
   
-  async execute(message, args) {
+  async execute(message, args, context) {
+    const { t } = context;
     try {
       // Vérifie qu'un utilisateur est mentionné
       const mentionedUser = message.mentions.users.first();
       
       if (!mentionedUser) {
         return message.reply({
-          content: '❌ **Erreur**: Tu dois mentionner un utilisateur!\n' +
-                   '**Exemple**: `!kiss @utilisateur` ou `!kiss @utilisateur secret`'
+          content: t('kiss.mention_error')
         });
       }
 
       // Vérifie que l'utilisateur ne se mentionne pas lui-même
       if (mentionedUser.id === message.author.id) {
-        return message.reply('❌ Tu ne peux pas t\'embrasser toi-même! 😘');
+        return message.reply(t('kiss.self_error'));
       }
 
       // Vérifie si le mode secret est activé
@@ -45,7 +45,7 @@ module.exports = {
       const data = await response.json();
       
       if (!data.data || !data.data.images) {
-        return message.reply('❌ Impossible de récupérer un GIF pour le moment.');
+        return message.reply(t('hug.giphy_error'));
       }
 
       const gifUrl = data.data.images.original.url;
@@ -61,9 +61,9 @@ module.exports = {
         // Mode secret : envoie en DM
         const embed = new EmbedBuilder()
           .setColor(0xFF1493)
-          .setDescription(`💋 **Quelqu'un** t'a envoyé un bisou secret!`)
+          .setDescription(t('kiss.secret_desc'))
           .setImage(gifUrl)
-          .setFooter({ text: '💌 Message secret' });
+          .setFooter({ text: t('hug.secret_footer') });
 
         try {
           await mentionedUser.send({ embeds: [embed] });
@@ -74,18 +74,18 @@ module.exports = {
           // Confirme l'envoi en DM à l'auteur avec le même GIF
           const confirmEmbed = new EmbedBuilder()
             .setColor(0xFF1493)
-            .setDescription(`✅ Ton bisou secret a été envoyé à **${mentionedUser.username}**!`)
+            .setDescription(t('kiss.confirm_desc', { user: mentionedUser.username }))
             .setImage(gifUrl)
-            .setFooter({ text: 'Aperçu du GIF envoyé' });
+            .setFooter({ text: t('hug.confirm_footer') });
           await message.author.send({ embeds: [confirmEmbed] });
         } catch {
-          await message.channel.send(`❌ Impossible d'envoyer un message privé à ${mentionedUser}.`);
+          await message.channel.send(t('hug.dm_error', { user: mentionedUser }));
         }
       } else {
         // Mode public : envoie dans le canal avec mention
         const embed = new EmbedBuilder()
           .setColor(0xFF1493)
-          .setDescription(`💋 <@${message.author.id}> fait un bisou à <@${mentionedUser.id}>!`)
+          .setDescription(t('kiss.public_desc', { author: message.author.id, target: mentionedUser.id }))
           .setImage(gifUrl);
 
         await message.channel.send({ embeds: [embed] });
@@ -93,7 +93,7 @@ module.exports = {
 
     } catch (error) {
       console.error('Erreur dans la commande kiss:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

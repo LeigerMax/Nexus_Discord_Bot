@@ -13,21 +13,30 @@ module.exports = {
   description: 'Vérifie la qualité de ta connexion',
   usage: '!wifi [@utilisateur]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     try {
       // Vérifie si un utilisateur est mentionné, sinon utilise l'auteur
       const targetUser = message.mentions.users.first() || message.author;
       
-      // États possibles de connexion
-      const states = [
-        { emoji: '📶', ping: '12', status: 'Fibre optique', description: 'Connexion parfaite', color: 0x00FF00, chance: 15 },
-        { emoji: '📶', ping: '35', status: 'Excellent', description: 'Ping ultra stable', color: 0x00FF00, chance: 20 },
-        { emoji: '📶', ping: '89', status: 'Jouable', description: 'Quelques microlags', color: 0xFFFF00, chance: 25 },
-        { emoji: '📶', ping: '145', status: 'Moyen', description: 'Commence à sentir le delay', color: 0xFF9900, chance: 20 },
-        { emoji: '📶', ping: '240', status: 'Injouable', description: 'Ta mère change de chaine, non ?', color: 0xFF0000, chance: 15 },
-        { emoji: '📶', ping: '999', status: 'Catastrophique', description: 'Internet Explorer vibes', color: 0x8B0000, chance: 4 },
-        { emoji: '📶', ping: '∞', status: 'Ping infini', description: 'Rollback detected', color: 0x000000, chance: 1 }
+      // États possibles de connexion (Poids et codes conservés, textes traduits)
+      const statesConfig = [
+        { ping: '12', color: 0x00FF00, chance: 15 },
+        { ping: '35', color: 0x00FF00, chance: 20 },
+        { ping: '89', color: 0xFFFF00, chance: 25 },
+        { ping: '145', color: 0xFF9900, chance: 20 },
+        { ping: '240', color: 0xFF0000, chance: 15 },
+        { ping: '999', color: 0x8B0000, chance: 4 },
+        { ping: '∞', color: 0x000000, chance: 1 }
       ];
+
+      const translatedStates = t('wifi.states');
+      const states = statesConfig.map((config, index) => ({
+        ...config,
+        emoji: '📶',
+        status: translatedStates[index].status,
+        description: translatedStates[index].desc
+      }));
 
       // Sélection pondérée
       const totalChance = states.reduce((sum, state) => sum + state.chance, 0);
@@ -51,21 +60,21 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setColor(selectedState.color)
-        .setTitle('📶 Qualité de Connexion')
+        .setTitle(t('wifi.title'))
         .setDescription(
-          `**Joueur**: ${targetUser.username}\n\n` +
+          `${t('wifi.label_player')}: ${targetUser.username}\n\n` +
           `${selectedState.emoji} **${selectedState.ping} ms** ${signalBars}\n\n` +
-          `**État**: ${selectedState.status}\n` +
+          `${t('wifi.label_status')}: ${selectedState.status}\n` +
           `*${selectedState.description}*`
         )
-        .setFooter({ text: 'Test de vitesse effectué' })
+        .setFooter({ text: t('wifi.footer') })
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande wifi:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

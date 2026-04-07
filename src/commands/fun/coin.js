@@ -13,26 +13,27 @@ module.exports = {
   description: 'Lance une pièce - Pile ou Face',
   usage: '!coin',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     try {
       // Résultats possibles
-      const results = ['Pile', 'Face'];
+      const results = [t('coin.heads'), t('coin.tails')];
       const result = results[Math.floor(Math.random() * results.length)];
       
-      const emoji = result === 'Pile' ? '🪙' : '💰';
+      const emoji = result === t('coin.heads') ? '🪙' : '💰';
 
       const embed = new EmbedBuilder()
-        .setColor(result === 'Pile' ? 0xFFD700 : 0xC0C0C0)
-        .setTitle('🎲 Lancer de Pièce')
-        .setDescription(`${emoji} **Résultat**: **${result}**!`)
-        .setFooter({ text: `Lancé par ${message.author.username}` })
+        .setColor(result === t('coin.heads') ? 0xFFD700 : 0xC0C0C0)
+        .setTitle(t('coin.title'))
+        .setDescription(t('coin.result_label', { result }))
+        .setFooter({ text: t('common.requested_by', { user: message.author.username }) })
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande coin:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

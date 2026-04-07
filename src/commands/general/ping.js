@@ -14,9 +14,12 @@ module.exports = {
   usage: '!ping',
   
   async execute(message, _args) {
+    // Dans CommandHandler, on a injecté context.t et context.locale
+    const { t } = arguments[0].t ? arguments[0] : { t: (key, p) => require('../../services/i18nService').t(key, 'fr', p) };
+    
     try {
       // Calcule la latence du bot
-      const sent = await message.reply('🏓 Calcul de la latence...');
+      const sent = await message.reply(t('ping.calculating'));
       const timeDiff = sent.createdTimestamp - message.createdTimestamp;
       const apiLatency = Math.round(message.client.ws.ping);
 
@@ -24,35 +27,35 @@ module.exports = {
       let quality;
       let color;
       if (timeDiff < 100) {
-        quality = 'Excellente';
+        quality = t('ping.qualities.excellent');
         color = 0x00FF00;
       } else if (timeDiff < 200) {
-        quality = 'Bonne';
+        quality = t('ping.qualities.good');
         color = 0xFFFF00;
       } else if (timeDiff < 500) {
-        quality = 'Moyenne';
+        quality = t('ping.qualities.average');
         color = 0xFF9900;
       } else {
-        quality = 'Mauvaise';
+        quality = t('ping.qualities.bad');
         color = 0xFF0000;
       }
 
       const embed = new EmbedBuilder()
         .setColor(color)
-        .setTitle('🏓 Pong!')
+        .setTitle(t('ping.title'))
         .addFields(
-          { name: '⏱️ Latence du Bot', value: `\`${timeDiff}ms\``, inline: true },
-          { name: '📡 Latence API', value: `\`${apiLatency}ms\``, inline: true },
-          { name: '📊 Qualité', value: `\`${quality}\``, inline: true }
+          { name: t('ping.bot_latency'), value: `\`${timeDiff}ms\``, inline: true },
+          { name: t('ping.api_latency'), value: `\`${apiLatency}ms\``, inline: true },
+          { name: t('ping.quality'), value: `\`${quality}\``, inline: true }
         )
-        .setFooter({ text: `Demandé par ${message.author.username}` })
+        .setFooter({ text: t('common.requested_by', { user: message.author.username }) })
         .setTimestamp();
 
       await sent.edit({ content: null, embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande ping:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

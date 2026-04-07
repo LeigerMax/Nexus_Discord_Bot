@@ -8,6 +8,7 @@
 
 const { ActivityType } = require('discord.js');
 const botConfig = require('../config/botConfig.json');
+const i18n = require('../services/i18nService');
 
 /**
  * Convertit un type d'activité en chaîne vers l'enum ActivityType
@@ -30,8 +31,9 @@ function getActivityType(type) {
  * @param {Client} client - Client Discord.js
  */
 function setBotPresence(client) {
+  const locale = i18n.defaultLocale;
   if (!client?.user) {
-    console.error('❌ Client ou user non disponible pour définir la présence');
+    console.error(i18n.t('system.presence.error_client', locale));
     return;
   }
 
@@ -48,9 +50,9 @@ function setBotPresence(client) {
     };
 
     client.user.setPresence(presenceData);
-    console.log(`✅ Présence du bot définie: ${status} - ${activities[0]?.name}`);
+    console.log(i18n.t('system.presence.success', locale, { status: status, activity: activities[0]?.name || '' }));
   } catch (error) {
-    console.error('❌ Erreur lors de la définition de la présence du bot:', error);
+    console.error(i18n.t('system.presence.error_set', locale), error);
   }
 }
 

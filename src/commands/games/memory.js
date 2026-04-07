@@ -11,7 +11,8 @@ module.exports = {
   description: 'Lance une partie de Jeu de Mémoire (4x4)',
   usage: '!memory',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     const emojis = ['🍎', '🍌', '🍒', '🍇', '🍉', '🍓', '🥝', '🍍'];
     // On double les emojis pour faire des paires et on mélange
     let boardContent = [...emojis, ...emojis];
@@ -52,12 +53,15 @@ module.exports = {
       return rows;
     };
 
-    const createEmbed = (status = 'Trouve toutes les paires !') => {
+    const createEmbed = (statusKey = 'memory.status_initial') => {
       return new EmbedBuilder()
         .setColor(isGameOver ? 0x2ECC71 : 0x9B59B6)
-        .setTitle('🧠 JEU DE MÉMOIRE')
-        .setDescription(`**Statut :** ${status}\n\n**Tentatives :** \`${tries}\` | **Paires trouvées :** \`${matched.size / 2} / 8\``)
-        .setFooter({ text: `Partie de ${message.author.username}` })
+        .setTitle(t('memory.title'))
+        .setDescription(
+          `**${t('hangman.status_label')} :** ${t(statusKey)}\n\n` +
+          `**${t('memory.label_tries')} :** \`${tries}\` | **${t('memory.label_pairs')} :** \`${matched.size / 2} / 8\``
+        )
+        .setFooter({ text: t('memory.footer', { user: message.author.username }) })
         .setTimestamp();
     };
 
@@ -73,7 +77,7 @@ module.exports = {
 
     collector.on('collect', async (interaction) => {
       if (interaction.user.id !== message.author.id) {
-        return interaction.reply({ content: '❌ Seul le joueur ayant lancé la partie peut jouer.', ephemeral: true });
+        return interaction.reply({ content: t('memory.only_player_error'), ephemeral: true });
       }
 
       const index = parseInt(interaction.customId.split('_')[1]);
@@ -101,12 +105,12 @@ module.exports = {
             isGameOver = true;
             collector.stop();
             await interaction.update({
-              embeds: [createEmbed('🏆 VICTOIRE ! Félicitations !')],
+              embeds: [createEmbed('memory.status_win')],
               components: createRows()
             });
           } else {
             await interaction.update({
-              embeds: [createEmbed('✨ Match trouvé ! Continue !')],
+              embeds: [createEmbed('memory.status_match')],
               components: createRows()
             });
           }
@@ -114,7 +118,7 @@ module.exports = {
           // Pas de match
           isWaiting = true;
           await interaction.update({
-            embeds: [createEmbed('❌ Pas le même...')],
+            embeds: [createEmbed('memory.status_no_match')],
             components: createRows(selected)
           });
 

@@ -11,11 +11,12 @@ module.exports = {
   description: 'Supprime un nombre de messages spécifié (max 100)',
   usage: '!clear <nombre> [mention]',
   
-  async execute(message, args) {
+  async execute(message, args, context) {
+    const { t } = context;
     try {
       // Vérifie les permissions
       if (!message.member.permissions.has('ManageMessages')) {
-        return message.reply('❌ Tu n\'as pas la permission de gérer les messages!');
+        return message.reply(t('clear.no_permission'));
       }
 
       // Vérifie qu'un nombre est fourni
@@ -23,13 +24,13 @@ module.exports = {
       
       if (!amount || isNaN(amount) || amount < 1) {
         return message.reply({
-          content: '❌ **Erreur**: Tu dois spécifier un nombre valide de messages à supprimer!\n' +
-                   '**Exemple**: `!clear 10` ou `!clear 50 @utilisateur`'
+          content: t('clear.invalid_amount') + '\n' +
+                   t('clear.example')
         });
       }
 
       if (amount > 100) {
-        return message.reply('❌ Je ne peux supprimer que 100 messages à la fois maximum!');
+        return message.reply(t('clear.limit_error'));
       }
 
       // Vérifie si on filtre par utilisateur
@@ -50,9 +51,11 @@ module.exports = {
       const deleted = await message.channel.bulkDelete(messagesToDelete, true);
 
       // Message de confirmation
-      const confirmMsg = await message.channel.send(
-        `✅ ${deleted.size} message(s) supprimé(s)${targetUser ? ` de ${targetUser.username}` : ''}!`
-      );
+      const msgText = targetUser 
+        ? t('clear.success_user', { count: deleted.size, user: targetUser.username })
+        : t('clear.success_generic', { count: deleted.size });
+
+      const confirmMsg = await message.channel.send(msgText);
 
       // Supprime le message de confirmation après 5 secondes
       setTimeout(() => confirmMsg.delete().catch(() => {}), 5000);
@@ -61,10 +64,10 @@ module.exports = {
       console.error('Erreur dans la commande clear:', error);
       
       if (error.code === 50034) {
-        return message.reply('❌ Je ne peux supprimer que les messages de moins de 14 jours!');
+        return message.reply(t('clear.old_messages_error'));
       }
       
-      message.reply('❌ Une erreur est survenue lors de la suppression des messages.');
+      message.reply(t('common.error'));
     }
   }
 };

@@ -6,22 +6,22 @@
  * @requires discord.js
  * @requires discord-player
  * @author Maxou
- * @version 0.1.4
+ * @version 1.0.0
  */
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-console.log("--- DEBUG ENV ---");
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("TOKEN PRESENT:", process.env.DISCORD_TOKEN ? "OUI (longueur: " + process.env.DISCORD_TOKEN.length + ")" : "NON");
-console.log("-----------------");
 
 const { Client, GatewayIntentBits } = require('discord.js');
 const path = require('node:path');
 const CommandHandler = require('./utils/commandHandler');
+const YoutubeService = require('./services/youtubeService');
 const keepAlive = require('./services/keepAlive');
+const storageService = require('./services/storageService');
+const statsService = require('./services/statsService');
+const updateService = require('./services/updateService');
 const https = require('node:https'); // Pour le test de connectivité
 
 // ============================================
@@ -38,7 +38,7 @@ const client = new Client({
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.DirectMessages
   ],
-  partials: ['CHANNEL'],
+  partials: ['CHANNEL', 'MESSAGE', 'REACTION'],
   // Force IPv4 pour éviter les hangs DNS sur certains serveurs (Node 18+)
   rest: {
     family: 4
@@ -64,6 +64,9 @@ client.once('ready', async () => {
   console.log(`Date: ${new Date().toLocaleString('fr-FR')}`);
   console.log(`Serveurs: ${client.guilds.cache.size}`);
   console.log(`${'='.repeat(50)}\n`);
+
+  // Initialisation du service de stockage
+  await storageService.init(client, process.env.STORAGE_CHANNEL_ID);
 
   // Configure la présence du bot
   const botConfig = require('./config/botConfig.json');
@@ -124,6 +127,17 @@ client.once('ready', async () => {
     }
   }
 
+  // Initialise le service YouTube
+  const youtubeService = new YoutubeService(client);
+  youtubeService.start();
+
+  // Initialise le service de statistiques (v1.1.0)
+  statsService.initAutoUpdate(client);
+
+  // Vérifie les mises à jour (v1.1.0)
+  updateService.checkForUpdates(client);
+  setInterval(() => updateService.checkForUpdates(client), 24 * 60 * 60 * 1000);
+
   console.log('\n✅ Bot prêt à recevoir des commandes!\n');
 });
 
@@ -151,46 +165,18 @@ process.on('unhandledRejection', error => {
 // Connexion et démarrage
 // ============================================
 
-/**
- * Test de connectivité à l'API Discord avant le login
- */
-async function checkDiscordConnectivity() {
-  return new Promise((resolve) => {
-    console.log("🔍 Test de connectivité à l'API Discord...");
-    const req = https.get('https://discord.com/api/v10/gateway', (res) => {
-      console.log(`📡 Réponse de l'API: ${res.statusCode}`);
-      resolve(res.statusCode === 200);
-    });
-
-    req.on('error', (err) => {
-      console.error("❌ Erreur de connectivité réseau:", err.message);
-      resolve(false);
-    });
-
-    req.setTimeout(5000, () => {
-      console.error("❌ Timeout: Impossible de joindre Discord après 5s");
-      req.destroy();
-      resolve(false);
-    });
-  });
-}
 
 async function start() {
-  // 1. Lance le serveur keep-alive
-  keepAlive();
+  // 1. Lance le serveur keep-alive avec le Dashboard
+  keepAlive(client);
 
-  // 2. Test de connectivité
-  const isConnected = await checkDiscordConnectivity();
-  if (!isConnected) {
-    console.warn("⚠️ Attention: L'API Discord semble injoignable. Tentative de login quand même...");
-  }
 
   // 3. Configuration des logs de debug
   client.on('debug', (info) => {
     if (info.includes('heartbeat') || info.includes('latency')) return; // Filtre les logs trop fréquents
     console.log(`[DEBUG] ${info}`);
   });
-  
+
   client.on('warn', info => console.warn(`[WARN] ${info}`));
 
   // 4. Connexion

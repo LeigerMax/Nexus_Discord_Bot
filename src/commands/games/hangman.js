@@ -6,7 +6,8 @@ module.exports = {
   description: 'Lance une partie de Pendu flash',
   usage: '!hangman',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     // Gestion du multijoueur (mentions)
     const mentions = message.mentions.users;
     const allowedUserIds = new Set([message.author.id]);
@@ -14,17 +15,7 @@ module.exports = {
     
     const playersList = Array.from(allowedUserIds).map(id => `<@${id}>`).join(', ');
 
-    const words = [
-      'DISCORD', 'BOT', 'PROGRAMMATION', 'JAVASCRIPT', 'NODEJS',
-      'DEVELOPPEUR', 'INTERFACE', 'COMMANDES', 'SERVEUR', 'MESSAGE',
-      'MYSTERE', 'AVENTURE', 'PIERRE', 'SOLEIL', 'MUSIQUE', 'GUITARE',
-      'ORDINATEUR', 'INTERNET', 'CLAVIER', 'SOURIS', 'ECRAN', 'ROBOT',
-      'ESPACE', 'PLANETE', 'ETOILE', 'GALAXIE', 'UNIVERS', 'COSMOS',
-      'VOYAGE', 'DESTINATION', 'VALISE', 'PASSEPORT', 'AVION', 'TRAIN',
-      'BATEAU', 'VOITURE', 'VELO', 'MARCHE', 'COURSE', 'SPORT',
-      'FOOTBALL', 'BASKETBALL', 'TENNIS', 'NATATION', 'ESCRIME',
-      'Cuisine', 'RECETTE', 'GATEAU', 'CHOCOLAT', 'VANILLE', 'FRUIT'
-    ];
+    const words = t('hangman.words', { returnObjects: true });
     
     const word = words[Math.floor(Math.random() * words.length)].toUpperCase();
     const revealedLetters = new Set();
@@ -103,16 +94,21 @@ module.exports = {
       return word.split('').map(letter => revealedLetters.has(letter) ? letter : '\\_').join(' ');
     };
     
-    const createEmbed = (status = 'En cours...') => {
-      // Calcul de l'index du dessin : plus on perd de vies, plus on avance
-      // 7 vies au total. Index 0 = 7 vies, Index 1 = 6 vies... Index 7 = 0 vies.
+    const createEmbed = (statusKey = 'hangman.status_ongoing', params = {}) => {
       const stageIndex = Math.min(7 - lives, hangmanStages.length - 1);
       
       return new EmbedBuilder()
         .setColor(lives > 2 ? 0x3498DB : 0xE74C30)
-        .setTitle('🎮 JEU DU PENDU (MULTI)')
-        .setDescription(`**Joueurs :** ${playersList}\n**Statut :** ${status}\n\`\`\`${hangmanStages[stageIndex]}\`\`\`\n\n**Mot :** ${getDisplayWord()}\n\n**Lettres tentées :** ${Array.from(guessedLetters).sort().join(', ') || 'Aucune'}\n**Vies restantes :** ${'❤️'.repeat(lives)}${'🖤'.repeat(7-lives)}`)
-        .setFooter({ text: `Tape une lettre pour jouer !` })
+        .setTitle(`🎮 ${t('help.categories.games').toUpperCase()}`)
+        .setDescription(
+          `**${t('hangman.players_label')} :** ${playersList}\n` +
+          `**${t('hangman.status_label')} :** ${t(statusKey, params)}\n` +
+          `\`\`\`${hangmanStages[stageIndex]}\`\`\`\n\n` +
+          `**${t('hangman.word_label')} :** ${getDisplayWord()}\n\n` +
+          `**${t('hangman.attempts_label')} :** ${Array.from(guessedLetters).sort().join(', ') || t('hangman.none')}\n` +
+          `**${t('hangman.lives_label')} :** ${'❤️'.repeat(lives)}${'🖤'.repeat(7-lives)}`
+        )
+        .setFooter({ text: t('hangman.footer') })
         .setTimestamp();
     };
     
@@ -128,38 +124,30 @@ module.exports = {
     collector.on('collect', async (m) => {
       const letter = m.content.toUpperCase();
       
-      // On supprime le message du joueur pour garder le chat propre (si perms)
       if (m.deletable) m.delete().catch(() => {});
       
-      if (guessedLetters.has(letter)) {
-        return; // Lettre déjà tentée
-      }
+      if (guessedLetters.has(letter)) return;
       
       guessedLetters.add(letter);
       
       if (word.includes(letter)) {
         revealedLetters.add(letter);
-        
-        // Vérifie la victoire
         if (word.split('').every(l => revealedLetters.has(l))) {
           collector.stop('win');
           return gameMessage.edit({
-            embeds: [createEmbed('🏆 VICTOIRE !')]
+            embeds: [createEmbed('hangman.status_win')]
           });
         }
       } else {
         lives--;
-        
-        // Vérifie la défaite
         if (lives <= 0) {
           collector.stop('lost');
           return gameMessage.edit({
-            embeds: [createEmbed(`💀 PERDU ! Le mot était **${word}**`)]
+            embeds: [createEmbed('hangman.status_lost', { word })]
           });
         }
       }
       
-      // Mise à jour de l'embed
       await gameMessage.edit({
         embeds: [createEmbed()]
       });
@@ -168,8 +156,8 @@ module.exports = {
     collector.on('end', (collected, reason) => {
       if (reason === 'time') {
         gameMessage.edit({
-          content: '⏰ Temps écoulé ! La partie est terminée.',
-          embeds: [createEmbed(`Fin du temps. Le mot était **${word}**`)]
+          content: t('hangman.timeout_msg'),
+          embeds: [createEmbed('hangman.timeout_status', { word })]
         }).catch(() => {});
       }
     });

@@ -17,7 +17,8 @@ module.exports = {
   description: 'Affiche toutes les commandes disponibles avec menu de sélection',
   usage: '!help',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t, prefix } = context;
     try {
       const commandsPath = path.join(__dirname, '..');
       const categories = fs.readdirSync(commandsPath).filter(item => {
@@ -34,17 +35,6 @@ module.exports = {
         'moderation': '🛡️',
         'utility': '🔧',
         'games': '🎮'
-      };
-
-      // Noms pour les catégories
-      const categoryNames = {
-        'admin': 'Administration',
-        'fun': 'Divertissement',
-        'general': 'Général',
-        'music': 'Musique',
-        'moderation': 'Modération',
-        'utility': 'Utilitaire',
-        'games': 'Jeux'
       };
 
       // Collecte les commandes par catégorie
@@ -79,24 +69,24 @@ module.exports = {
       // Crée l'embed d'accueil
       const homeEmbed = new EmbedBuilder()
         .setColor(0x5865F2)
-        .setTitle('📚 Menu d\'Aide')
+        .setTitle(t('help.title'))
         .setDescription(
-          `Bienvenue dans le menu d'aide!\n\n` +
-          `**Total**: ${totalCommands} commande(s)\n` +
-          `**Préfixe**: \`!\`\n\n` +
-          `Utilisez le menu déroulant ci-dessous pour naviguer entre les catégories.`
+          `${t('help.welcome_title')}\n\n` +
+          `${t('help.total_label', { count: totalCommands })}\n` +
+          `${t('help.prefix_label', { prefix })}\n\n` +
+          t('help.welcome_desc')
         )
-        .setFooter({ text: `Demandé par ${message.author.username}`, iconURL: message.author.displayAvatarURL() })
+        .setFooter({ text: t('common.requested_by', { user: message.author.username }), iconURL: message.author.displayAvatarURL() })
         .setTimestamp();
 
       // Ajoute un aperçu des catégories
       for (const category in commandsByCategory) {
         const emoji = categoryEmojis[category] || '📌';
-        const categoryName = categoryNames[category] || category.charAt(0).toUpperCase() + category.slice(1);
+        const categoryName = t(`help.categories.${category}`) || category.charAt(0).toUpperCase() + category.slice(1);
         const commandCount = commandsByCategory[category].length;
         homeEmbed.addFields({
           name: `${emoji} ${categoryName}`,
-          value: `${commandCount} commande(s)`,
+          value: t('help.category_footer', { count: commandCount, user: message.author.username }).split(' • ')[0],
           inline: true
         });
       }
@@ -104,26 +94,26 @@ module.exports = {
       // Crée le menu déroulant
       const selectMenu = new StringSelectMenuBuilder()
         .setCustomId('help_menu')
-        .setPlaceholder('Sélectionnez une catégorie...');
+        .setPlaceholder(t('help.select_placeholder'));
 
       // Ajoute l'option "Accueil"
       selectMenu.addOptions(
         new StringSelectMenuOptionBuilder()
-          .setLabel('🏠 Accueil')
-          .setDescription('Retour au menu principal')
+          .setLabel(t('help.select_home_label'))
+          .setDescription(t('help.select_home_desc'))
           .setValue('home')
       );
 
       // Ajoute les options pour chaque catégorie
       for (const category in commandsByCategory) {
         const emoji = categoryEmojis[category] || '📌';
-        const categoryName = categoryNames[category] || category.charAt(0).toUpperCase() + category.slice(1);
+        const categoryName = t(`help.categories.${category}`) || category.charAt(0).toUpperCase() + category.slice(1);
         const commandCount = commandsByCategory[category].length;
         
         selectMenu.addOptions(
           new StringSelectMenuOptionBuilder()
             .setLabel(`${emoji} ${categoryName}`)
-            .setDescription(`${commandCount} commande(s) disponible(s)`)
+            .setDescription(t('help.category_footer', { count: commandCount, user: message.author.username }).split(' • ')[0])
             .setValue(category)
         );
       }
@@ -155,37 +145,41 @@ module.exports = {
         // Crée l'embed pour la catégorie sélectionnée
         const category = selectedValue;
         const emoji = categoryEmojis[category] || '📌';
-        const categoryName = categoryNames[category] || category.charAt(0).toUpperCase() + category.slice(1);
+        const categoryName = t(`help.categories.${category}`) || category.charAt(0).toUpperCase() + category.slice(1);
         const commands = commandsByCategory[category];
 
         const categoryEmbed = new EmbedBuilder()
           .setColor(0x5865F2)
-          .setTitle(`${emoji} ${categoryName}`)
-          .setDescription(`Liste des commandes de la catégorie **${categoryName}** :`)
-          .setFooter({ text: `${commands.length} commande(s) • Demandé par ${message.author.username}`, iconURL: message.author.displayAvatarURL() })
+          .setTitle(t('help.category_title', { emoji, name: categoryName }))
+          .setDescription(t('help.category_desc', { name: categoryName }))
+          .setFooter({ text: t('help.category_footer', { count: commands.length, user: message.author.username }), iconURL: message.author.displayAvatarURL() })
           .setTimestamp();
 
         // Ajoute les commandes
         const commandsList = commands.map(cmd => {
-          const description = cmd.description || 'Pas de description';
-          const usage = cmd.usage || `!${cmd.name}`;
-          return `**!${cmd.name}**\n${description}\n\`${usage}\``;
+          const transDesc = t(`commands.${cmd.name}.desc`);
+          const transUsage = t(`commands.${cmd.name}.usage`);
+          
+          const description = (transDesc !== `commands.${cmd.name}.desc` ? transDesc : cmd.description) || t('help.no_description');
+          const usage = (transUsage !== `commands.${cmd.name}.usage` ? transUsage : cmd.usage) || `${prefix}${cmd.name}`;
+          
+          return `**${prefix}${cmd.name}**\n${description}\n\`${usage}\``;
         }).join('\n\n');
 
         // Divise en plusieurs embeds si nécessaire
         if (commandsList.length > 4096) {
-          // Si trop long, utilise le format compact
           const compactList = commands.map(cmd => {
-            const description = cmd.description || 'Pas de description';
-            return `\`!${cmd.name}\` • ${description}`;
+            const transDesc = t(`commands.${cmd.name}.desc`);
+            const description = (transDesc !== `commands.${cmd.name}.desc` ? transDesc : cmd.description) || t('help.no_description');
+            return `\`${prefix}${cmd.name}\` • ${description}`;
           }).join('\n');
           
           categoryEmbed.setDescription(
-            `Liste des commandes de la catégorie **${categoryName}** :\n\n${compactList}`
+            t('help.category_desc', { name: categoryName }) + `\n\n${compactList}`
           );
         } else {
           categoryEmbed.setDescription(
-            `Liste des commandes de la catégorie **${categoryName}** :\n\n${commandsList}`
+            t('help.category_desc', { name: categoryName }) + `\n\n${commandsList}`
           );
         }
 
@@ -204,7 +198,7 @@ module.exports = {
 
     } catch (error) {
       console.error('Erreur dans la commande info:', error);
-      message.reply('❌ Une erreur est survenue lors de la récupération des commandes.');
+      message.reply(t('common.error'));
     }
   },
 };

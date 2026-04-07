@@ -12,12 +12,13 @@ module.exports = {
   description: 'Lance une partie de Morpion (Solo contre le bot ou Multi)',
   usage: '!morpion [@joueur]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     const opponent = message.mentions.users.first();
     const isSolo = !opponent || opponent.id === message.client.user.id || opponent.bot;
     
     if (!isSolo && opponent.id === message.author.id) {
-      return message.reply('❌ Tu ne peux pas jouer contre toi-même !');
+      return message.reply(t('tictactoe.self_error'));
     }
 
     const players = {
@@ -72,17 +73,17 @@ module.exports = {
     };
 
     const getStatusText = () => {
-      if (winner === 'draw') return '🤝 **Match nul !** Personne n\'a gagné.';
-      if (winner) return `🏆 **${players[winner].username} (${winner}) a gagné !**`;
-      return `👉 C'est au tour de **${players[currentPlayer].username}** (${currentPlayer})`;
+      if (winner === 'draw') return t('tictactoe.status_draw');
+      if (winner) return t('tictactoe.status_win', { user: players[winner].username, symbol: winner });
+      return t('tictactoe.status_turn', { user: players[currentPlayer].username, symbol: currentPlayer });
     };
 
     const createEmbed = () => {
       return new EmbedBuilder()
         .setColor(winner ? (winner === 'draw' ? 0x95A5A6 : (winner === 'X' ? 0x3498DB : 0xE74C30)) : 0xF1C40F)
-        .setTitle('⭕ MORPION ❌')
+        .setTitle(t('tictactoe.title'))
         .setDescription(`${getStatusText()}\n\n**X :** ${players.X}\n**O :** ${players.O}`)
-        .setFooter({ text: isSolo ? 'Mode Solo vs Bot' : 'Mode Multi' })
+        .setFooter({ text: isSolo ? t('tictactoe.footer_solo') : t('tictactoe.footer_multi') })
         .setTimestamp();
     };
 
@@ -149,8 +150,9 @@ module.exports = {
     };
 
     collector.on('collect', async (interaction) => {
-      if (interaction.user.id !== players[currentPlayer].id) {
-        return interaction.reply({ content: `❌ Ce n'est pas ton tour ! C'est à <@${players[currentPlayer].id}> de jouer.`, ephemeral: true });
+      const pId = players[currentPlayer].id;
+      if (interaction.user.id !== pId) {
+        return interaction.reply({ content: t('tictactoe.not_your_turn', { user: pId }), ephemeral: true });
       }
 
       const index = parseInt(interaction.customId.split('_')[1]);

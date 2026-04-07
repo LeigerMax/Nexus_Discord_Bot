@@ -1,0 +1,1462 @@
+{
+  "common": {
+    "error": "❌ An error occurred while processing your command.",
+    "error_find_command": "Command `{command}` not found.",
+    "help_suggestion": "Use `{prefix}help` to see all commands.",
+    "no_permission": "❌ You do not have permission to use this command.",
+    "requested_by": "Requested by {user}",
+    "loading": "Loading...",
+    "success": "Operation successful!"
+  },
+  "middlewares": {
+    "curse": {
+      "blocked": "🚫 You are cursed! No commands work for you...",
+      "challenge": "🧩 **Trial of the Scribe in progress!**\nYou cannot use commands until you have successfully copied the following sentence:\n`{phrase}`",
+      "garbled": "🔀 Your command was garbled: `{msg}`",
+      "slow": "🐌 Processing... *slowly*",
+      "reversed_target": "🔄 **Command reversed!** {user}, you wanted to target someone but you are the target now! 😈",
+      "reversed_failed": "🔄 Command inversion failed... You're lucky this time!",
+      "reversed_general": "🔄 Command reversed! I'm doing the opposite of `{cmd}`... or nothing at all! 😈",
+      "worst_luck": "💀 {user} is cursed! The outcome had to be the absolute worst... 😈"
+    }
+  },
+  "events": {
+    "cursed_messages": {
+      "cheat_detected": "🚫 **CHEAT ATTEMPT DETECTED** {user}!\nCopy-pasting is strictly forbidden. You get a penalty of **5 extra minutes**! ⏲️\n*(Wait at least 4 seconds before sending)*",
+      "success_title": "✨ Trial of the Scribe Succesful!",
+      "success_desc": "🎉 **{user}** successfully copied the sentence!\n\n*The curse is lifted, you can speak again.*",
+      "fail": "❌ **Scribe Trial Failed**, {user}!\nType exactly:\n`{phrase}`",
+      "polite_mode": "🤵 **{user}**, mind your manners! A butler must start with \"Sir,\" and end with \"Yours faithfully\".",
+      "emoji_only": "😜 **{user}**, we only speak with emojis here! 😜",
+      "said": "**{user}** said : {msg}"
+    },
+    "dm_reply": {
+      "reply_title": "💬 Reply to your secret message",
+      "reply_desc": "**{user}** replied:\n\n{msg}",
+      "from": "From: {tag}",
+      "attachments": "📎 Attachments",
+      "confirm": "✅ Your message has been forwarded!",
+      "system_footer": "Automated Reply System"
+    },
+    "random_taunts": {
+      "insults": [
+        "Look, the resident looser {user} spoke again...",
+        "{user}, no one asked you, looser.",
+        "Idiot alert! {user} just made an appearance.",
+        "Again {user}... Even an Uno Reverse card couldn't save your dignity.",
+        "Oh no, {user} just polluted the chat..."
+      ],
+      "praises": [
+        "Glory to the King {user}! 👑",
+        "Make way for the great {user}, our lord! 🙌",
+        "Silence, our King {user} has spoken. Everyone listen!",
+        "Blessed be your name, {user}. This server is nothing without you.",
+        "👑 The KING {user} graces the channel with their presence!"
+      ]
+    }
+  },
+  "system": {
+    "presence": {
+      "error_client": "❌ Client or user not available to set presence",
+      "success": "✅ Bot presence set: {status} - {activity}",
+      "error_set": "❌ Error while setting bot presence:"
+    }
+  },
+  "ping": {
+    "calculating": "🏓 Calculating latency...",
+    "title": "🏓 Pong!",
+    "bot_latency": "⏱️ Bot Latency",
+    "api_latency": "📡 API Latency",
+    "quality": "📊 Quality",
+    "qualities": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "average": "Average",
+      "bad": "Bad"
+    }
+  },
+  "help": {
+    "title": "📚 Help Menu",
+    "welcome_title": "Welcome to the help menu!",
+    "welcome_desc": "Use the dropdown menu below to navigate between categories.",
+    "total_label": "**Total**: {count} command(s)",
+    "prefix_label": "**Prefix**: `{prefix}`",
+    "select_placeholder": "Select a category...",
+    "select_home_label": "🏠 Home",
+    "select_home_desc": "Back to the main menu",
+    "category_title": "{emoji} {name}",
+    "category_desc": "List of commands in the **{name}** category:",
+    "category_footer": "{count} command(s) • Requested by {user}",
+    "no_description": "No description",
+    "categories": {
+      "general": "General",
+      "admin": "Administration",
+      "fun": "Entertainment",
+      "games": "Games",
+      "music": "Music",
+      "moderation": "Moderation",
+      "utility": "Utility"
+    },
+    "footer": "Use !help <command> for more details."
+  },
+  "dashboard": {
+    "title": "Nexus Dashboard",
+    "nav": {
+      "servers": "Servers",
+      "configuration": "Configuration",
+      "general": "General",
+      "players": "Players",
+      "welcome": "Welcome",
+      "security": "Security",
+      "monitoring": "Monitoring",
+      "curses": "Curses",
+      "automates": "Automates",
+      "audit": "Audit",
+      "youtube": "YouTube",
+      "stats": "Live Stats",
+      "vocal_temp": "Temp Voice",
+      "tickets": "Tickets",
+      "info": "Information",
+      "changelog": "Changelog",
+      "github": "GitHub Project",
+      "logout": "Logout",
+      "ui_language": "Interface Language"
+    },
+    "hub": {
+      "welcome": "Welcome,",
+      "select_server": "Select a server to configure.",
+      "back": "← Back to Hub"
+    },
+    "tabs": {
+      "general": {
+        "title": "General Settings",
+        "description": "Basic bot settings for this server. Change the command prefix or enable funny auto-responses (Auto-Feur).",
+        "prefix": "⚡ Prefix",
+        "auto_feur": "🎭 Auto-Feur",
+        "mute_duration": "⏱️ Roulette Mute Duration (s)",
+        "bot_language": "🌐 Bot Language",
+        "random_taunts": "😈 Random Taunts",
+        "random_taunts_chance": "🎲 Probability (% per message)"
+      },
+      "players": {
+        "title": "Player Management",
+        "description": "Define the server's special privileges. Kings are immune to bot effects, while Loosers are the primary targets for curses and draws.",
+        "kings": "👑 Kings",
+        "loosers": "🤡 Loosers",
+        "weekly_rotation": "Automatic weekly Looser rotation"
+      },
+      "welcome": {
+        "title": "Welcome System",
+        "description": "Welcome new members automatically in the channel of your choice with a custom message.",
+        "enable": "Enable system",
+        "channel": "Welcome channel",
+        "message": "Message"
+      },
+      "security": {
+        "title": "Security & Anti-Raid",
+        "description": "Protect your server against massive invasions. The system detects fast arrivals and takes automatic measures (Kick/Ban).",
+        "enable": "Enable Anti-Raid",
+        "limit": "Limit",
+        "window": "Window (s)",
+        "action": "Punitive Action",
+        "kick": "Kick",
+        "ban": "Ban"
+      },
+      "monitoring": {
+        "title": "Presence Monitoring",
+        "description": "Be notified as soon as certain members connect or disconnect. Ideal for not missing a friend's arrival or a watched Looser.",
+        "enable": "Enable monitoring",
+        "members": "Members to watch",
+        "channel": "Alert channel"
+      },
+      "curses": {
+        "title": "Curses Management",
+        "description": "The bot has many fun curses (Voice mute, Spam, Text inversion, etc.). Disable the ones you find too intrusive here.",
+        "default_duration": "⏱️ Default curse duration (in seconds)",
+        "types": {
+          "RANDOM_RESPONSES": "🎲 Random Responses",
+          "IGNORED": "👻 Ignored",
+          "BLOCKED": "🚫 Blocked",
+          "WORST_LUCK": "💀 Worst Luck",
+          "PUBLIC_SHAME": "📢 Public Shame",
+          "GARBLED": "🔀 Garbled Messages",
+          "VOICE_MUTE": "🔇 Voice Mute",
+          "SPAM": "💥 Mention Spam",
+          "REVERSED": "🔄 Reversed Commands",
+          "SLOW_MODE": "🐌 Slow Mode",
+          "MESSAGE_SCRAMBLER": "🔀 Message Scrambler",
+          "MESSAGE_OPPOSER": "🔄 Opposed Message",
+          "CLOWN_MODE": "🤡 Clown Mode",
+          "UWU_MODE": "😺 UwU Mode",
+          "YODA_MODE": "🗣️ Yoda Mode",
+          "CAPS_LOCK": "📢 CAPS LOCK",
+          "PIRATE_MODE": "🏴‍☠️ Pirate Mode",
+          "VOWEL_REMOVER": "🎯 Vowel Remover"
+        }
+      },
+      "automates": {
+        "title": "Automated Messages",
+        "description": "Manage repetitive messages activated via the `!auto` command. You can stop them here without needing Discord commands.",
+        "empty": "No active automates.",
+        "stop_btn": "Stop"
+      },
+      "youtube": {
+        "title": "Multi-Channel YouTube Notifications 📺",
+        "description": "Alert your members as soon as one of your favorite channels publishes a new video. Enter an `@handle` or a YouTube link to add a channel.",
+        "enable": "Enable module",
+        "add_label": "Add a channel",
+        "add_placeholder": "@mcp or URL",
+        "add_btn": "Add",
+        "resolving": "🔍 Resolving channel...",
+        "added": "✅ Channel added (ID: {id})",
+        "not_found": "❌ Channel not found.",
+        "empty": "No feeds configured.",
+        "chan_id_label": "Channel ID",
+        "discord_chan_label": "Discord Channel",
+        "msg_label": "Message",
+        "msg_placeholder": "🔴 New video!",
+        "delete_btn": "Delete"
+      },
+      "audit": {
+        "title": "Audit Moderation Logs (v1.0.0)",
+        "description": "Automatically trace all crucial server actions. Modifications, deletions, and voice movements will be sent to a dedicated channel in real-time.",
+        "enable": "Enable Audit system",
+        "channel": "Audit Logs Channel",
+        "privacy_warning": "⚠️ **Privacy**: Deleted or edited messages can be sensitive. Ensure only staff has access to this channel."
+      },
+      "stats": {
+        "title": "Live Server Stats",
+        "description": "Display your server statistics in real-time in voice channel names (locked).",
+        "enable": "Enable Live Stats",
+        "total_label": "Channel: Total Members",
+        "online_label": "Channel: Online",
+        "note": "Note: The bot will rename these channels automatically every 10 minutes."
+      },
+      "vocal_temp": {
+        "title": "Temporary Voice Channels",
+        "description": "Automatically create private channels when a member joins a \"Hub\" channel.",
+        "enable": "Enable Temp Channels",
+        "hub_label": "Hub Channel (Voice)",
+        "category_label": "Target category"
+      },
+      "tickets": {
+        "title": "Ticketing System",
+        "description": "Allow members to open private support tickets with the team.",
+        "enable": "Enable Tickets",
+        "category_label": "Tickets Category",
+        "staff_roles_label": "Staff Roles (Ticket access)",
+        "note": "Use `!ticket-setup` on Discord to send the initial message."
+      }
+    },
+    "actions": {
+      "save": "Save changes 💾",
+      "none_option": "None",
+      "success_toast": "✅ Action successful!"
+    },
+    "updates": {
+      "banner_title": "🚀 New version available!",
+      "view_btn": "View new features",
+      "desc": "Version {version} ({name}) is available."
+    },
+    "curses_types": {
+      "RANDOM_RESPONSES": "🎲 Random Responses",
+      "IGNORED": "👻 Ignored",
+      "BLOCKED": "🚫 Blocked",
+      "WORST_LUCK": "💀 Worst Luck",
+      "PUBLIC_SHAME": "📢 Public Shame",
+      "GARBLED": "🔀 Garbled Messages",
+      "VOICE_MUTE": "🔇 Voice Mute",
+      "SPAM": "💥 Mentions Spam",
+      "REVERSED": "🔄 Reversed Commands",
+      "SLOW_MODE": "🐌 Slow Mode",
+      "MESSAGE_SCRAMBLER": "🔀 Word Scrambler",
+      "MESSAGE_OPPOSER": "🔄 Opposer",
+      "CLOWN_MODE": "🤡 Clown Mode",
+      "UWU_MODE": "😺 UwU Mode",
+      "YODA_MODE": "🗣️ Yoda Mode",
+      "CAPS_LOCK": "📢 CAPS LOCK",
+      "PIRATE_MODE": "🏴‍☠️ Pirate Mode",
+      "VOWEL_REMOVER": "🎯 Vowel Remover"
+    },
+    "index": {
+      "title": "Nexus Dashboard",
+      "desc": "Take control of your Discord server with a modern, smooth, and intuitive interface. Configure your modules in a few clicks.",
+      "login_btn": "Login with Discord"
+    }
+  },
+  "antiraid": {
+    "description": "Configure the server's anti-raid system",
+    "usage": "!antiraid <on|off|config|status>",
+    "no_admin": "❌ You must be an administrator to configure anti-raid!",
+    "invalid_subcommand": "❌ Invalid sub-command!",
+    "available_commands": "**Available Commands**:",
+    "help_on": "Enables the anti-raid system",
+    "help_off": "Disables the anti-raid system",
+    "help_config": "Configures an option",
+    "help_status": "Shows the current status",
+    "config_options": "**Config Options**:",
+    "enabled_title": "🛡️ Anti-Raid Enabled",
+    "enabled_desc": "The anti-raid system is now active!",
+    "disabled": "✅ Anti-raid system disabled!",
+    "config_specify_option": "❌ Specify an option to configure! Use `!antiraid` to see the list.",
+    "config_joinlimit_error": "❌ Join limit must be between 1 and 20!",
+    "config_joinlimit_success": "✅ Join limit set to **{limit}** users.",
+    "config_joinwindow_error": "❌ Time window must be at least 1 second!",
+    "config_joinwindow_success": "✅ Time window set to **{window}** seconds.",
+    "config_action_error": "❌ Action must be either `kick` or `ban`!",
+    "config_action_success": "✅ Anti-raid action set to **{action}**.",
+    "config_autolock_error": "❌ AutoLock must be `true` or `false`!",
+    "config_autolock_success": "✅ Automatic locking {status}.",
+    "config_invalid_option": "❌ Invalid option! Use `!antiraid` to see available options.",
+    "status_title": "🛡️ Anti-Raid Status",
+    "status_active": "✅ **System active**",
+    "status_locked": " 🔒 **SERVER LOCKED**",
+    "status_disabled": "❌ **System disabled**",
+    "config_label": "⚙️ Configuration",
+    "config_text_limit": "**Limit**: {limit} joins in {window}s",
+    "config_text_action": "**Action**: {action}",
+    "config_text_autolock": "**Auto-Lock**: {status}",
+    "raid_detected_title": "🚨 RAID DETECTED!",
+    "raid_detected_desc": "**{count}** members joined in {window} seconds!",
+    "raid_action_performed": "✅ Action performed: **{action}**",
+    "raid_autolock_notif": "🔒 Server locked automatically",
+    "raid_unlock_instruction": "Use `!antiraid off` then `!antiraid on` to unlock."
+  },
+  "auto": {
+    "description": "Sends a message automatically every X seconds",
+    "usage": "!auto <time_in_seconds> <message> OR !auto stop",
+    "no_admin": "❌ You must be an administrator to use this command!",
+    "stopped": "⏹️ Automatic message stopped!",
+    "no_active": "❌ No active automatic message in this channel!",
+    "incorrect_usage": "❌ **Error**: Incorrect usage!",
+    "example": "**Example**: `!auto 60 This is an automatic reminder`",
+    "stop_hint": "**Stop**: `!auto stop`",
+    "time_error": "❌ Time must be a number greater than or equal to 1 second!",
+    "empty_error": "❌ Message cannot be empty!",
+    "too_long_error": "❌ Message is too long (max 500 characters)!",
+    "embed_footer": "Automatic message • Every {seconds}s",
+    "enabled_title": "✅ Automatic message enabled!",
+    "enabled_desc": "**Message**: {message}\n**Intervalle**: Every {seconds} seconds",
+    "stop_instr": "Use !auto stop to stop"
+  },
+  "clear": {
+    "description": "Deletes a specified number of messages (max 100)",
+    "usage": "!clear <amount> [mention]",
+    "no_permission": "❌ You don't have permission to manage messages!",
+    "invalid_amount": "❌ **Error**: You must specify a valid number of messages to delete!",
+    "example": "**Example**: `!clear 10` or `!clear 50 @user`",
+    "limit_error": "❌ I can only delete up to 100 messages at once!",
+    "success_generic": "✅ {count} message(s) deleted!",
+    "success_user": "✅ {count} message(s) deleted from {user}!",
+    "old_messages_error": "❌ I can only delete messages that are less than 14 days old!"
+  },
+  "mute": {
+    "description": "Mutes a player in voice for a set duration (forced mute)",
+    "usage": "!mute @user <duration_in_seconds>",
+    "no_mention": "❌ **Error**: You must mention a user!\n**Example**: `!mute @user 30`",
+    "no_duration": "❌ **Error**: You must specify a valid duration (in seconds)!\n**Example**: `!mute @user 30`",
+    "not_in_voice": "❌ {user} is not in a voice channel!",
+    "already_muted": "❌ {user} is already under forced mute!",
+    "already_muted_desc": "⏱️ **Time remaining**: {time} second(s)\n💡 Wait for the current mute to end.",
+    "pre_embed_title": "🔇 Forced Mute",
+    "pre_embed_desc": "🎯 **{user}** will be muted!\n⏱️ **Duration**: {duration} second(s)",
+    "embed_footer_requested": "Requested by {user}",
+    "unmuted_desc": "🔊 **{user}** can speak again!",
+    "unmuted_footer": "Mute ended",
+    "remut_desc": "🚫 **{user}** tried to unmute!",
+    "confirm_title": "🔇 Forced Mute Enabled",
+    "confirm_desc": "✅ **{user}** has been muted!\n\n⏱️ **Duration**: {duration} second(s)\n🔓 **End**: <t:{endTime}:R>\n⚠️ **Forced mute**: Cannot unmute yourself\n👤 **By**: {by}",
+    "confirm_footer": "Any attempt to unmute will be penalized",
+    "audit_reason": "Forced mute by {user} - {duration}s",
+    "permission_error": "❌ Unable to mute the member. Check bot permissions.",
+    "mocking_messages": [
+      "Nice try! 😈",
+      "Did you really think you could escape? 😂",
+      "Try again! 🤡",
+      "Impossible my friend! 🙈",
+      "Keep dreaming! 😏",
+      "Not today! 🚫",
+      "Too easy! 😎",
+      "You wish! 💀"
+    ]
+  },
+  "override": {
+    "description": "[KING ONLY] Force stop all active curses, mutes, and sanctions",
+    "usage": "!override <curse|mute|roulettemute|all> [@user|all]",
+    "no_king": "👑 This command is reserved for the KING of the server!",
+    "help_title": "⚔️ **KING COMMAND - OVERRIDE**",
+    "help_syntax": "**Syntax**: `!override <type> <target>`",
+    "help_types": "**Available Types**:",
+    "help_type_curse": "`curse` - Lifts curses",
+    "help_type_mute": "`mute` - Forced unmute",
+    "help_type_roulette": "`roulettemute` - Stops roulettemute",
+    "help_type_all": "`all` - Stop everything",
+    "help_targets": "**Targets**:",
+    "help_target_user": "`@user` - For a specific user",
+    "help_target_all": "`all` - For all users",
+    "help_examples": "**Examples**:",
+    "help_example1": "`!override curse @User` - Lifts curse from User",
+    "help_example2": "`!override all all` - Stops everything for everyone",
+    "access_error": "❌ Error: Could not access commands.",
+    "result_title": "👑 KING OVERRIDE ACTIVATED",
+    "result_target": "**Target**: {target}",
+    "result_target_all": "All users",
+    "result_action": "**Action**: {action}",
+    "result_label_curses": "🔮 Curses lifted: **{count}**",
+    "result_label_mutes": "🔇 Mutes stopped: **{count}**",
+    "result_label_roulette": "🎲 Roulette mutes stopped: **{count}**",
+    "result_success": "✅ All sanctions have been cancelled by royal decree!",
+    "result_footer": "Executed by {user}",
+    "audit_reason": "Override by the KING"
+  },
+  "showdeleted": {
+    "description": "Displays the last deleted messages",
+    "usage": "!showdeleted [amount] [@user]",
+    "no_permission": "❌ You don't have permission to see deleted messages!",
+    "unavailable": "❌ Deleted message tracking system is unavailable!",
+    "none_found": "✨ No deleted messages found recently!",
+    "embed_title": "🗑️ Deleted Messages",
+    "embed_desc": "Displaying the **{count}** last deleted messages{user}",
+    "field_author": "**Author**",
+    "field_channel": "**Channel**",
+    "field_time": "**Time ago**",
+    "field_content": "**Content**",
+    "field_no_text": "[No text]",
+    "field_attachments": "attachment(s)",
+    "field_name": "Message {index}",
+    "footer_more": "{count} additional message(s) not displayed"
+  },
+  "tickets": {
+    "description": "Sends the initial message for the ticket system",
+    "default_title": "Nexus Dashboard Support",
+    "default_desc": "Need help? Click the button below to open a private ticket with the team.",
+    "embed_footer": "Interactive Support System",
+    "btn_label": "Open a ticket",
+    "setup_error": "❌ Error during ticket setup for {user}.",
+    "create_success": "✅ Your ticket has been created: {channel}",
+    "already_exists": "❌ You already have an open ticket: {channel}",
+    "channel_name": "ticket-{user}",
+    "topic": "Ticket from {user} | Created on {date}",
+    "welcome_title": "🎫 Support Ticket",
+    "welcome_desc": "Hello {user}, a team member will be available soon to help you.\n\nPlease describe your request below to speed up the process.",
+    "close_btn": "Close ticket",
+    "closing": "🔒 Closing ticket...",
+    "closed_by": "Ticket closed by {user}"
+  },
+  "curse": {
+    "description": "Casts a random curse on a player with various effects",
+    "usage": "!curse [@player] [duration] [TYPE] OR !curse hidden [@player] [duration] [TYPE] OR !curse types",
+    "invalid_type": "❌ **Invalid curse type!**",
+    "help_syntax": "**Syntax**: `!curse hidden @player duration TYPE`",
+    "available_types": "**Available Types**:",
+    "types_title": "👹 Curse Types",
+    "hidden_syntax": "**Hidden Syntax**: `!curse hidden @player duration TYPE`",
+    "hidden_example": "**Example**: `!curse hidden @player 30 UWU_MODE`",
+    "hidden_footer": "Message sent in private to remain hidden",
+    "no_admin_clear": "❌ Only an administrator can lift curses!",
+    "cleared_all": "✨ All curses have been lifted by **{user}**!",
+    "list_empty": "✨ No players are currently cursed!",
+    "list_title": "👹 List of Cursed Players",
+    "list_desc": "Here are all the unfortunate souls currently under a curse:",
+    "list_field_curse": "**Curse**",
+    "list_field_time": "**Time Remaining**",
+    "no_voice_random": "❌ No players available in voice channels!",
+    "mention_error": "❌ **Error**: You must mention a player or use `random`!",
+    "examples": "**Examples**:\n`!curse @player 60` - Curse a player for 60 seconds\n`!curse random 30` - Curse a random player in voice for 30 seconds\n`!curse list` - Show cursed players\n`!curse clear` - Lift all curses (admin)",
+    "duration_error": "❌ Duration must be a number greater than 0!",
+    "bot_error": "❌ You cannot curse a bot!",
+    "already_cursed": "❌ {user} is already cursed!",
+    "already_cursed_time": "⏱️ **Time remaining**: {time} second(s)",
+    "disabled_error": "❌ Curse type `{type}` is disabled on this server!",
+    "all_disabled_error": "❌ All curses are disabled on this server!",
+    "summon_title": "👹 CURSE INCANTATION",
+    "summon_desc": "🌙 *Dark forces are gathering...*",
+    "summon_target": "**Target**: {user}",
+    "summon_duration": "⏳ **Duration**: {duration} second(s)",
+    "summon_incanting": "*The curse is being cast...*",
+    "summon_footer": "Summoned by {user}",
+    "confirm_title": "{emoji} CURSE CAST!",
+    "confirm_desc": "💀 **{user}** has been cursed!",
+    "confirm_curse": "**Curse**: {name}",
+    "confirm_effect": "**Effect**: {desc}",
+    "confirm_duration": "**Duration**: {duration} second(s)",
+    "confirm_end": "**End**: <t:{time}:R>",
+    "confirm_closing": "*May darkness accompany them...*",
+    "confirm_footer": "Cursed by {user} | Good luck!",
+    "hidden_confirm_title": "{emoji} Hidden Curse Activated",
+    "hidden_confirm_desc": "✅ **{user}** has been secretly cursed!",
+    "hidden_confirm_closing": "*The target doesn't know who cursed them... 😈*",
+    "hidden_confirm_footer": "Private message - No one else sees this",
+    "lifted_title": "✨ Curse Lifted",
+    "lifted_desc": "🎉 **{user}** is free from the curse!\n\nThe {name} has ended.",
+    "lifted_label_by": "👤 **Cursed by**",
+    "lifted_footer": "You are free!",
+    "audit_reason": "Curse - {duration}s",
+    "audit_force_mute": "Forced Mute Curse",
+    "challenge_label": "📝 **YOUR PHRASE TO COPY (COPY-PASTE FORBIDDEN!)**",
+    "challenge_instr": "*Chat and voice are blocked until you post it!*",
+    "shame_messages": [
+      "😂 {user} is still cursed!",
+      "👻 Has anyone seen {user}? They're cursed lol",
+      "🤡 {user} thinks they can escape the curse",
+      "💀 {user} is a cursed player, avoid them!"
+    ],
+    "spam_messages": [
+      "{user} PING! 🏓",
+      "Hey {user}, you're still cursed 👻",
+      "{user} *beep beep* Curse reminder 📢",
+      "{user} Don't forget me! 😈"
+    ],
+    "random_responses": [
+      "Sorry, I'm busy counting pixels.",
+      "The answer is 42... or maybe not.",
+      "🦆 Quack quack!",
+      "Error 404: Brain not found.",
+      "Have you tried turning it off and on again?",
+      "I'm a teapot. ☕",
+      "BEEP BOOP I am a robot 🤖",
+      "Ask Miguel... oh wait.",
+      "The answer is in your heart... or not.",
+      "*Bot left for cigarettes*",
+      "I refuse to answer without my lawyer.",
+      "Type /help for... oh wait, that doesn't work for you."
+    ],
+    "challenge_phrases": [
+      "Six slippery snails slid slowly seaward.",
+      "Peter Piper picked a peck of pickled peppers.",
+      "How much wood would a woodchuck chuck if a woodchuck could chuck wood?",
+      "She sells seashells by the seashore.",
+      "The thirty-three thieves thought that they thrilled the throne throughout Thursday.",
+      "I saw Susie sitting in a shoeshine shop.",
+      "Freshly fried flying fish.",
+      "Red lory, yellow lory.",
+      "A proper copper coffee pot.",
+      "Toy boat, toy boat, toy boat."
+    ],
+    "types": {
+      "RANDOM_RESPONSES": {
+        "name": "Random Responses",
+        "desc": "All commands return absurd answers"
+      },
+      "IGNORED": {
+        "name": "Ignored",
+        "desc": "Bot completely ignores all messages"
+      },
+      "BLOCKED": {
+        "name": "Blocked",
+        "desc": "No commands work"
+      },
+      "WORST_LUCK": {
+        "name": "Bad Luck",
+        "desc": "All random results are the worst possible"
+      },
+      "PUBLIC_SHAME": {
+        "name": "Public Shame",
+        "desc": "Bot constantly reminds everyone you're cursed"
+      },
+      "GARBLED": {
+        "name": "Garbled Messages",
+        "desc": "All messages are reversed or scrambled"
+      },
+      "VOICE_MUTE": {
+        "name": "Voice Mute",
+        "desc": "Muted in all voice channels"
+      },
+      "SPAM": {
+        "name": "Mention Spam",
+        "desc": "Bot mentions you randomly"
+      },
+      "REVERSED": {
+        "name": "Reversed Commands",
+        "desc": "Commands backfire on you"
+      },
+      "SLOW_MODE": {
+        "name": "Slow Mode",
+        "desc": "Bot responds with a 10-second delay"
+      },
+      "MESSAGE_SCRAMBLER": {
+        "name": "Word Scrambler",
+        "desc": "Your messages are rewritten with scrambled words"
+      },
+      "MESSAGE_OPPOSER": {
+        "name": "Opposer",
+        "desc": "Your messages say the opposite of what you want"
+      },
+      "CLOWN_MODE": {
+        "name": "Clown Mode",
+        "desc": "Clown emojis invade all your messages"
+      },
+      "UWU_MODE": {
+        "name": "UwU Mode",
+        "desc": "Your messages are transformed into UwU speak"
+      },
+      "YODA_MODE": {
+        "name": "Yoda Mode",
+        "desc": "Speak like Yoda you must"
+      },
+      "CAPS_LOCK": {
+        "name": "CAPS LOCK",
+        "desc": "ALL YOUR MESSAGES ARE IN CAPS!!!!"
+      },
+      "PIRATE_MODE": {
+        "name": "Pirate Mode",
+        "desc": "Speak like a pirate you will, landlubber!"
+      },
+      "VOWEL_REMOVER": {
+        "name": "Vowel Remover",
+        "desc": "ll vwls dspr frm yr mssgs"
+      },
+      "REVERSE_TEXT": {
+        "name": "Reverse Text",
+        "desc": "sdrawkcab tpyt si txet ruoY"
+      },
+      "RANDOM_EMOJI": {
+        "name": "Random Emojis",
+        "desc": "Words are replaced by weird emojis"
+      },
+      "CHALLENGE": {
+        "name": "Scribe's Trial",
+        "desc": "Copy the complex phrase to lift the spell"
+      },
+      "POLITE_MODE": {
+        "name": "Butler Mode",
+        "desc": "Forces you to be polite"
+      },
+      "SHY_MODE": {
+        "name": "Shy Mode",
+        "desc": "Messages limited to 10 characters and truncated"
+      },
+      "EMOJI_ONLY": {
+        "name": "Emoji Mode",
+        "desc": "Only emojis allowed"
+      },
+      "QUESTIONER": {
+        "name": "Question Mark",
+        "desc": "All messages must end with a question mark"
+      },
+      "SELF_DESTRUCT": {
+        "name": "Self-Destruction",
+        "desc": "Messages delete after 5 seconds"
+      },
+      "PARROT": {
+        "name": "The Parrot",
+        "desc": "Bot repeats your messages mockingly"
+      }
+    }
+  },
+  "roulette": {
+    "description": "Selects a random player from voice and disconnects them",
+    "usage": "!roulette",
+    "no_voice": "❌ **Error**: You must be in a voice channel to use this command!",
+    "no_players": "❌ No players in the voice channel!",
+    "alone": "❌ You are alone in voice! At least 2 players are needed.",
+    "embed_title": "🎲 Russian Roulette",
+    "embed_desc": "**{count}** players in voice...\n\n🔫 **{user}** has been selected!\n👤 **Started by**: {by}",
+    "embed_footer": "Disconnecting...",
+    "success_desc": "✅ **{user}** has been disconnected from voice!",
+    "permission_error": "❌ Unable to disconnect the member. Check bot permissions.",
+    "audit_reason": "Russian Roulette"
+  },
+  "roulettehard": {
+    "description": "Russian Roulette with a 1-minute BAN",
+    "usage": "!roulettehard",
+    "embed_title": "💀 HARDCORE Russian Roulette",
+    "embed_desc": "**{count}** potential survivors...\n\n🚀 **{user}** is going to be banned for 1 minute!\n👤 **Executioner**: {by}",
+    "embed_footer": "Banning...",
+    "success_desc": "👋 **{user}** has been banned from the server for 1 minute!",
+    "unban_audit": "End of Hard Roulette ban",
+    "ban_audit": "Lost at Hardcore Roulette - 1 minute",
+    "permission_error": "❌ Unable to ban the member. Check bot permissions."
+  },
+  "roulettemute": {
+    "description": "Forced mute of 30s to 5min for the loser",
+    "usage": "!roulettemute [time_in_sec]",
+    "embed_title": "🔇 Mute Roulette",
+    "embed_desc": "**{count}** test subjects...\n\n🔇 **{user}** will be muted for **{duration}** seconds!\n👤 **Initiated by**: {by}",
+    "embed_footer": "Muting...",
+    "success_desc": "✅ **{user}** has been silenced for {duration} seconds!",
+    "unmuted_desc": "🔊 **{user}** can speak again!",
+    "unmuted_footer": "End of punishment",
+    "audit_reason": "Lost at Mute Roulette - {duration}s",
+    "remut_desc": "🚫 **{user}** tried to unmute during their sentence!",
+    "remut_footer": "No cheating!",
+    "mocking_messages": [
+      "Nice try! 😈",
+      "Did you really think you could escape? 😂",
+      "Try again! 🤡",
+      "Impossible, my friend! 🙈",
+      "You're dreaming! 😏",
+      "Not today! 🚫",
+      "Too easy! 😎",
+      "You thought? 💀"
+    ]
+  },
+  "version": {
+    "description": "Displays the current bot version and news",
+    "usage": "!version [version]",
+    "history_title": "📜 History - Version {version}",
+    "published_on": "Published on {date}",
+    "current_footer": "Current version: {version}",
+    "features_title": "✨ New Features",
+    "fixes_title": "🐛 Fixes",
+    "bot_title": "🤖 Nexus Bot v{version}",
+    "recent_versions": "📜 Recent Versions",
+    "history_hint": "*Use `!version {version}` to see details*",
+    "info_title": "🔗 Information",
+    "developed_by": "Developed by **{developer}**",
+    "prefix_label": "Prefix: `{prefix}`"
+  },
+  "battleship": {
+    "description": "Starts an advanced BattleShip game (8x8)",
+    "usage": "!battleship [@player]",
+    "self_error": "❌ You cannot play against yourself!",
+    "not_playing": "❌ You are not playing.",
+    "already_ready": "✅ Already ready.",
+    "invalid_placement": "❌ Invalid placement!",
+    "not_your_turn": "❌ Not your turn!",
+    "ships": {
+      "carrier": "Aircraft Carrier",
+      "cruiser": "Cruiser",
+      "destroyer": "Destroyer",
+      "submarine": "Submarine"
+    },
+    "logs": {
+      "start": "⚓ Game started!",
+      "miss": "💨 {user} → {coord}: Miss!",
+      "hit": "🔥 {user} HIT!",
+      "sunk": "💥 {user} SUNK the **{ship}**!",
+      "already": "Already fired here!"
+    },
+    "setup": {
+      "title": "🏗️ PLACEMENT: {user}",
+      "ship_label": "Ship",
+      "all_placed": "All placed!",
+      "pos_label": "Position",
+      "orient_label": "Orientation",
+      "footer": "This message is private.",
+      "placeholder_col": "Column (A-H)",
+      "placeholder_row": "Row (1-8)",
+      "placeholder_orient": "Orientation",
+      "orient_h": "→ Horizontal",
+      "orient_v": "↓ Vertical",
+      "btn_place": "📌 Place",
+      "btn_ready": "✅ READY!",
+      "btn_random": "🎲 Random",
+      "btn_start": "🏗️ Place my ships"
+    },
+    "battle": {
+      "title": "🚢 BATTLESHIP",
+      "main_desc": "**{p1}** {s1} vs **{p2}** {s2}\n\nClick to place your ships!",
+      "turn_label": "Turn of",
+      "my_grid": "🛡️ My Grid",
+      "op_grid": "🎯 Enemy Grid",
+      "choose_row": "👇 **Choose a ROW:**",
+      "choose_col": "✅ Row **{row}** → 👇 **Column:**",
+      "btn_back": "⬅️ Back",
+      "btn_view_self": "👁️ My Grid",
+      "win_title": "🏆 VICTORY!",
+      "win_desc": "**{user}** wins the battle!\n\n**{opponent}'s Grid:**"
+    }
+  },
+  "blackjack": {
+    "description": "Starts a Blackjack game (Solo or Multi against the dealer)",
+    "usage": "!blackjack [@players]",
+    "title": "🃏 MULTI BLACKJACK 🃏",
+    "dealer_label": "Dealer",
+    "player_turn_desc": "It's **{user}**'s turn!",
+    "dealer_turn_desc": "The dealer is playing...",
+    "score_label": "Score",
+    "cards_label": "Cards",
+    "status_bust": "💥 BUST",
+    "status_blackjack": "🃏 BLACKJACK",
+    "status_stand": "⏹️ STAND",
+    "status_turn": "👉 TURN",
+    "results_title": "RESULTS:",
+    "res_lose_bust": "❌ Lost (Bust)",
+    "res_blackjack_push": "🤝 Push (Double Blackjack)",
+    "res_blackjack_win": "💰 Blackjack!",
+    "res_win_dealer_bust": "✅ Won (Dealer Bust)",
+    "res_win": "✅ Won",
+    "res_lose": "❌ Lost",
+    "res_push": "🤝 Push",
+    "btn_hit": "Hit",
+    "btn_stand": "Stand",
+    "not_your_turn": "❌ Not your turn! It's <@{user}>'s turn."
+  },
+  "connect4": {
+    "description": "Starts a Connect 4 game (Solo or Multi)",
+    "usage": "!p4 [@player]",
+    "self_error": "❌ You cannot play against yourself!",
+    "draw_desc": "🤝 **Draw!** The grid is full.",
+    "win_desc": "🏆 **{user} won!**",
+    "turn_desc": "👉 It's **{user}**'s turn ({color})",
+    "title": "🔴 CONNECT 4 🟡",
+    "btn_full": "Column full",
+    "footer_solo": "Solo Mode vs Bot",
+    "footer_multi": "Multiplayer Mode",
+    "not_your_turn": "❌ Not your turn! It's <@{user}>'s turn."
+  },
+  "hangman": {
+    "description": "Starts a quick Hangman game",
+    "usage": "!hangman [@players]",
+    "players_label": "Players",
+    "status_label": "Status",
+    "status_ongoing": "In progress...",
+    "status_win": "🏆 VICTORY!",
+    "status_lost": "💀 LOST! The word was **{word}**",
+    "word_label": "Word",
+    "attempts_label": "Guessed letters",
+    "lives_label": "Lives remaining",
+    "none": "None",
+    "footer": "Type a letter to play!",
+    "timeout_msg": "⏰ Time's up! The game is over.",
+    "timeout_status": "Time finished. The word was **{word}**",
+    "words": [
+      "DISCORD",
+      "BOT",
+      "PROGRAMMING",
+      "JAVASCRIPT",
+      "NODEJS",
+      "DEVELOPER",
+      "INTERFACE",
+      "COMMANDS",
+      "SERVER",
+      "MESSAGE",
+      "MYSTERY",
+      "ADVENTURE",
+      "STONE",
+      "SUNLIGHT",
+      "MUSIC",
+      "GUITAR",
+      "COMPUTER",
+      "INTERNET",
+      "KEYBOARD",
+      "MOUSE",
+      "SCREEN",
+      "ROBOT",
+      "SPACE",
+      "PLANET",
+      "STAR",
+      "GALAXY",
+      "UNIVERSE",
+      "COSMOS",
+      "TRAVEL",
+      "DESTINATION",
+      "SUITCASE",
+      "PASSPORT",
+      "AIRPLANE",
+      "TRAIN",
+      "BOAT",
+      "CAR",
+      "BICYCLE",
+      "WALKING",
+      "RUNNING",
+      "SPORT",
+      "FOOTBALL",
+      "BASKETBALL",
+      "TENNIS",
+      "SWIMMING",
+      "FENCING",
+      "COOKING",
+      "RECIPE",
+      "CAKE",
+      "CHOCOLATE",
+      "VANILLA",
+      "FRUIT"
+    ]
+  },
+  "memory": {
+    "description": "Starts a Memory game (4x4)",
+    "usage": "!memory",
+    "title": "🧠 MEMORY GAME",
+    "status_initial": "Find all the pairs!",
+    "status_win": "🏆 VICTORY! Congratulations!",
+    "status_match": "✨ Match found! Keep going!",
+    "status_no_match": "❌ Not the same...",
+    "label_tries": "Tries",
+    "label_pairs": "Pairs found",
+    "footer": "{user}'s Game",
+    "only_player_error": "❌ Only the player who started the game can play."
+  },
+  "minesweeper": {
+    "description": "Starts a quick minesweeper game (5x5)",
+    "usage": "!minesweeper [mines]",
+    "title": "💣 FLASH MINESWEEPER",
+    "desc_initial": "Find all free cells without touching the **{mines}** mines!",
+    "how_to_label": "**How to play:**",
+    "how_to_step1": "- Click a **[ ? ]** button to reveal a cell.",
+    "how_to_step2": "- 🟦 = Empty cell (no mines around).",
+    "how_to_step3": "- 1️⃣, 2️⃣... = Number of mines in the 8 adjacent cells.",
+    "how_to_step4": "- 💣 = MINE! The game stops if you hit one.",
+    "how_to_objective": "*Goal: Reveal all cells that do not contain a mine.*",
+    "not_your_game": "❌ This is not your game!",
+    "win_title": "🏆 VICTORY!",
+    "win_desc": "Congratulations! You've successfully cleared the field!",
+    "lost_title": "💥 BOOM!",
+    "lost_desc": "You hit a mine at [{r}, {c}]! Better luck next time...",
+    "timeout_msg": "⏰ Time's up for this game!",
+    "footer": "{user}'s Game"
+  },
+  "reaction": {
+    "description": "Starts a multiplayer reaction test (entire server)",
+    "usage": "!reaction",
+    "title": "⚡ REACTION TEST",
+    "wait_status": "Get ready... The button will change! ⏳",
+    "wait_btn": "Wait...",
+    "trigger_title": "🔥 CLICK NOW!! 🔥",
+    "trigger_status": "NOW! ⚡",
+    "trigger_btn": "CLICK HERE!",
+    "false_start_title": "❌ FALSE START!",
+    "false_start_desc": "**{user}** clicked too early! The game is cancelled.",
+    "false_start_btn": "Too early!",
+    "win_title": "🏆 WON!",
+    "win_desc": "**{user}** was the fastest!\n\n**Reaction time:** `{time} ms` ⏱️",
+    "win_btn": "Finished!",
+    "timeout_title": "⏰ TIME'S UP",
+    "timeout_status": "No one clicked in time...",
+    "timeout_btn": "Expired"
+  },
+  "tictactoe": {
+    "description": "Starts a TicTacToe game (Solo vs bot or Multi)",
+    "usage": "!morpion [@player]",
+    "title": "⭕ TIC TAC TOE ❌",
+    "status_draw": "🤝 **Draw!** No one won.",
+    "status_win": "🏆 **{user} ({symbol}) won!**",
+    "status_turn": "👉 It's **{user}**'s turn ({symbol})",
+    "footer_solo": "Solo Mode vs Bot",
+    "footer_multi": "Multiplayer Mode",
+    "self_error": "❌ You cannot play against yourself!",
+    "not_your_turn": "❌ Not your turn! It's <@{user}>'s turn."
+  },
+  "brain": {
+    "title": "🧠 Brain Status",
+    "footer": "Neural scan completed",
+    "states": [
+      {
+        "status": "Brain: ON",
+        "desc": "Plays smart, thinks before acting"
+      },
+      {
+        "status": "Brain: OFF",
+        "desc": "Solo push, no brain like Miguel"
+      },
+      {
+        "status": "Brain: LAG",
+        "desc": "No info getting through"
+      },
+      {
+        "status": "Brain: AFK",
+        "desc": "Auto-pilot mode activated"
+      },
+      {
+        "status": "Brain: OVERLOAD",
+        "desc": "200 IQ plays incoming"
+      },
+      {
+        "status": "Brain: SLOW",
+        "desc": "Takes time to understand"
+      },
+      {
+        "status": "Brain: RANDOM",
+        "desc": "Unpredictable decisions"
+      },
+      {
+        "status": "Brain: NEED COFFEE",
+        "desc": "Not awake, running at 10%"
+      }
+    ]
+  },
+  "coach": {
+    "title": "🎓 Coach's Advice",
+    "footer": "For {user} • AI Coach",
+    "category_label": "Category",
+    "types": {
+      "serious": "Serious",
+      "troll": "Troll",
+      "mental": "Mental",
+      "realistic": "Realistic"
+    },
+    "advices": [
+      {
+        "text": "Look at the minimap every 3 seconds",
+        "type": "serious"
+      },
+      {
+        "text": "Stop reloading after every kill",
+        "type": "serious"
+      },
+      {
+        "text": "Play safe when you're the carry",
+        "type": "serious"
+      },
+      {
+        "text": "Communicate with your team",
+        "type": "serious"
+      },
+      {
+        "text": "Take breaks every hour",
+        "type": "serious"
+      },
+      {
+        "text": "Adjust your mouse sensitivity",
+        "type": "serious"
+      },
+      {
+        "text": "Aim for the head, not the feet",
+        "type": "serious"
+      },
+      {
+        "text": "Use your abilities at the right time",
+        "type": "serious"
+      },
+      {
+        "text": "Farm before fighting",
+        "type": "serious"
+      },
+      {
+        "text": "Check your blind spots",
+        "type": "serious"
+      },
+      {
+        "text": "Blame the support",
+        "type": "troll"
+      },
+      {
+        "text": "Spam ping your toplaner",
+        "type": "troll"
+      },
+      {
+        "text": "Solo push without vision",
+        "type": "troll"
+      },
+      {
+        "text": "Buy skins only, it's a buff",
+        "type": "troll"
+      },
+      {
+        "text": "Flash in place to assert dominance",
+        "type": "troll"
+      },
+      {
+        "text": "Trashtalk in all chat to tilt the enemy",
+        "type": "troll"
+      },
+      {
+        "text": "AFK if first death",
+        "type": "troll"
+      },
+      {
+        "text": "Play with your feet, it's more fun",
+        "type": "troll"
+      },
+      {
+        "text": "The problem is never you",
+        "type": "troll"
+      },
+      {
+        "text": "Turn off sound, play on instinct",
+        "type": "troll"
+      },
+      {
+        "text": "Boost your DPI to 10000",
+        "type": "troll"
+      },
+      {
+        "text": "Breathe deeply before playing",
+        "type": "mental"
+      },
+      {
+        "text": "Stay hydrated",
+        "type": "mental"
+      },
+      {
+        "text": "Turn off your PC, go outside",
+        "type": "realistic"
+      }
+    ]
+  },
+  "keyboard": {
+    "title": "⌨️ Keyboard Health",
+    "footer": "Complete diagnostic performed",
+    "states": [
+      {
+        "status": "Keyboard intact",
+        "desc": "No damage detected"
+      },
+      {
+        "status": "Sticky keys",
+        "desc": "1 key stuck (probably soda)"
+      },
+      {
+        "status": "3 keys missing",
+        "desc": "W, A, S or D have left the chat"
+      },
+      {
+        "status": "Cracked spacebar",
+        "desc": "Jumping too hard"
+      },
+      {
+        "status": "Keyboard on fire",
+        "desc": "It's heating up seriously"
+      },
+      {
+        "status": "Keyboard destroyed (RIP)",
+        "desc": "Critical punch confirmed"
+      }
+    ]
+  },
+  "monitor": {
+    "title": "🖥️ Monitor Status",
+    "footer": "Visual inspection completed",
+    "states": [
+      {
+        "status": "Clean monitor",
+        "desc": "Like new, no smudges"
+      },
+      {
+        "status": "Fingerprints",
+        "desc": "Someone touched the screen"
+      },
+      {
+        "status": "Light scratch",
+        "desc": "Top right corner impacted"
+      },
+      {
+        "status": "Cracked screen",
+        "desc": "Spider web impact in the middle"
+      },
+      {
+        "status": "Smashed monitor",
+        "desc": "Rage quit with a blunt object"
+      },
+      {
+        "status": "Monitor KO",
+        "desc": "Critical punch detected"
+      }
+    ]
+  },
+  "hug": {
+    "description": "Sends a hug GIF to a user",
+    "usage": "!hug @user [secret]",
+    "mention_error": "❌ **Error**: You must mention a user!\n**Example**: `!hug @user` or `!hug @user secret`",
+    "self_error": "❌ You can't hug yourself! 🤗",
+    "giphy_error": "❌ Unable to fetch a GIF at the moment.",
+    "secret_desc": "🤗 **Someone** sent you a secret hug!",
+    "secret_footer": "💌 Secret message",
+    "confirm_desc": "✅ Your secret hug has been sent to **{user}**!",
+    "confirm_footer": "Preview of the sent GIF",
+    "dm_error": "❌ Unable to send a private message to {user}.",
+    "public_desc": "🤗 <@{author}> gives a hug to <@${target}>!"
+  },
+  "kiss": {
+    "description": "Sends a kiss GIF to a user",
+    "usage": "!kiss @user [secret]",
+    "mention_error": "❌ **Error**: You must mention a user!",
+    "self_error": "❌ You can't kiss yourself! (Well, it's complicated...)",
+    "secret_desc": "💋 **Someone** sent you a secret kiss!",
+    "confirm_desc": "✅ Your secret kiss has been sent to **{user}**!",
+    "public_desc": "💋 <@{author}> gives a kiss to <@${target}>!"
+  },
+  "slap": {
+    "description": "Slaps a user",
+    "usage": "!slap @user [secret]",
+    "mention_error": "❌ **Error**: You must mention a user!",
+    "self_error": "❌ Why do you want to slap yourself? 🤨",
+    "secret_desc": "💥 **Someone** sent you a secret slap! Ouch!",
+    "confirm_desc": "✅ Your secret slap has been sent to **{user}**!",
+    "public_desc": "💥 <@{author}> {msg} <@${target}>!",
+    "fun_messages": [
+      "slapped",
+      "poked",
+      "smashed",
+      "corrected",
+      "hit"
+    ]
+  },
+  "who": {
+    "description": "Choisit une personne aléatoire connectée dans le salon vocal",
+    "usage": "!who",
+    "title": "🎯 Sélection Aléatoire",
+    "desc_pattern": "**{count}** joueurs dans le vocal...\n\n✨ **{user}** a été choisi!",
+    "forced_msg": "\n\n*(Le destin a frappé... ou peut-être la config 🤡)*",
+    "footer_pattern": "Selected from {count} player(s)"
+  },
+  "osef": {
+    "description": "Sends a 'don't care' GIF to a user",
+    "usage": "!osef @user [secret]",
+    "secret_desc": "🤷 **Someone** says they royalement don't care!",
+    "confirm_desc": "✅ Your secret 'osef' message has been sent to **{user}**!",
+    "public_desc": "🤷 <@{author}> tells <@{target}>: **I don't care!**"
+  },
+  "rage": {
+    "description": "Calculates your current rage level",
+    "usage": "!rage [@user]",
+    "title": "😤 Rage Level",
+    "footer": "Take a deep breath...",
+    "states": [
+      "zen as a monk",
+      "calm and composed",
+      "starting to huff",
+      "boiling inside",
+      "keyboard in danger",
+      "destruction mode activated"
+    ]
+  },
+  "spam": {
+    "description": "Spams a player with mentions then deletes everything",
+    "usage": "!spam @user [duration_in_seconds]",
+    "error_min_duration": "❌ **Error**: Minimum duration is 1 second!",
+    "confirm_title": "⚠️ Spam in progress!",
+    "confirm_desc": "🎯 **Target**: {target}\n👤 **Started by**: {author}\n⏱️ **Duration**: {duration} seconds\n💬 **Channel spam**: Every 2s\n📩 **DM GIFs**: Every 10s\n🗑️ **Cleanup**: Automatic after {duration}s",
+    "confirm_footer": "Warning, things are about to get heated! 🔥",
+    "dm_desc": "🔥 **SPAM ATTACK!** 🔥\nFrom: {author}",
+    "dm_footer": "You are being spammed! 😈",
+    "end_desc": "✅ Spam completed!\n🗑️ {count} messages deleted",
+    "end_footer": "Victime: {target} • By: {author}",
+    "texts": [
+      "{target} 👀",
+      "Hey {target}! 👋",
+      "{target} look! 👁️",
+      "Hi {target}! 🎉",
+      "{target} are you there? 🤔",
+      "{target}!!!",
+      "Ping {target} 🔔",
+      "{target} answer me! 📢",
+      "Yo {target}! 🎮",
+      "{target} wake up! ⏰"
+    ]
+  },
+  "wifi": {
+    "description": "Checks your connection quality",
+    "usage": "!wifi [@user]",
+    "title": "📶 Connection Quality",
+    "label_player": "**Player**",
+    "label_status": "**Status**",
+    "footer": "Speed test completed",
+    "states": [
+      {
+        "status": "Fiber Optic",
+        "desc": "Perfect connection"
+      },
+      {
+        "status": "Excellent",
+        "desc": "Ultra stable ping"
+      },
+      {
+        "status": "Playable",
+        "desc": "Some microlags"
+      },
+      {
+        "status": "Average",
+        "desc": "Starting to feel the delay"
+      },
+      {
+        "status": "Unplayable",
+        "desc": "Is your mom downloading stuff?"
+      },
+      {
+        "status": "Catastrophic",
+        "desc": "Internet Explorer vibes"
+      },
+      {
+        "status": "Infinite Ping",
+        "desc": "Rollback detected"
+      }
+    ]
+  },
+  "coin": {
+    "title": "🎲 Coin Flip",
+    "result_label": "**Result**: **{result}**!",
+    "heads": "Heads",
+    "tails": "Tails"
+  },
+  "dice": {
+    "title": "🎲 Dice Roll",
+    "result_label": "**Result**: **{result}**!"
+  },
+  "roll": {
+    "title": "🎲 Custom Dice Roll",
+    "result_label": "**Result**: **{result}**!"
+  },
+  "random": {
+    "title": "🎲 Random Choice",
+    "result_label": "**Result**: **{result}**!",
+    "min_options": "❌ **Error**: You must provide at least 2 options!",
+    "example": "**Example**: `!random pizza burger tacos`",
+    "with_spaces": "**With spaces**: `!random \"option 1\" \"option 2\"`",
+    "max_options": "❌ **Error**: Maximum 25 options allowed!",
+    "empty_options": "❌ **Error**: Options cannot be empty!",
+    "options_label": "**Options** ({count}):",
+    "choice_label": "✨ **I choose**"
+  },
+  "welcome": {
+    "description": "Manage the welcome system",
+    "test_description": "Test a welcome message",
+    "messages": [
+      "Oh no... {user} just arrived. Who left the door open? 🙄",
+      "Look, {user} found the server. Can someone tell them we're full? 😒",
+      "{user} just joined! Are we pretending to be happy or...? 🤔",
+      "Heads up everyone, {user} is here! Hide your quality memes! 😏",
+      "{user} joined the server. RIP our tranquility. ⚰️",
+      "Welcome {user}! Don't you have anything better to do with your life? 😂",
+      "{user} just connected. Can someone show them the exit? 🚪",
+      "Oh great, {user} is here. As if we needed more chaos... 🤦",
+      "{user} decided to join us. Good luck to us all! 💀",
+      "Knock knock, who's there? It's {user}. Unfortunately, we can't pretend we're not home... 😅"
+    ]
+  },
+  "commands": {
+    "antiraid": {
+      "desc": "Configure the server anti-raid system",
+      "usage": "!antiraid <on|off|config|status>"
+    },
+    "auto": {
+      "desc": "Send an automatic message every X seconds",
+      "usage": "!auto <time_in_seconds> <message> OR !auto stop"
+    },
+    "clear": {
+      "desc": "Delete a specified number of messages (max 100)",
+      "usage": "!clear <amount> [mention]"
+    },
+    "mute": {
+      "desc": "Mute a player in voice channel for a defined duration",
+      "usage": "!mute @user <duration_in_seconds>"
+    },
+    "override": {
+      "desc": "[KING ONLY] Force stop all curses, mutes and sanctions",
+      "usage": "!override <curse|mute|roulettemute|all> [@user|all]"
+    },
+    "showdeleted": {
+      "desc": "Show last deleted messages",
+      "usage": "!showdeleted [amount] [@user]"
+    },
+    "ticket-setup": {
+      "desc": "Send the initial message for the ticket system"
+    },
+    "welcome": {},
+    "brain": {
+      "desc": "Check if your brain is turned on",
+      "usage": "!brain [@user]"
+    },
+    "coach": {
+      "desc": "Get gaming coach advice",
+      "usage": "!coach"
+    },
+    "coin": {
+      "desc": "Flip a coin - Heads or Tails",
+      "usage": "!coin"
+    },
+    "curse": {
+      "desc": "Cast a curse on a player",
+      "usage": "!curse [@user] [duration] [TYPE] OR !curse hidden [@user] [duration] [TYPE] OR !curse types"
+    },
+    "dice": {
+      "desc": "Roll a 6-sided dice",
+      "usage": "!dice"
+    },
+    "hug": {
+      "desc": "Send a hug GIF to a user",
+      "usage": "!hug @user [secret]"
+    },
+    "keyboard": {
+      "desc": "Check the state of your keyboard",
+      "usage": "!keyboard [@user]"
+    },
+    "kiss": {
+      "desc": "Send a kiss GIF to a user",
+      "usage": "!kiss @user [secret]"
+    },
+    "monitor": {
+      "desc": "Check the state of your monitor",
+      "usage": "!monitor [@user]"
+    },
+    "osef": {
+      "desc": "Send an \"I don't care\" GIF to a user",
+      "usage": "!osef @user [secret]"
+    },
+    "rage": {
+      "desc": "Calculate your current rage level",
+      "usage": "!rage [@user]"
+    },
+    "random": {
+      "desc": "Pick a random option among those provided",
+      "usage": "!random <option1> <option2> ..."
+    },
+    "roll": {
+      "desc": "Roll a random number between 1 and 100",
+      "usage": "!roll"
+    },
+    "roulette": {
+      "desc": "Select a random player in voice channel and disconnect them",
+      "usage": "!roulette"
+    },
+    "roulettehard": {
+      "desc": "Select a random player in voice channel and kick them for 5 minutes",
+      "usage": "!roulettehard"
+    },
+    "roulettemute": {
+      "desc": "Select a random player in voice channel and mute them",
+      "usage": "!roulettemute [duration]"
+    },
+    "slap": {
+      "desc": "Send a slap GIF to a user (joke)",
+      "usage": "!slap @user [secret]"
+    },
+    "spam": {
+      "desc": "Spam a player with mentions then delete everything",
+      "usage": "!spam @user [duration]"
+    },
+    "who": {
+      "desc": "Pick a random person connected in voice channel",
+      "usage": "!who"
+    },
+    "wifi": {
+      "desc": "Check the quality of your connection",
+      "usage": "!wifi [@user]"
+    },
+    "battleship": {
+      "desc": "Start a game of Advanced Battleship (8x8)",
+      "usage": "!battleship [@user]"
+    },
+    "blackjack": {
+      "desc": "Start a game of Blackjack (Solo or Multi against dealer)",
+      "usage": "!blackjack [@users]"
+    },
+    "p4": {
+      "desc": "Start a game of Connect 4 (Solo or Multi)",
+      "usage": "!p4 [@user]"
+    },
+    "hangman": {
+      "desc": "Start a flash Hangman game",
+      "usage": "!hangman"
+    },
+    "memory": {
+      "desc": "Start a Memory Game (4x4)",
+      "usage": "!memory"
+    },
+    "minesweeper": {
+      "desc": "Start a flash Minesweeper game (5x5)",
+      "usage": "!minesweeper [mines]"
+    },
+    "reaction": {
+      "desc": "Start a multiplayer reaction test (entire server)",
+      "usage": "!reaction"
+    },
+    "morpion": {
+      "desc": "Start a game of Tic-Tac-Toe",
+      "usage": "!morpion [@user]"
+    },
+    "help": {
+      "desc": "Shows all available commands with a selection menu",
+      "usage": "!help"
+    },
+    "ping": {
+      "desc": "Shows bot latency",
+      "usage": "!ping"
+    },
+    "version": {
+      "desc": "Shows current bot version and updates",
+      "usage": "!version [version]"
+    }
+  }
+}

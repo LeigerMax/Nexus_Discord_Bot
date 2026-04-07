@@ -26,17 +26,17 @@ module.exports = {
   name: 'mute',
   description: 'Mute un joueur dans le vocal pendant une durée définie (mute forcé)',
   mutedMembers,
-  usage: '!mute @utilisateur <durée_en_minutes>',
+  usage: '!mute @utilisateur <durée_en_secondes>',
   
-  async execute(message, args) {
+  async execute(message, args, context) {
+    const { t } = context;
     try {
       // Vérifie qu'un utilisateur est mentionné
       const mentionedUser = message.mentions.members.first();
       
       if (!mentionedUser) {
         return message.reply({
-          content: '❌ **Erreur**: Tu dois mentionner un utilisateur!\n' +
-                   '**Exemple**: `!mute @utilisateur 5`'
+          content: t('mute.no_mention')
         });
       }
 
@@ -45,37 +45,31 @@ module.exports = {
       
       if (!duration || Number.isNaN(duration) || duration < 1) {
         return message.reply({
-          content: '❌ **Erreur**: Tu dois spécifier une durée valide (en minutes)!\n' +
-                   '**Exemple**: `!mute @utilisateur 5`'
+          content: t('mute.no_duration')
         });
-      }
-
-      if (duration > 60) {
-        return message.reply('❌ La durée maximale est de 60 minutes!');
       }
 
       // Vérifie que l'utilisateur est dans un salon vocal
       if (!mentionedUser.voice.channel) {
-        return message.reply(`❌ ${mentionedUser.user.username} n'est pas dans un salon vocal!`);
+        return message.reply(t('mute.not_in_voice', { user: mentionedUser.user.username }));
       }
 
       // Vérifie si le membre est déjà muté par cette commande
       if (mutedMembers.has(mentionedUser.id)) {
         const muteInfo = mutedMembers.get(mentionedUser.id);
-        const timeRemaining = Math.ceil((muteInfo.endTime - Date.now()) / 60000);
+        const timeRemaining = Math.ceil((muteInfo.endTime - Date.now()) / 1000);
         return message.reply(
-          `❌ ${mentionedUser.user.username} est déjà sous mute forcé!\n` +
-          `⏱️ **Temps restant**: ${timeRemaining} minute(s)\n` +
-          `💡 Attends que le mute actuel se termine.`
+          t('mute.already_muted', { user: mentionedUser.user.username }) + '\n' +
+          t('mute.already_muted_desc', { time: timeRemaining })
         );
       }
 
       // Crée un embed pour annoncer le mute
       const embed = new EmbedBuilder()
         .setColor(0xFF6600)
-        .setTitle('🔇 Mute Forcé')
-        .setDescription(`🎯 **${mentionedUser.user.username}** va être muté!\n⏱️ **Durée**: ${duration} minute(s)`)
-        .setFooter({ text: `Demandé par ${message.author.username}` })
+        .setTitle(t('mute.pre_embed_title'))
+        .setDescription(t('mute.pre_embed_desc', { user: mentionedUser.user.username, duration: duration }))
+        .setFooter({ text: t('mute.embed_footer_requested', { user: message.author.username }) })
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
@@ -85,9 +79,9 @@ module.exports = {
 
       // Mute le membre
       try {
-        await mentionedUser.voice.setMute(true, `Mute forcé par ${message.author.username} - ${duration} min`);
+        await mentionedUser.voice.setMute(true, t('mute.audit_reason', { user: message.author.username, duration }));
         
-        const endTime = Date.now() + (duration * 60000);
+        const endTime = Date.now() + (duration * 1000);
         
         // Système de surveillance pour remuter automatiquement
         const checkInterval = setInterval(async () => {
@@ -102,23 +96,23 @@ module.exports = {
 
             // Si le temps est écoulé
             if (Date.now() >= endTime) {
-              await currentMember.voice.setMute(false, 'Fin du mute forcé');
+              await currentMember.voice.setMute(false, t('mute.unmuted_footer'));
               clearInterval(checkInterval);
               mutedMembers.delete(mentionedUser.id);
               
               const unmutedEmbed = new EmbedBuilder()
                 .setColor(0x00FF00)
-                .setDescription(`🔊 **${mentionedUser.user.username}** peut à nouveau parler!`)
-                .setFooter({ text: 'Mute terminé' });
+                .setDescription(t('mute.unmuted_desc', { user: mentionedUser.user.username }))
+                .setFooter({ text: t('mute.unmuted_footer') });
               
               await message.channel.send({ embeds: [unmutedEmbed] });
               return;
             }
 
-            // Si le membre a enlevé son mute, on le remute
+            // Si le membre a enlevé son mute, on le remuter
             if (!currentMember.voice.serverMute) {
               console.log(`Remute de ${mentionedUser.user.username}`);
-              await currentMember.voice.setMute(true, 'Tentative de démute détectée - Mute forcé');
+              await currentMember.voice.setMute(true, t('mute.remut_desc', { user: mentionedUser.user.username }));
               
               // GIFs de moquerie
               const mockingGifs = [
@@ -132,23 +126,14 @@ module.exports = {
                 'https://media.giphy.com/media/3oz8xLd9DJq2l2VFtu/giphy.gif'
               ];
               
-              const mockingMessages = [
-                'Nice try! 😈',
-                'Tu pensais vraiment t\'échapper? 😂',
-                'Retente ta chance! 🤡',
-                'Impossible mon ami! 🙈',
-                'Tu rêves! 😏',
-                'Pas aujourd\'hui! 🚫',
-                'Trop facile! 😎',
-                'T\'as cru? 💀'
-              ];
+              const mockingMessages = t('mute.mocking_messages');
               
               const randomGif = mockingGifs[Math.floor(Math.random() * mockingGifs.length)];
               const randomMessage = mockingMessages[Math.floor(Math.random() * mockingMessages.length)];
               
               const remutedEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setDescription(`🚫 **${mentionedUser.user.username}** a essayé de se démute!`)
+                .setDescription(t('mute.remut_desc', { user: mentionedUser.user.username }))
                 .setImage(randomGif)
                 .setFooter({ text: randomMessage });
               
@@ -170,27 +155,28 @@ module.exports = {
 
         const successEmbed = new EmbedBuilder()
           .setColor(0xFF0000)
-          .setTitle('🔇 Mute Forcé Activé')
+          .setTitle(t('mute.confirm_title'))
           .setDescription(
-            `✅ **${mentionedUser.user.username}** a été muté!\n\n` +
-            `⏱️ **Durée**: ${duration} minute(s)\n` +
-            `🔓 **Fin**: <t:${Math.floor(endTime / 1000)}:R>\n` +
-            `⚠️ **Mute forcé**: Impossible de se démute\n` +
-            `👤 **Par**: ${message.author.username}`
+            t('mute.confirm_desc', { 
+              user: mentionedUser.user.username, 
+              duration: duration, 
+              endTime: Math.floor(endTime / 1000), 
+              by: message.author.username 
+            })
           )
-          .setFooter({ text: 'Toute tentative de démute sera sanctionnée' })
+          .setFooter({ text: t('mute.confirm_footer') })
           .setTimestamp();
         
         await message.channel.send({ embeds: [successEmbed] });
 
       } catch (err) {
         console.error('Erreur lors du mute:', err);
-        return message.reply('❌ Impossible de mute le membre. Vérifiez les permissions du bot.');
+        return message.reply(t('mute.permission_error'));
       }
 
     } catch (error) {
       console.error('Erreur dans la commande mute:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   }
 };

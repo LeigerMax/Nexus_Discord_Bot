@@ -13,7 +13,8 @@ module.exports = {
   description: 'Calcule ton niveau de rage actuel',
   usage: '!rage [@utilisateur]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     try {
       // Vérifie si un utilisateur est mentionné, sinon utilise l'auteur
       const targetUser = message.mentions.users.first() || message.author;
@@ -24,29 +25,31 @@ module.exports = {
       // Détermine l'état et l'emoji selon le niveau
       let status, emoji, color;
       
+      const states = t('rage.states');
+
       if (rageLevel <= 20) {
         emoji = '😌';
-        status = 'zen comme un moine';
+        status = states[0];
         color = 0x00FF00;
       } else if (rageLevel <= 40) {
         emoji = '😐';
-        status = 'calme et posé';
+        status = states[1];
         color = 0x99FF99;
       } else if (rageLevel <= 60) {
         emoji = '😠';
-        status = 'commence à souffler';
+        status = states[2];
         color = 0xFFFF00;
       } else if (rageLevel <= 80) {
         emoji = '😡';
-        status = 'bouillonne de l\'intérieur';
+        status = states[3];
         color = 0xFF9900;
       } else if (rageLevel <= 95) {
         emoji = '🤬';
-        status = 'clavier en danger';
+        status = states[4];
         color = 0xFF0000;
       } else {
         emoji = '💢';
-        status = 'mode destruction activé';
+        status = states[5];
         color = 0x8B0000;
       }
 
@@ -58,16 +61,16 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setColor(color)
-        .setTitle('😤 Niveau de Rage')
+        .setTitle(t('rage.title'))
         .setDescription(`${emoji} **${targetUser.username}**\n\n${bar} **${rageLevel}%**\n\n*${status}*`)
-        .setFooter({ text: 'Respire un bon coup...' })
+        .setFooter({ text: t('rage.footer') })
         .setTimestamp();
 
       await message.reply({ embeds: [embed] });
 
     } catch (error) {
       console.error('Erreur dans la commande rage:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   },
 };

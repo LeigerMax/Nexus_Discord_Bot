@@ -1,19 +1,70 @@
 {
-  "current": "0.2.0",
-  "releaseDate": "25 Mars 2026",
+  "current": "1.0.0",
+  "releaseDate": "7 Avril 2026",
   "changelog": {
+    "v1.0.0": {
+      "date": "7 Avril 2026",
+      "features": [
+        "Lancement du Nexus Dashboard : interface professionnelle avec barre latérale et navigation par onglets",
+        "Système YouTube V2 : support multi-chaînes et résolution automatique des handles",
+        "Monitoring Avancé : support de la multi-surveillance des membres avec choix du salon d'annonce",
+        "Sécurité : Intégration complète de l'Anti-Raid configurable via le web",
+        "Curses : Désactivation dynamique des types de malédictions par serveur",
+        "Standardisation Temporelle : Passage de toutes les commandes en secondes et suppression des limites arbitraires",
+        "Configuration Web : Réglage des durées par défaut du Mute Roulette et des Curses via le dashboard",
+        "Stockage Robuste : Migration vers un système de fichiers JSON (Attachments) pour lever la limite de 2000 caractères",
+        "Optimisation Stats : Utilisation de l'API REST pour les compteurs de membres afin d'éviter les bannissements Gateway",
+        "Logs de Modération Audit : Système de traçage complet (suppressions, modifications, vocal) sans stockage local",
+        "Stats de Serveur en Live : Affichage dynamique du nombre de membres et des connectés dans les salons vocaux",
+        "Salons Vocaux Temporaires : Création et suppression automatique de salons vocaux privés (Auto-Channels)",
+        "Système de Tickets : Support interactif via boutons avec catégories dédiées et gestion des rôles staff",
+        "Landing Page : Nouvelle page de connexion premium avec authentification Discord OAuth2",
+        "Changelog Dynamique : L'interface se met à jour automatiquement via la configuration JSON",
+        "UI/UX Polish : Icônes SVG, descriptions d'aide, boutons de suppression et alignements optimisés"
+      ],
+      "features_en": [
+        "Nexus Dashboard launch: professional interface with sidebar and tabbed navigation",
+        "YouTube System V2: multi-channel support and automatic handle resolution",
+        "Advanced Monitoring: multi-member surveillance with announcement channel selection",
+        "Security: Full Anti-Raid integration configurable via web",
+        "Curses: Dynamic per-server deactivation of curse types",
+        "Temporal Standardization: All commands moved to seconds, removing arbitrary limits",
+        "Web Configuration: Default Mute Roulette and Curse durations adjustable via dashboard",
+        "Robust Storage: Migration to JSON file system (Attachments) to lift 2,000 character limit",
+        "Stats Optimization: REST API usage for member counters to prevent Gateway bans",
+        "Audit Moderation Logs: Complete tracking system (deletes, edits, voice) without local storage",
+        "Live Server Stats: Dynamic member and online counts in voice channels",
+        "Temporary Voice Channels: Automatic creation and deletion of private voice rooms (Auto-Channels)",
+        "Ticket System: Interactive button-based support with dedicated categories and staff roles",
+        "Landing Page: New premium login page with Discord OAuth2 authentication",
+        "Dynamic Changelog: Interface automatically updates via JSON configuration",
+        "UI/UX Polish: SVG icons, help descriptions, delete buttons, and optimized alignments"
+      ],
+      "fixes": [
+        "Support des salons d'annonce (News/Announcements) dans les sélecteurs",
+        "Correction de l'alignement des cases à cocher de rotation",
+        "Déplacement du bouton Enregistrer pour une meilleure ergonomie",
+        "Bouton déconnexion agrandi et épuré"
+      ],
+      "fixes_en": [
+        "Announcement channel support in selectors",
+        "Rotation checkbox alignment fix",
+        "Save button relocated for better ergonomics",
+        "Enlarged and refined logout button"
+      ]
+    },
     "v0.2.0": {
       "date": "25 Mars 2026",
       "features": [
-        "🎮 Ajout de 8 mini-jeux : Démineur, Pendu, Morpion, Puissance 4, Blackjack, Memory, Test de Réaction, Bataille Navale",
-        "🚢 Bataille Navale avancée : grille 8x8, placement privé, double affichage, ciblage par boutons",
-        "👹 Ajout de 8 nouveaux curses : Scribe, Polite, Auto-Destruct, Binary, Baby Talk, Dramatic, Robot, Medieval",
-        "✍️ Épreuve du Scribe : anti-copie, test de vitesse avec pénalité",
-        "📂 Nouvelle catégorie Jeux dans le menu !help",
-        "🏗️ Réorganisation des commandes (dossier games/)"
+        "Ajout de 8 mini-jeux : Démineur, Pendu, Morpion, Puissance 4, Blackjack, Memory, Test de Réaction, Bataille Navale",
+        "Bataille Navale avancée : grille 8x8, placement privé, double affichage, ciblage par boutons",
+        "Ajout de 8 nouveaux curses : Scribe, Polite, Auto-Destruct, Binary, Baby Talk, Dramatic, Robot, Medieval",
+        "Épreuve du Scribe : anti-copie, test de vitesse avec pénalité",
+        "Nouvelle catégorie Jeux dans le menu !help",
+        "Réorganisation des commandes (dossier games/)"
       ],
       "fixes": [
-        "🗑️ Suppression du module musique (incompatibilité YouTube)",
+        "Suppression du module musique (incompatibilité YouTube)",
         "Correction des erreurs Discord API 50035 (labels/emojis)",
         "Protection allowedMentions sur les commandes sensibles",
         "Meilleure gestion des collectors et interactions éphémères"
@@ -56,30 +107,20 @@
       "features": [
         "Ajout de réponse automatique feur quand quelqu'un écrit 'quoi'",
         "Ajout du Autocomplete ",
-        "Ajout de la commande `!play` pour lire des musiques depuis YouTube",
-        "Ajout de la commande `!queue` pour afficher la file d'attente des musiques",
-        "Ajout de la commande `!skip` pour passer à la musique suivante",
-        "Ajout de la commande `!stop` pour arrêter la lecture et vider la file d'attente",
+        "Ajout de la commande !play pour lire des musiques depuis YouTube",
+        "Ajout de la commande !queue pour afficher la file d'attente des musiques",
+        "Ajout de la commande !skip pour passer à la musique suivante",
+        "Ajout de la commande !stop pour arrêter la lecture et vider la file d'attente",
         "Ajout de tests afin d'atteindre le +60% de couverture de code",
-        "Ajout de la commande `!clear <nombre> [@utilisateur]` pour nettoyer les messages dans un canal",
-        "Ajout de la commande `!showdeleted [nombre] [@utilisateur]` pour afficher les messages supprimés récemment",
-        "Ajout d'un Système anti-raid, avec la commande `!antiraid <on|off|config|status>`",
-        "Ajout de la commande `!override <type> <cible>` pour annuler toutes les sanctions: curse, mutes, etc. (KING Only)",
+        "Ajout de la commande !clear <nombre> [@utilisateur] pour nettoyer les messages dans un canal",
+        "Ajout de la commande !showdeleted [nombre] [@utilisateur] pour afficher les messages supprimés récemment",
+        "Ajout d'un Système anti-raid, avec la commande !antiraid <on|off|config|status>",
+        "Ajout de la commande !override <type> <cible> pour annuler toutes les sanctions: curse, mutes, etc. (KING Only)",
         "Ajout de la configuration du status Discord personnalisé pour le bot",
         "Ajout de la configuration 'À propos' du bot avec description et fonctionnalités"
       ],
       "fixes": [
         "Correction du spam 'Le mute sera réappliqué s'il revient!'"
-      ]
-    },
-    "v0.1.0": {
-      "date": "11 Janvier 2026",
-      "features": [
-        "Ajout de la commande !version"
-      ],
-      "fixes": [
-        "Correction du warning 'ready' → 'clientReady'",
-        "Correction du mute lors du départ d'un vocal"
       ]
     }
   },

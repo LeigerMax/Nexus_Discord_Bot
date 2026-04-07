@@ -5,8 +5,8 @@
  * @listens messageCreate
  * @requires discord.js
  */
-
 const { EmbedBuilder } = require('discord.js');
+const i18n = require('../services/i18nService');
 
 // Map pour stocker les relations: destinataire -> expéditeur original
 // Format: Map<userId du destinataire, userId de l'expéditeur>
@@ -50,18 +50,19 @@ module.exports = {
         
         if (!originalSender) return;
         
+        const locale = i18n.defaultLocale; // Default locale for DMs
         const replyEmbed = new EmbedBuilder()
           .setColor(0x5865F2)
-          .setTitle('💬 Réponse à ton message secret')
-          .setDescription(`**${message.author.username}** a répondu:\n\n${message.content}`)
+          .setTitle(i18n.t('events.dm_reply.reply_title', locale))
+          .setDescription(i18n.t('events.dm_reply.reply_desc', locale, { user: message.author.username, msg: message.content }))
           .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
-          .setFooter({ text: `De: ${message.author.tag}` })
+          .setFooter({ text: i18n.t('events.dm_reply.from', locale, { tag: message.author.tag }) })
           .setTimestamp();
         
         // Ajoute les pièces jointes s'il y en a
         if (message.attachments.size > 0) {
           const attachments = Array.from(message.attachments.values()).map(att => att.url).join('\n');
-          replyEmbed.addFields({ name: '📎 Pièces jointes', value: attachments });
+          replyEmbed.addFields({ name: i18n.t('events.dm_reply.attachments', locale), value: attachments });
         }
         
         // Envoie au destinataire original
@@ -70,8 +71,8 @@ module.exports = {
         // Confirme la réception
         const confirmEmbed = new EmbedBuilder()
           .setColor(0x00FF00)
-          .setDescription('✅ Ton message a été transféré!')
-          .setFooter({ text: 'Système de réponse automatique' });
+          .setDescription(i18n.t('events.dm_reply.confirm', locale))
+          .setFooter({ text: i18n.t('events.dm_reply.system_footer', locale) });
         
         await message.reply({ embeds: [confirmEmbed] });
         

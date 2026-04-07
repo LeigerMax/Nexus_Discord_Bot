@@ -12,12 +12,13 @@ module.exports = {
   description: 'Lance une partie de Puissance 4 (Solo ou Multi)',
   usage: '!p4 [@joueur]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     const opponent = message.mentions.users.first();
     const isSolo = !opponent || opponent.id === message.client.user.id || opponent.bot;
     
     if (!isSolo && opponent.id === message.author.id) {
-      return message.reply('❌ Tu ne peux pas jouer contre toi-même !');
+      return message.reply(t('connect4.self_error'));
     }
 
     const players = {
@@ -100,15 +101,15 @@ module.exports = {
 
     const createEmbed = () => {
       let status = '';
-      if (winner === 'draw') status = '🤝 **Match nul !** La grille est pleine.';
-      else if (winner) status = `🏆 **${players[winner].username} a gagné !**`;
-      else status = `👉 C'est au tour de **${players[currentPlayer].username}** (${currentPlayer === 1 ? '🔴' : '🟡'})`;
+      if (winner === 'draw') status = t('connect4.draw_desc');
+      else if (winner) status = t('connect4.win_desc', { user: players[winner].username });
+      else status = t('connect4.turn_desc', { user: players[currentPlayer].username, color: currentPlayer === 1 ? '🔴' : '🟡' });
 
       return new EmbedBuilder()
         .setColor(winner ? (winner === 1 ? 0xE74C30 : (winner === 2 ? 0xF1C40F : 0x95A5A6)) : 0x3498DB)
-        .setTitle('🔴 PUISSANCE 4 🟡')
+        .setTitle(t('connect4.title'))
         .setDescription(`${status}\n\n${renderBoard()}\n\n**🔴 :** ${players[1]}\n**🟡 :** ${players[2]}`)
-        .setFooter({ text: isSolo ? 'Mode Solo vs Bot' : 'Mode Multi' })
+        .setFooter({ text: isSolo ? t('connect4.footer_solo') : t('connect4.footer_multi') })
         .setTimestamp();
     };
 
@@ -180,8 +181,9 @@ module.exports = {
     };
 
     collector.on('collect', async (interaction) => {
-      if (interaction.user.id !== players[currentPlayer].id) {
-        return interaction.reply({ content: `❌ Ce n'est pas ton tour ! C'est à <@${players[currentPlayer].id}> de jouer.`, ephemeral: true });
+      const pId = players[currentPlayer].id;
+      if (interaction.user.id !== pId) {
+        return interaction.reply({ content: t('connect4.not_your_turn', { user: pId }), ephemeral: true });
       }
 
       const col = parseInt(interaction.customId.split('_')[1]);

@@ -1,0 +1,1463 @@
+{
+  "dashboard": {
+    "title": "Nexus Dashboard",
+    "nav": {
+      "servers": "Serveurs",
+      "configuration": "Configuration",
+      "general": "Général",
+      "players": "Joueurs",
+      "welcome": "Bienvenue",
+      "security": "Sécurité",
+      "monitoring": "Surveillance",
+      "curses": "Curses",
+      "automates": "Automates",
+      "audit": "Audit",
+      "youtube": "YouTube",
+      "stats": "Stats Live",
+      "vocal_temp": "Vocal Temp",
+      "tickets": "Tickets",
+      "info": "Informations",
+      "changelog": "Changelog",
+      "github": "GitHub Project",
+      "logout": "Déconnexion",
+      "ui_language": "Langue de l'interface"
+    },
+    "hub": {
+      "welcome": "Bienvenue,",
+      "select_server": "Sélectionnez un serveur à configurer.",
+      "back": "← Retour au Hub"
+    },
+    "tabs": {
+      "general": {
+        "title": "Paramètres Généraux",
+        "description": "Réglages de base du bot pour ce serveur. Modifiez le préfixe de commande ou activez les réponses automatiques amusantes (Auto-Feur).",
+        "prefix": "⚡ Préfixe",
+        "auto_feur": "🎭 Auto-Feur",
+        "mute_duration": "⏱️ Durée Mute Roulette (s)",
+        "bot_language": "🌐 Langue du Bot",
+        "random_taunts": "😈 Moqueries Aléatoires",
+        "random_taunts_chance": "🎲 Probabilité (% par message)"
+      },
+      "players": {
+        "title": "Gestion des Joueurs",
+        "description": "Définissez les privilèges spéciaux du serveur. Les Kings sont immunisés contre les effets du bot, tandis que les Loosers sont les cibles prioritaires des malédictions et tirages.",
+        "kings": "👑 Kings",
+        "loosers": "🤡 Loosers",
+        "weekly_rotation": "Rotation hebdomadaire automatique du Looser"
+      },
+      "welcome": {
+        "title": "Système de Bienvenue",
+        "description": "Souhaitez la bienvenue aux nouveaux membres automatiquement dans le salon de votre choix avec un message personnalisé.",
+        "enable": "Activer le système",
+        "channel": "Salon d'accueil",
+        "message": "Message"
+      },
+      "security": {
+        "title": "Sécurité & Anti-Raid",
+        "description": "Protégez votre serveur contre les invasions massives. Le système détecte les arrivées trop rapides et prend des mesures automatiques (Kick/Ban).",
+        "enable": "Activer l'Anti-Raid",
+        "limit": "Limite",
+        "window": "Fénêtre (s)",
+        "action": "Action Punitive",
+        "kick": "Expulser (Kick)",
+        "ban": "Bannir (Ban)"
+      },
+      "monitoring": {
+        "title": "Surveillance de Présence",
+        "description": "Soyez averti dès que certains membres se connectent ou se déconnectent. Idéal pour ne pas rater l'arrivée d'un ami ou d'un Looser surveillé.",
+        "enable": "Activer la surveillance",
+        "members": "Membres à surveiller",
+        "channel": "Salon d'alerte"
+      },
+      "curses": {
+        "title": "Gestion des Malédictions",
+        "description": "Le bot dispose de nombreuses malédictions amusantes (Mute vocal, Spam, Inversion de texte, etc.). Désactivez ici celles que vous jugez trop intrusives.",
+        "default_duration": "⏱️ Durée par défaut des malédictions (en secondes)",
+        "types": {
+          "RANDOM_RESPONSES": "🎲 Réponses Aléatoires",
+          "IGNORED": "👻 Ignoré",
+          "BLOCKED": "🚫 Bloqué",
+          "WORST_LUCK": "💀 Malchance",
+          "PUBLIC_SHAME": "📢 Honte Publique",
+          "GARBLED": "🔀 Messages Déformés",
+          "VOICE_MUTE": "🔇 Mute Vocal",
+          "SPAM": "💥 Spam de Mentions",
+          "REVERSED": "🔄 Commandes Inversées",
+          "SLOW_MODE": "🐌 Mode Lent",
+          "MESSAGE_SCRAMBLER": "🔀 Mélangeur de Mots",
+          "MESSAGE_OPPOSER": "🔄 Opposé",
+          "CLOWN_MODE": "🤡 Mode Clown",
+          "UWU_MODE": "🤡 Mode UwU",
+          "YODA_MODE": "🗣️ Mode Yoda",
+          "CAPS_LOCK": "📢 CAPS LOCK",
+          "PIRATE_MODE": "🏴‍☠️ Mode Pirate",
+          "VOWEL_REMOVER": "🎯 Suppression Voyelles"
+        }
+      },
+      "automates": {
+        "title": "Messages Automatisés",
+        "description": "Gérez les messages répétitifs activés via la commande `!auto`. Vous pouvez les arrêter ici sans avoir besoin de commandes Discord.",
+        "empty": "Aucun automate actif.",
+        "stop_btn": "Stop"
+      },
+      "youtube": {
+        "title": "Notifications YouTube Multi-Chaines 📺",
+        "description": "Alertez vos membres dès qu'une de vos chaînes préférées publie une nouvelle vidéo. Saisissez un `@handle` ou un lien YouTube pour ajouter une chaîne.",
+        "enable": "Activer le module",
+        "add_label": "Ajouter une chaîne",
+        "add_placeholder": "@mcp ou URL",
+        "add_btn": "Ajouter",
+        "resolving": "🔍 Résolution de la chaîne...",
+        "added": "✅ Chaîne ajoutée (ID: {id})",
+        "not_found": "❌ Canal introuvable.",
+        "empty": "Aucun flux configuré.",
+        "chan_id_label": "ID Chaîne",
+        "discord_chan_label": "Salon Discord",
+        "msg_label": "Message",
+        "msg_placeholder": "🔴 Nouvelle vidéo !",
+        "delete_btn": "Supprimer"
+      },
+      "audit": {
+        "title": "Logs de Modération Audit (v1.0.0)",
+        "description": "Tracez automatiquement toutes les actions cruciales du serveur. Les modifications, suppressions et mouvements vocaux seront envoyés dans un salon dédié en temps réel.",
+        "enable": "Activer le système d'Audit",
+        "channel": "Salon des Logs d'Audit",
+        "privacy_warning": "⚠️ **Confidentialité** : Les messages supprimés ou modifiés peuvent être sensibles. Assurez-vous que seul le staff a accès à ce salon."
+      },
+      "stats": {
+        "title": "Stats de Serveur en Live",
+        "description": "Affichez les statistiques de votre serveur en temps réel dans les noms de salons vocaux (verrouillés).",
+        "enable": "Activer les Stats Live",
+        "total_label": "Salon : Total Membres",
+        "online_label": "Salon : En Ligne",
+        "note": "Note: Le bot renommera ces salons automatiquement toutes les 10 minutes."
+      },
+      "vocal_temp": {
+        "title": "Salons Vocaux Temporaires",
+        "description": "Créez automatiquement des salons privés quand un membre rejoint un salon \"Hub\".",
+        "enable": "Activer les Salons Temp",
+        "hub_label": "Salon Hub (Vocal)",
+        "category_label": "Catégorie cible"
+      },
+      "tickets": {
+        "title": "Système de Tickets",
+        "description": "Permettez aux membres d'ouvrir des tickets de support privés avec l'équipe.",
+        "enable": "Activer les Tickets",
+        "category_label": "Catégorie des Tickets",
+        "staff_roles_label": "Rôles Staff (Accès aux tickets)",
+        "note": "Utilisez `!ticket-setup` sur Discord pour envoyer le message initial."
+      }
+    },
+    "actions": {
+      "save": "Enregistrer les modifications 💾",
+      "none_option": "Aucun",
+      "success_toast": "✅ Action réussie !"
+    },
+    "updates": {
+      "banner_title": "🚀 Nouvelle version disponible !",
+      "view_btn": "Voir les nouveautés",
+      "desc": "La version {version} ({name}) est disponible."
+    },
+    "curses_types": {
+      "RANDOM_RESPONSES": "🎲 Réponses Aléatoires",
+      "IGNORED": "👻 Ignoré",
+      "BLOCKED": "🚫 Bloqué",
+      "WORST_LUCK": "💀 Malchance",
+      "PUBLIC_SHAME": "📢 Honte Publique",
+      "GARBLED": "🔀 Messages Déformés",
+      "VOICE_MUTE": "🔇 Mute Vocal",
+      "SPAM": "💥 Spam de Mentions",
+      "REVERSED": "🔄 Commandes Inversées",
+      "SLOW_MODE": "🐌 Mode Lent",
+      "MESSAGE_SCRAMBLER": "🔀 Mélangeur de Mots",
+      "MESSAGE_OPPOSER": "🔄 Opposé",
+      "CLOWN_MODE": "🤡 Mode Clown",
+      "UWU_MODE": "😺 Mode UwU",
+      "YODA_MODE": "🗣️ Mode Yoda",
+      "CAPS_LOCK": "📢 CAPS LOCK",
+      "PIRATE_MODE": "🏴‍☠️ Mode Pirate",
+      "VOWEL_REMOVER": "🎯 Suppression Voyelles"
+    },
+    "index": {
+      "title": "Nexus Dashboard",
+      "desc": "Prenez le contrôle de votre serveur Discord avec une interface moderne, fluide et intuitive. Configurez vos modules en quelques clics.",
+      "login_btn": "Se connecter avec Discord"
+    }
+  },
+  "common": {
+    "error": "❌ Une erreur est survenue lors du traitement de ta commande.",
+    "error_find_command": "Commande `{command}` introuvable.",
+    "help_suggestion": "Utilise `{prefix}help` pour voir toutes les commandes.",
+    "no_permission": "❌ Tu n'as pas la permission d'utiliser cette commande.",
+    "requested_by": "Demandé par {user}",
+    "loading": "Chargement...",
+    "success": "Opération réussie !"
+  },
+  "middlewares": {
+    "curse": {
+      "blocked": "🚫 Tu es maudit! Aucune commande ne fonctionne pour toi...",
+      "challenge": "🧩 **Épreuve du Scribe en cours !**\nTu ne peux pas utiliser de commandes tant que tu n'as pas recopié la phrase suivante :\n`{phrase}`",
+      "garbled": "🔀 Ta commande a été déformée: `{msg}`",
+      "slow": "🐌 Traitement en cours... *lentement*",
+      "reversed_target": "🔄 **Commande inversée!** {user}, tu voulais cibler quelqu'un mais c'est toi la cible maintenant! 😈",
+      "reversed_failed": "🔄 L'inversion de la commande a échoué... Tu as de la chance cette fois!",
+      "reversed_general": "🔄 Commande inversée! Je fais l'opposé de `{cmd}`... ou rien du tout! 😈",
+      "worst_luck": "💀 {user} est maudit! Le résultat était forcément le pire possible... 😈"
+    }
+  },
+  "events": {
+    "cursed_messages": {
+      "cheat_detected": "🚫 **TENTATIVE DE TRICHE DÉTECTÉE** {user}!\nLe copier-coller est strictement interdit. Tu reçois une pénalité de **5 minutes** supplémentaires ! ⏲️\n*(Attends au moins 4 secondes avant de valider)*",
+      "success_title": "✨ Épreuve du Scribe Réussie !",
+      "success_desc": "🎉 **{user}** a recopié la phrase avec succès !\n\n*La malédiction est levée, tu peux à nouveau parler.*",
+      "fail": "❌ **Échec du Scribe**, {user}!\nÉcris exactement :\n`{phrase}`",
+      "polite_mode": "🤵 **{user}**, un peu de tenue ! Un majordome doit commencer par \"Monsieur,\" et finir par \"Je vous prie d'agréer mes salutations distinguées\".",
+      "emoji_only": "😜 **{user}**, ici on ne parle qu'en emojis ! 😜",
+      "said": "**{user}** a dit : {msg}"
+    },
+    "dm_reply": {
+      "reply_title": "💬 Réponse à ton message secret",
+      "reply_desc": "**{user}** a répondu:\n\n{msg}",
+      "from": "De: {tag}",
+      "attachments": "📎 Pièces jointes",
+      "confirm": "✅ Ton message a été transféré!",
+      "system_footer": "Système de réponse automatique"
+    },
+    "random_taunts": {
+      "insults": [
+        "Tiens, le looser de service {user} a encore parlé...",
+        "{user}, on t'a pas sonné le looser.",
+        "Alerte au gogol ! {user} vient de faire une apparition.",
+        "Encore {user}... Même avec une carte Uno Reverse tu pourrais pas sauver ta dignité.",
+        "Oh la la, {user} vient de polluer le chat..."
+      ],
+      "praises": [
+        "Gloire au King {user} ! 👑",
+        "Place au grand {user}, notre seigneur ! 🙌",
+        "Silence, notre King {user} a parlé. Tout le monde écoute !",
+        "Que ton nom soit béni, {user}. Le serveur n'est rien sans toi.",
+        "👑 Le ROI {user} honore le salon de sa présence !"
+      ]
+    }
+  },
+  "system": {
+    "presence": {
+      "error_client": "❌ Client ou user non disponible pour définir la présence",
+      "success": "✅ Présence du bot définie: {status} - {activity}",
+      "error_set": "❌ Erreur lors de la définition de la présence du bot:"
+    }
+  },
+  "ping": {
+    "calculating": "🏓 Calcul de la latence...",
+    "title": "🏓 Pong!",
+    "bot_latency": "⏱️ Latence du Bot",
+    "api_latency": "📡 Latence API",
+    "quality": "📊 Qualité",
+    "qualities": {
+      "excellent": "Excellente",
+      "good": "Bonne",
+      "average": "Moyenne",
+      "bad": "Mauvaise"
+    }
+  },
+  "help": {
+    "title": "📚 Menu d'Aide",
+    "welcome_title": "Bienvenue dans le menu d'aide!",
+    "welcome_desc": "Utilisez le menu déroulant ci-dessous pour naviguer entre les catégories.",
+    "total_label": "**Total**: {count} commande(s)",
+    "prefix_label": "**Préfixe**: `{prefix}`",
+    "select_placeholder": "Sélectionnez une catégorie...",
+    "select_home_label": "🏠 Accueil",
+    "select_home_desc": "Retour au menu principal",
+    "category_title": "{emoji} {name}",
+    "category_desc": "Liste des commandes de la catégorie **{name}** :",
+    "category_footer": "{count} commande(s) • Demandé par {user}",
+    "no_description": "Pas de description",
+    "categories": {
+      "general": "Général",
+      "admin": "Administration",
+      "fun": "Divertissement",
+      "games": "Jeux",
+      "music": "Musique",
+      "moderation": "Modération",
+      "utility": "Utilitaire"
+    },
+    "footer": "Utilise !help <commande> pour plus de détails."
+  },
+  "antiraid": {
+    "description": "Configure le système anti-raid du serveur",
+    "usage": "!antiraid <on|off|config|status>",
+    "no_admin": "❌ Tu dois être administrateur pour configurer l'anti-raid!",
+    "invalid_subcommand": "❌ Sous-commande invalide!",
+    "available_commands": "**Commandes disponibles**:",
+    "help_on": "Active le système anti-raid",
+    "help_off": "Désactive le système anti-raid",
+    "help_config": "Configure une option",
+    "help_status": "Affiche le statut actuel",
+    "config_options": "**Options de config**:",
+    "enabled_title": "🛡️ Anti-Raid Activé",
+    "enabled_desc": "Le système anti-raid est maintenant actif!",
+    "disabled": "✅ Système anti-raid désactivé!",
+    "config_specify_option": "❌ Spécifie une option à configurer! Utilise `!antiraid` pour voir la liste.",
+    "config_joinlimit_error": "❌ La limite de joins doit être entre 1 et 20!",
+    "config_joinlimit_success": "✅ Limite de joins définie à **{limit}** utilisateurs.",
+    "config_joinwindow_error": "❌ La fenêtre de temps doit être d'au moins 1 seconde!",
+    "config_joinwindow_success": "✅ Fenêtre de temps définie à **{window}** secondes.",
+    "config_action_error": "❌ L'action doit être `kick` ou `ban`!",
+    "config_action_success": "✅ Action anti-raid définie à **{action}**.",
+    "config_autolock_error": "❌ AutoLock doit être `true` ou `false`!",
+    "config_autolock_success": "✅ Verrouillage automatique {status}.",
+    "config_invalid_option": "❌ Option invalide! Utilise `!antiraid` pour voir les options disponibles.",
+    "status_title": "🛡️ Statut Anti-Raid",
+    "status_active": "✅ **Système actif**",
+    "status_locked": " 🔒 **SERVEUR VERROUILLÉ**",
+    "status_disabled": "❌ **Système désactivé**",
+    "config_label": "⚙️ Configuration",
+    "config_text_limit": "**Limite**: {limit} joins en {window}s",
+    "config_text_action": "**Action**: {action}",
+    "config_text_autolock": "**Auto-Lock**: {status}",
+    "raid_detected_title": "🚨 RAID DÉTECTÉ!",
+    "raid_detected_desc": "**{count}** membres ont rejoint en {window} secondes!",
+    "raid_action_performed": "✅ Action effectuée: **{action}**",
+    "raid_autolock_notif": "🔒 Serveur verrouillé automatiquement",
+    "raid_unlock_instruction": "Utilise `!antiraid off` puis `!antiraid on` pour déverrouiller."
+  },
+  "auto": {
+    "description": "Envoie un message automatiquement tous les X secondes",
+    "usage": "!auto <temps_en_secondes> <message> OU !auto stop",
+    "no_admin": "❌ Tu dois être administrateur pour utiliser cette commande!",
+    "stopped": "⏹️ Message automatique arrêté!",
+    "no_active": "❌ Aucun message automatique actif dans ce salon!",
+    "incorrect_usage": "❌ **Erreur**: Utilisation incorrecte!",
+    "example": "**Exemple**: `!auto 60 Ceci est un rappel automatique`",
+    "stop_hint": "**Arrêter**: `!auto stop`",
+    "time_error": "❌ Le temps doit être un nombre supérieur ou égal à 1 seconde!",
+    "empty_error": "❌ Le message ne peut pas être vide!",
+    "too_long_error": "❌ Le message est trop long (max 500 caractères)!",
+    "embed_footer": "Message automatique • Tous les {seconds}s",
+    "enabled_title": "✅ Message automatique activé!",
+    "enabled_desc": "**Message**: {message}\n**Intervalle**: Tous les {seconds} secondes",
+    "stop_instr": "Utilisez !auto stop pour arrêter"
+  },
+  "clear": {
+    "description": "Supprime un nombre de messages spécifié (max 100)",
+    "usage": "!clear <nombre> [mention]",
+    "no_permission": "❌ Tu n'as pas la permission de gérer les messages!",
+    "invalid_amount": "❌ **Erreur**: Tu dois spécifier un nombre valide de messages à supprimer!",
+    "example": "**Exemple**: `!clear 10` ou `!clear 50 @utilisateur`",
+    "limit_error": "❌ Je ne peux supprimer que 100 messages à la fois maximum!",
+    "success_generic": "✅ {count} message(s) supprimé(s)!",
+    "success_user": "✅ {count} message(s) supprimé(s) de {user}!",
+    "old_messages_error": "❌ Je ne peux supprimer que les messages de moins de 14 jours!"
+  },
+  "mute": {
+    "description": "Mute un joueur dans le vocal pendant une durée définie (mute forcé)",
+    "usage": "!mute @utilisateur <durée_en_secondes>",
+    "no_mention": "❌ **Erreur**: Tu dois mentionner un utilisateur!\n**Exemple**: `!mute @utilisateur 30`",
+    "no_duration": "❌ **Erreur**: Tu dois spécifier une durée valide (en secondes)!\n**Exemple**: `!mute @utilisateur 30`",
+    "not_in_voice": "❌ {user} n'est pas dans un salon vocal!",
+    "already_muted": "❌ {user} est déjà sous mute forcé!",
+    "already_muted_desc": "⏱️ **Temps restant**: {time} seconde(s)\n💡 Attends que le mute actuel se termine.",
+    "pre_embed_title": "🔇 Mute Forcé",
+    "pre_embed_desc": "🎯 **{user}** va être muté!\n⏱️ **Durée**: {duration} seconde(s)",
+    "embed_footer_requested": "Demandé par {user}",
+    "unmuted_desc": "🔊 **{user}** peut à nouveau parler!",
+    "unmuted_footer": "Mute terminé",
+    "remut_desc": "🚫 **{user}** a essayé de se démute!",
+    "confirm_title": "🔇 Mute Forcé Activé",
+    "confirm_desc": "✅ **{user}** a été muté!\n\n⏱️ **Durée**: {duration} seconde(s)\n🔓 **Fin**: <t:{endTime}:R>\n⚠️ **Mute forcé**: Impossible de se démute\n👤 **Par**: {by}",
+    "confirm_footer": "Toute tentative de démute sera sanctionnée",
+    "audit_reason": "Mute forcé par {user} - {duration}s",
+    "permission_error": "❌ Impossible de mute le membre. Vérifiez les permissions du bot.",
+    "mocking_messages": [
+      "Nice try! 😈",
+      "Tu pensais vraiment t'échapper? 😂",
+      "Retente ta chance! 🤡",
+      "Impossible mon ami! 🙈",
+      "Tu rêves! 😏",
+      "Pas aujourd'hui! 🚫",
+      "Trop facile! 😎",
+      "T'as cru? 💀"
+    ]
+  },
+  "override": {
+    "description": "[KING ONLY] Force l'arrêt de toutes les malédictions, mutes et sanctions",
+    "usage": "!override <curse|mute|roulettemute|all> [@utilisateur|all]",
+    "no_king": "👑 Cette commande est réservée au ROI du serveur!",
+    "help_title": "⚔️ **COMMANDE KING - OVERRIDE**",
+    "help_syntax": "**Syntaxe**: `!override <type> <cible>`",
+    "help_types": "**Types disponibles**:",
+    "help_type_curse": "`curse` - Lève les malédictions",
+    "help_type_mute": "`mute` - Démute forcé",
+    "help_type_roulette": "`roulettemute` - Arrête roulettemute",
+    "help_type_all": "`all` - Tout arrêter",
+    "help_targets": "**Cibles**:",
+    "help_target_user": "`@utilisateur` - Pour un utilisateur spécifique",
+    "help_target_all": "`all` - Pour tous les utilisateurs",
+    "help_examples": "**Exemples**:",
+    "help_example1": "`!override curse @User` - Lève la malédiction de User",
+    "help_example2": "`!override all all` - Arrête tout pour tout le monde",
+    "access_error": "❌ Erreur: Impossible d'accéder aux commandes.",
+    "result_title": "👑 OVERRIDE KING ACTIVÉ",
+    "result_target": "**Cible**: {target}",
+    "result_target_all": "Tous les utilisateurs",
+    "result_action": "**Action**: {action}",
+    "result_label_curses": "🔮 Malédictions levées: **{count}**",
+    "result_label_mutes": "🔇 Mutes arrêtés: **{count}**",
+    "result_label_roulette": "🎲 Roulette mutes arrêtés: **{count}**",
+    "result_success": "✅ Toutes les sanctions ont été annulées par ordre royal!",
+    "result_footer": "Exécuté par {user}",
+    "audit_reason": "Override par le KING"
+  },
+  "showdeleted": {
+    "description": "Affiche les derniers messages supprimés",
+    "usage": "!showdeleted [nombre] [@utilisateur]",
+    "no_permission": "❌ Tu n'as pas la permission de voir les messages supprimés!",
+    "unavailable": "❌ Le système de tracking des messages supprimés n'est pas disponible!",
+    "none_found": "✨ Aucun message supprimé récemment!",
+    "embed_title": "🗑️ Messages Supprimés",
+    "embed_desc": "Affichage des **{count}** derniers messages supprimés{user}",
+    "field_author": "**Auteur**",
+    "field_channel": "**Canal**",
+    "field_time": "**Il y a**",
+    "field_content": "**Contenu**",
+    "field_no_text": "[Aucun texte]",
+    "field_attachments": "piece(s) jointe(s)",
+    "field_name": "Message {index}",
+    "footer_more": "{count} message(s) supplémentaire(s) non affichés"
+  },
+  "tickets": {
+    "description": "Envoie le message initial pour le système de tickets",
+    "default_title": "Support Nexus Dashboard",
+    "default_desc": "Besoin d'aide ? Cliquez sur le bouton ci-dessous pour ouvrir un ticket privé avec l'équipe.",
+    "embed_footer": "Système de Support Interactif",
+    "btn_label": "Ouvrir un ticket",
+    "setup_error": "❌ Erreur lors du setup de ticket pour {user}.",
+    "create_success": "✅ Votre ticket a été créé: {channel}",
+    "already_exists": "❌ Vous avez déjà un ticket ouvert: {channel}",
+    "channel_name": "ticket-{user}",
+    "topic": "Ticket de {user} | Créé le {date}",
+    "welcome_title": "🎫 Support Ticket",
+    "welcome_desc": "Bonjour {user}, un membre de l'équipe sera bientôt disponible pour vous aider.\n\nPrécisez votre demande ci-dessous pour accélérer le traitement.",
+    "close_btn": "Fermer le ticket",
+    "closing": "🔒 Fermeture du ticket...",
+    "closed_by": "Ticket fermé par {user}"
+  },
+  "curse": {
+    "description": "Lance une malédiction sur un joueur",
+    "usage": "!curse [@joueur] [durée] [TYPE] OU !curse hidden [@joueur] [durée] [TYPE] OU !curse types",
+    "invalid_type": "❌ **Type de malédiction invalide!**",
+    "help_syntax": "**Syntaxe**: `!curse hidden @joueur durée TYPE`",
+    "available_types": "**Types disponibles**:",
+    "types_title": "👹 Types de Malédictions",
+    "hidden_syntax": "**Syntaxe cachée**: `!curse hidden @joueur durée TYPE`",
+    "hidden_example": "**Exemple**: `!curse hidden @joueur 30 UWU_MODE`",
+    "hidden_footer": "Message envoyé en privé pour rester caché",
+    "no_admin_clear": "❌ Seul un administrateur peut lever les malédictions!",
+    "cleared_all": "✨ Toutes les malédictions ont été levées par **{user}**!",
+    "list_empty": "✨ Aucun joueur n'est actuellement maudit!",
+    "list_title": "👹 Liste des Joueurs Maudits",
+    "list_desc": "Voici tous les malheureux actuellement sous malédiction :",
+    "list_field_curse": "**Malédiction**",
+    "list_field_time": "**Temps restant**",
+    "no_voice_random": "❌ Aucun joueur disponible dans les salons vocaux!",
+    "mention_error": "❌ **Erreur**: Tu dois mentionner un joueur ou utiliser `random`!",
+    "examples": "**Exemples**:\n`!curse @joueur 60` - Maudit un joueur pour 60 secondes\n`!curse random 30` - Maudit un joueur aléatoire en vocal pour 30 secondes\n`!curse list` - Affiche les joueurs maudits\n`!curse clear` - Lève toutes les malédictions (admin)",
+    "duration_error": "❌ La durée doit être un nombre supérieur à 0!",
+    "bot_error": "❌ Tu ne peux pas maudire un bot!",
+    "already_cursed": "❌ {user} est déjà maudit!",
+    "already_cursed_time": "⏱️ **Temps restant**: {time} seconde(s)",
+    "disabled_error": "❌ Le type de malédiction `{type}` est désactivé sur ce serveur !",
+    "all_disabled_error": "❌ Toutes les malédictions sont désactivées sur ce serveur !",
+    "summon_title": "👹 INVOCATION DE MALÉDICTION",
+    "summon_desc": "🌙 *Les forces obscures se rassemblent...*",
+    "summon_target": "**Cible**: {user}",
+    "summon_duration": "⏳ **Durée**: {duration} seconde(s)",
+    "summon_incanting": "*La malédiction est en cours d'incantation...*",
+    "summon_footer": "Invoqué par {user}",
+    "confirm_title": "{emoji} MALÉDICTION LANCÉE!",
+    "confirm_desc": "💀 **{user}** a été maudit!",
+    "confirm_curse": "**Malédiction**: {name}",
+    "confirm_effect": "**Effet**: {desc}",
+    "confirm_duration": "**Durée**: {duration} seconde(s)",
+    "confirm_end": "**Fin**: <t:{time}:R>",
+    "confirm_closing": "*Que les ténèbres l'accompagnent...*",
+    "confirm_footer": "Maudit par {user} | Bonne chance!",
+    "hidden_confirm_title": "{emoji} Malédiction Cachée Activée",
+    "hidden_confirm_desc": "✅ **{user}** a été maudit secrètement!",
+    "hidden_confirm_closing": "*La cible ne sait pas qui l'a maudit... 😈*",
+    "hidden_confirm_footer": "Message privé - Personne d'autre ne voit ça",
+    "lifted_title": "✨ Malédiction Levée",
+    "lifted_desc": "🎉 **{user}** est libéré de la malédiction!\n\nLa {name} a pris fin.",
+    "lifted_label_by": "👤 **Maudit par**",
+    "lifted_footer": "Tu es libre!",
+    "audit_reason": "Malédiction - {duration}s",
+    "audit_force_mute": "Force Mute Malédiction",
+    "challenge_label": "📝 **TA PHRASE À COPIER (INTERDIT DE COPIER-COLLER !)**",
+    "challenge_instr": "*Le chat et le vocal sont bloqués tant que tu ne l'as pas posté !*",
+    "shame_messages": [
+      "😂 {user} est toujours maudit !",
+      "👻 Quelqu'un a vu {user} ? Il est maudit lol",
+      "🤡 {user} pense qu'il peut échapper à la malédiction",
+      "💀 {user} est un joueur maudit, évitez-le!"
+    ],
+    "spam_messages": [
+      "{user} PING! 🏓",
+      "Hey {user}, tu es toujours maudit 👻",
+      "{user} *bip bip* Rappel de malédiction 📢",
+      "{user} Ne m'oublie pas ! 😈"
+    ],
+    "random_responses": [
+      "Désolé, je suis occupé à compter les pixels.",
+      "La réponse est 42... ou peut-être pas.",
+      "🦆 Coin coin !",
+      "Erreur 404 : Cerveau non trouvé.",
+      "As-tu essayé de l'éteindre et de le rallumer ?",
+      "Je suis une théière. ☕",
+      "BEEP BOOP Je suis un robot 🤖",
+      "Demande à Miguel... ah non attends.",
+      "La réponse est dans ton cœur... ou pas.",
+      "*Le bot est parti chercher des cigarettes*",
+      "Je refuse de répondre sans mon avocat.",
+      "Tape /help pour... ah non ça marche pas pour toi."
+    ],
+    "challenge_phrases": [
+      "Le chasseur sachant chasser chasse sans son chien dans les bois sombres.",
+      "Si six scies scient six cyprès, six cent six scies scient six cent six cyprès.",
+      "Un chasseur sachant chasser doit savoir chasser sans son chien de chasse.",
+      "Trois tortues trottaient sur un trottoir très étroit.",
+      "Les chaussettes de l'archiduchesse sont-elles sèches, archi-sèches ?",
+      "Un pâtissier qui pâtissait chez un tapissier qui tapissait, dit au tapissier qui tapissait : pourquoi tapisses-tu chez un pâtissier qui pâtisse ?",
+      "Fruits frais, fruits frits, fruits cuits, fruits crus.",
+      "La robe rouge de Rosalie est ravissante.",
+      "Douze douches douces.",
+      "Pruneau cuit, pruneau cru, pruneau cuit, pruneau cru."
+    ],
+    "types": {
+      "RANDOM_RESPONSES": {
+        "name": "Réponses Aléatoires",
+        "desc": "Toutes les commandes renvoient des réponses absurdes"
+      },
+      "IGNORED": {
+        "name": "Ignoré",
+        "desc": "Le bot ignore complètement tous les messages"
+      },
+      "BLOCKED": {
+        "name": "Bloqué",
+        "desc": "Aucune commande ne fonctionne"
+      },
+      "WORST_LUCK": {
+        "name": "Malchance",
+        "desc": "Tous les résultats aléatoires sont les pires possibles"
+      },
+      "PUBLIC_SHAME": {
+        "name": "Honte Publique",
+        "desc": "Le bot rappelle constamment que tu es maudit"
+      },
+      "GARBLED": {
+        "name": "Messages Déformés",
+        "desc": "Tous les messages sont inversés ou mélangés"
+      },
+      "VOICE_MUTE": {
+        "name": "Mute Vocal",
+        "desc": "Muté dans tous les salons vocaux"
+      },
+      "SPAM": {
+        "name": "Spam de Mentions",
+        "desc": "Le bot te mentionne aléatoirement"
+      },
+      "REVERSED": {
+        "name": "Commandes Inversées",
+        "desc": "Les commandes se retournent contre toi"
+      },
+      "SLOW_MODE": {
+        "name": "Mode Lent",
+        "desc": "Le bot répond avec 10 secondes de délai"
+      },
+      "MESSAGE_SCRAMBLER": {
+        "name": "Mélangeur de Mots",
+        "desc": "Tes messages sont réécrits avec les mots mélangés"
+      },
+      "MESSAGE_OPPOSER": {
+        "name": "Opposé",
+        "desc": "Tes messages disent l'inverse de ce que tu veux"
+      },
+      "CLOWN_MODE": {
+        "name": "Mode Clown",
+        "desc": "Des emojis clown envahissent tous tes messages"
+      },
+      "UWU_MODE": {
+        "name": "Mode UwU",
+        "desc": "Tes messages sont transformés en langage UwU"
+      },
+      "YODA_MODE": {
+        "name": "Mode Yoda",
+        "desc": "Comme Yoda parler tu dois"
+      },
+      "CAPS_LOCK": {
+        "name": "CAPS LOCK",
+        "desc": "TOUS TES MESSAGES SONT EN MAJUSCULES!!!!"
+      },
+      "PIRATE_MODE": {
+        "name": "Mode Pirate",
+        "desc": "Comme un pirate parler tu vas, moussaillon!"
+      },
+      "VOWEL_REMOVER": {
+        "name": "Suppression Voyelles",
+        "desc": "Ttes ls vyls dsprsssnt d ts mssg"
+      },
+      "REVERSE_TEXT": {
+        "name": "Texte Inversé",
+        "desc": "sruobne à l'tircé tse txet noT"
+      },
+      "RANDOM_EMOJI": {
+        "name": "Emojis Aléatoires",
+        "desc": "Des mots sont remplacés par des emojis bizarres"
+      },
+      "CHALLENGE": {
+        "name": "Épreuve du Scribe",
+        "desc": "Recopie la phrase complexe pour lever le sort"
+      },
+      "POLITE_MODE": {
+        "name": "Mode Majordome",
+        "desc": "Oblige à être poli"
+      },
+      "SHY_MODE": {
+        "name": "Mode Timide",
+        "desc": "Messages limités à 10 caractères et tronqués"
+      },
+      "EMOJI_ONLY": {
+        "name": "Mode Émoticône",
+        "desc": "Uniquement des emojis autorisés"
+      },
+      "QUESTIONER": {
+        "name": "Point d'Interrogation",
+        "desc": "Tous les messages doivent finir par un point d'interrogation"
+      },
+      "SELF_DESTRUCT": {
+        "name": "Auto-Destruction",
+        "desc": "Les messages se suppriment après 5 secondes"
+      },
+      "PARROT": {
+        "name": "Le Perroquet",
+        "desc": "Le bot répète tes messages de façon moqueuse"
+      }
+    }
+  },
+  "roulette": {
+    "description": "Sélectionne un joueur aléatoire du vocal et le déconnecte",
+    "usage": "!roulette",
+    "no_voice": "❌ **Erreur**: Tu dois être dans un salon vocal pour utiliser cette commande!",
+    "no_players": "❌ Aucun joueur dans le salon vocal!",
+    "alone": "❌ Tu es seul dans le vocal! Il faut au moins 2 joueurs.",
+    "embed_title": "🎲 Roulette Russe",
+    "embed_desc": "**{count}** joueurs dans le vocal...\n\n🔫 **{user}** a été sélectionné!\n👤 **Lancé par**: {by}",
+    "embed_footer": "Déconnexion en cours...",
+    "success_desc": "✅ **{user}** a été déconnecté du vocal!",
+    "permission_error": "❌ Impossible de déconnecter le membre. Vérifiez les permissions du bot.",
+    "audit_reason": "Roulette russe"
+  },
+  "roulettehard": {
+    "description": "Roulette Russe avec BAN de 1 minute",
+    "usage": "!roulettehard",
+    "embed_title": "💀 Roulette Russe HARDCORE",
+    "embed_desc": "**{count}** survivants potentiels...\n\n🚀 **{user}** va être banni pour 1 minute!\n👤 **Bourreau**: {by}",
+    "embed_footer": "Bannissement en cours...",
+    "success_desc": "👋 **{user}** a été banni du serveur pour 1 minute!",
+    "unban_audit": "Fin du ban Roulette Hard",
+    "ban_audit": "Perdu à la Roulette Hardcore - 1 minute",
+    "permission_error": "❌ Impossible de bannir le membre. Vérifiez les permissions du bot."
+  },
+  "roulettemute": {
+    "description": "Mute forcée de 30s à 5min pour le perdant",
+    "usage": "!roulettemute [temps_en_sec]",
+    "embed_title": "🔇 Roulette Mute",
+    "embed_desc": "**{count}** cobayes...\n\n🔇 **{user}** va être muté pendant **{duration}** secondes!\n👤 **Initié par**: {by}",
+    "embed_footer": "Mute en cours...",
+    "success_desc": "✅ **{user}** a été réduit au silence pour {duration} secondes!",
+    "unmuted_desc": "🔊 **{user}** peut à nouveau parler!",
+    "unmuted_footer": "Fin de la punition",
+    "audit_reason": "Perdu à la Roulette Mute - {duration}s",
+    "remut_desc": "🚫 **{user}** a essayé de se démute pendant sa peine!",
+    "remut_footer": "Triche interdite!",
+    "mocking_messages": [
+      "Bien tenté! 😈",
+      "Tu pensais vraiment t'échapper? 😂",
+      "Retente ta chance! 🤡",
+      "Impossible mon ami! 🙈",
+      "Tu rêves! 😏",
+      "Pas aujourd'hui! 🚫",
+      "Trop facile! 😎",
+      "T'as cru? 💀"
+    ]
+  },
+  "version": {
+    "description": "Affiche la version actuelle du bot et les nouveautés",
+    "usage": "!version [version]",
+    "history_title": "📜 Historique - Version {version}",
+    "published_on": "Publiée le {date}",
+    "current_footer": "Version actuelle: {version}",
+    "features_title": "✨ Nouveautés",
+    "fixes_title": "🐛 Corrections",
+    "bot_title": "🤖 Nexus Bot v{version}",
+    "recent_versions": "📜 Versions récentes",
+    "history_hint": "*Utilise `!version {version}` pour voir les détails*",
+    "info_title": "🔗 Informations",
+    "developed_by": "Développé par **{developer}**",
+    "prefix_label": "Préfixe: `{prefix}`"
+  },
+  "battleship": {
+    "description": "Lance une partie de Bataille Navale avancée (8x8)",
+    "usage": "!battleship [@joueur]",
+    "self_error": "❌ Tu ne peux pas jouer contre toi-même !",
+    "not_playing": "❌ Tu ne joues pas.",
+    "already_ready": "✅ Déjà prêt.",
+    "invalid_placement": "❌ Emplacement invalide !",
+    "not_your_turn": "❌ Pas ton tour !",
+    "ships": {
+      "carrier": "Porte-avion",
+      "cruiser": "Croiseur",
+      "destroyer": "Destroyer",
+      "submarine": "Sous-marin"
+    },
+    "logs": {
+      "start": "⚓ Partie lancée !",
+      "miss": "💨 {user} → {coord} : À l'eau !",
+      "hit": "🔥 {user} TOUCHÉ !",
+      "sunk": "💥 {user} COULE le **{ship}** !",
+      "already": "Déjà tiré ici !"
+    },
+    "setup": {
+      "title": "🏗️ PLACEMENT : {user}",
+      "ship_label": "Bateau",
+      "all_placed": "Tous placés !",
+      "pos_label": "Position",
+      "orient_label": "Orientation",
+      "footer": "Ce message est privé.",
+      "placeholder_col": "Colonne (A-H)",
+      "placeholder_row": "Ligne (1-8)",
+      "placeholder_orient": "Orientation",
+      "orient_h": "→ Horizontal",
+      "orient_v": "↓ Vertical",
+      "btn_place": "📌 Placer",
+      "btn_ready": "✅ PRÊT !",
+      "btn_random": "🎲 Aléatoire",
+      "btn_start": "🏗️ Placer mes bateaux"
+    },
+    "battle": {
+      "title": "🚢 BATAILLE NAVALE",
+      "main_desc": "**{p1}** {s1} vs **{p2}** {s2}\n\nClique pour placer tes bateaux !",
+      "turn_label": "Tour de",
+      "my_grid": "🛡️ Ma Grille",
+      "op_grid": "🎯 Grille Adverse",
+      "choose_row": "👇 **Choisis une LIGNE :**",
+      "choose_col": "✅ Ligne **{row}** → 👇 **Colonne :**",
+      "btn_back": "⬅️ Retour",
+      "btn_view_self": "👁️ Ma Grille",
+      "win_title": "🏆 VICTOIRE !",
+      "win_desc": "**{user}** remporte la bataille !\n\n**Grille de {opponent} :**"
+    }
+  },
+  "blackjack": {
+    "description": "Lance une partie de Blackjack (Solo ou Multi contre le croupier)",
+    "usage": "!blackjack [@joueurs]",
+    "title": "🃏 BLACKJACK MULTI 🃏",
+    "dealer_label": "Croupier",
+    "player_turn_desc": "C'est au tour de **{user}** !",
+    "dealer_turn_desc": "Le croupier joue...",
+    "score_label": "Score",
+    "cards_label": "Cartes",
+    "status_bust": "💥 BUST",
+    "status_blackjack": "🃏 BLACKJACK",
+    "status_stand": "⏹️ STAND",
+    "status_turn": "👉 TURN",
+    "results_title": "RÉSULTATS :",
+    "res_lose_bust": "❌ Perdu (Bust)",
+    "res_blackjack_push": "🤝 Push (Double Blackjack)",
+    "res_blackjack_win": "💰 Blackjack !",
+    "res_win_dealer_bust": "✅ Gagné (Dealer Bust)",
+    "res_win": "✅ Gagné",
+    "res_lose": "❌ Perdu",
+    "res_push": "🤝 Push",
+    "btn_hit": "Tirer (Hit)",
+    "btn_stand": "Rester (Stand)",
+    "not_your_turn": "❌ Ce n'est pas ton tour ! C'est à <@{user}> de jouer."
+  },
+  "connect4": {
+    "description": "Lance une partie de Puissance 4 (Solo ou Multi)",
+    "usage": "!p4 [@joueur]",
+    "self_error": "❌ Tu ne peux pas jouer contre toi-même !",
+    "draw_desc": "🤝 **Match nul !** La grille est pleine.",
+    "win_desc": "🏆 **{user} a gagné !**",
+    "turn_desc": "👉 C'est au tour de **{user}** ({color})",
+    "title": "🔴 PUISSANCE 4 🟡",
+    "btn_full": "Colonne pleine",
+    "footer_solo": "Mode Solo vs Bot",
+    "footer_multi": "Mode Multi",
+    "not_your_turn": "❌ Ce n'est pas ton tour ! C'est à <@{user}> de jouer."
+  },
+  "hangman": {
+    "description": "Lance une partie de Pendu flash",
+    "usage": "!hangman [@joueurs]",
+    "players_label": "Joueurs",
+    "status_label": "Statut",
+    "status_ongoing": "En cours...",
+    "status_win": "🏆 VICTOIRE !",
+    "status_lost": "💀 PERDU ! Le mot était **{word}**",
+    "word_label": "Mot",
+    "attempts_label": "Lettres tentées",
+    "lives_label": "Vies restantes",
+    "none": "Aucune",
+    "footer": "Tape une lettre pour jouer !",
+    "timeout_msg": "⏰ Temps écoulé ! La partie est terminée.",
+    "timeout_status": "Fin du temps. Le mot était **{word}**",
+    "words": [
+      "DISCORD",
+      "BOT",
+      "PROGRAMMATION",
+      "JAVASCRIPT",
+      "NODEJS",
+      "DEVELOPPEUR",
+      "INTERFACE",
+      "COMMANDES",
+      "SERVEUR",
+      "MESSAGE",
+      "MYSTERE",
+      "AVENTURE",
+      "PIERRE",
+      "SOLEIL",
+      "MUSIQUE",
+      "GUITARE",
+      "ORDINATEUR",
+      "INTERNET",
+      "CLAVIER",
+      "SOURIS",
+      "ECRAN",
+      "ROBOT",
+      "ESPACE",
+      "PLANETE",
+      "ETOILE",
+      "GALAXIE",
+      "UNIVERS",
+      "COSMOS",
+      "VOYAGE",
+      "DESTINATION",
+      "VALISE",
+      "PASSEPORT",
+      "AVION",
+      "TRAIN",
+      "BATEAU",
+      "VOITURE",
+      "VELO",
+      "MARCHE",
+      "COURSE",
+      "SPORT",
+      "FOOTBALL",
+      "BASKETBALL",
+      "TENNIS",
+      "NATATION",
+      "ESCRIME",
+      "CUISINE",
+      "RECETTE",
+      "GATEAU",
+      "CHOCOLAT",
+      "VANILLE",
+      "FRUIT"
+    ]
+  },
+  "memory": {
+    "description": "Lance une partie de Jeu de Mémoire (4x4)",
+    "usage": "!memory",
+    "title": "🧠 JEU DE MÉMOIRE",
+    "status_initial": "Trouve toutes les paires !",
+    "status_win": "🏆 VICTOIRE ! Félicitations !",
+    "status_match": "✨ Match trouvé ! Continue !",
+    "status_no_match": "❌ Pas le même...",
+    "label_tries": "Tentatives",
+    "label_pairs": "Paires trouvées",
+    "footer": "Partie de {user}",
+    "only_player_error": "❌ Seul le joueur ayant lancé la partie peut jouer."
+  },
+  "minesweeper": {
+    "description": "Lance une partie de démineur flash (5x5)",
+    "usage": "!minesweeper [mines]",
+    "title": "💣 DÉMINEUR FLASH",
+    "desc_initial": "Trouve toutes les cases libres sans toucher les **{mines}** mines !",
+    "how_to_label": "**Comment jouer :**",
+    "how_to_step1": "- Cliquez sur un bouton **[ ? ]** pour révéler une case.",
+    "how_to_step2": "- 🟦 = Case vide (aucune mine autour).",
+    "how_to_step3": "- 1️⃣, 2️⃣... = Nombre de mines dans les 8 cases adjacentes.",
+    "how_to_step4": "- 💣 = MINE ! La partie s'arrête si vous en touchez une.",
+    "how_to_objective": "*Objectif : Révéler toutes les cases qui ne contiennent pas de mine.*",
+    "not_your_game": "❌ Ce n'est pas ta partie !",
+    "win_title": "🏆 VICTOIRE !",
+    "win_desc": "Félicitations ! Tu as déminé tout le terrain sans encombre !",
+    "lost_title": "💥 BOUM !",
+    "lost_desc": "Tu as touché une mine en [{r}, {c}] ! Dommage...",
+    "timeout_msg": "⏰ Temps écoulé pour cette partie !",
+    "footer": "Partie de {user}"
+  },
+  "reaction": {
+    "description": "Lance un test de réaction multijoueur (tout le serveur)",
+    "usage": "!reaction",
+    "title": "⚡ TEST DE RÉACTION",
+    "wait_status": "Préparez-vous... Le bouton va changer ! ⏳",
+    "wait_btn": "Attendez...",
+    "trigger_title": "🔥 CLIQUEZ !! 🔥",
+    "trigger_status": "C'EST MAINTENANT ! ⚡",
+    "trigger_btn": "CLIQUEZ ICI !",
+    "false_start_title": "❌ FAUX DÉPART !",
+    "false_start_desc": "**{user}** a cliqué trop tôt ! La partie est annulée.",
+    "false_start_btn": "Trop tôt !",
+    "win_title": "🏆 GAGNÉ !",
+    "win_desc": "**{user}** a été le plus rapide !\n\n**Temps de réaction :** `{time} ms` ⏱️",
+    "win_btn": "Terminé !",
+    "timeout_title": "⏰ TEMPS ÉCOULÉ",
+    "timeout_status": "Personne n'a cliqué à temps...",
+    "timeout_btn": "Expiré"
+  },
+  "tictactoe": {
+    "description": "Lance une partie de Morpion (Solo contre le bot ou Multi)",
+    "usage": "!morpion [@joueur]",
+    "title": "⭕ MORPION ❌",
+    "status_draw": "🤝 **Match nul !** Personne n'a gagné.",
+    "status_win": "🏆 **{user} ({symbol}) a gagné !**",
+    "status_turn": "👉 C'est au tour de **{user}** ({symbol})",
+    "footer_solo": "Mode Solo vs Bot",
+    "footer_multi": "Mode Multi",
+    "self_error": "❌ Tu ne peux pas jouer contre toi-même !",
+    "not_your_turn": "❌ Ce n'est pas ton tour ! C'est à <@{user}> de jouer."
+  },
+  "brain": {
+    "title": "🧠 État du Cerveau",
+    "footer": "Scan neuronal effectué",
+    "states": [
+      {
+        "status": "Brain: ON",
+        "desc": "Plays smart, pense avant d'agir"
+      },
+      {
+        "status": "Brain: OFF",
+        "desc": "Push solo, no brain comme Miguel"
+      },
+      {
+        "status": "Brain: LAG",
+        "desc": "Aucune info ne passe"
+      },
+      {
+        "status": "Brain: AFK",
+        "desc": "Mode auto-pilote activé"
+      },
+      {
+        "status": "Brain: OVERLOAD",
+        "desc": "200 IQ plays incoming"
+      },
+      {
+        "status": "Brain: SLOW",
+        "desc": "Prend son temps pour comprendre"
+      },
+      {
+        "status": "Brain: RANDOM",
+        "desc": "Décisions imprévisibles"
+      },
+      {
+        "status": "Brain: NEED COFFEE",
+        "desc": "Pas réveillé, fonctionne à 10%"
+      }
+    ]
+  },
+  "coach": {
+    "title": "🎓 Conseil du Coach",
+    "footer": "Pour {user} • Coach AI",
+    "category_label": "Catégorie",
+    "types": {
+      "serious": "Sérieux",
+      "troll": "Troll",
+      "mental": "Mental",
+      "realistic": "Réaliste"
+    },
+    "advices": [
+      {
+        "text": "Regarde la minimap toutes les 3 secondes",
+        "type": "serious"
+      },
+      {
+        "text": "Arrête de reload après chaque kill",
+        "type": "serious"
+      },
+      {
+        "text": "Joue safe quand t'es carry",
+        "type": "serious"
+      },
+      {
+        "text": "Communique avec ton équipe",
+        "type": "serious"
+      },
+      {
+        "text": "Prends des pauses toutes les heures",
+        "type": "serious"
+      },
+      {
+        "text": "Ajuste ta sensibilité souris",
+        "type": "serious"
+      },
+      {
+        "text": "Vise la tête, pas les pieds",
+        "type": "serious"
+      },
+      {
+        "text": "Utilise tes capacités au bon moment",
+        "type": "serious"
+      },
+      {
+        "text": "Farm avant de fight",
+        "type": "serious"
+      },
+      {
+        "text": "Check tes angles morts",
+        "type": "serious"
+      },
+      {
+        "text": "Blame le support",
+        "type": "troll"
+      },
+      {
+        "text": "Spam ping ton toplaner",
+        "type": "troll"
+      },
+      {
+        "text": "Push solo sans vision",
+        "type": "troll"
+      },
+      {
+        "text": "Achète que des skins, ça buff",
+        "type": "troll"
+      },
+      {
+        "text": "Flash sur place pour assert dominance",
+        "type": "troll"
+      },
+      {
+        "text": "Trashtalk en all chat pour tilt l'ennemi",
+        "type": "troll"
+      },
+      {
+        "text": "AFK si première mort",
+        "type": "troll"
+      },
+      {
+        "text": "Joue avec les pieds, c'est plus fun",
+        "type": "troll"
+      },
+      {
+        "text": "Le problème c'est jamais toi",
+        "type": "troll"
+      },
+      {
+        "text": "Désactive le son, joue à l'instinct",
+        "type": "troll"
+      },
+      {
+        "text": "Monte ton DPI à 10000",
+        "type": "troll"
+      },
+      {
+        "text": "Respire profondément avant de jouer",
+        "type": "mental"
+      },
+      {
+        "text": "Hydrate-toi",
+        "type": "mental"
+      },
+      {
+        "text": "Éteins ton PC, sors dehors",
+        "type": "realistic"
+      }
+    ]
+  },
+  "keyboard": {
+    "title": "⌨️ État du Clavier",
+    "footer": "Diagnostic complet effectué",
+    "states": [
+      {
+        "status": "Clavier intact",
+        "desc": "Aucun dégât détecté"
+      },
+      {
+        "status": "Touches collantes",
+        "desc": "1 touche coincée (probablement du soda)"
+      },
+      {
+        "status": "3 touches arrachées",
+        "desc": "W, A, S ou D manquent à l'appel"
+      },
+      {
+        "status": "Barre espace fissurée",
+        "desc": "Tu jump trop fort"
+      },
+      {
+        "status": "Clavier en feu",
+        "desc": "Il chauffe grave"
+      },
+      {
+        "status": "Clavier détruit (RIP)",
+        "desc": "Coup de poing critique confirmé"
+      }
+    ]
+  },
+  "monitor": {
+    "title": "🖥️ État de l'Écran",
+    "footer": "Inspection visuelle terminée",
+    "states": [
+      {
+        "status": "Écran nickel",
+        "desc": "Comme neuf, aucune trace"
+      },
+      {
+        "status": "Trace de doigt",
+        "desc": "Quelqu'un a pointé l'écran"
+      },
+      {
+        "status": "Fissure légère",
+        "desc": "Coin supérieur droit touché"
+      },
+      {
+        "status": "Écran fissuré",
+        "desc": "Impact au centre, toile d'araignée"
+      },
+      {
+        "status": "Écran explosé",
+        "desc": "Rage quit avec objet contondant"
+      },
+      {
+        "status": "Écran KO",
+        "desc": "Coup de poing critique détecté"
+      }
+    ]
+  },
+  "hug": {
+    "description": "Envoie un GIF de câlin à un utilisateur",
+    "usage": "!hug @utilisateur [secret]",
+    "mention_error": "❌ **Erreur**: Tu dois mentionner un utilisateur!\n**Exemple**: `!hug @utilisateur` ou `!hug @utilisateur secret`",
+    "self_error": "❌ Tu ne peux pas te faire un câlin toi-même! 🤗",
+    "giphy_error": "❌ Impossible de récupérer un GIF pour le moment.",
+    "secret_desc": "🤗 **Quelqu'un** t'a envoyé un câlin secret!",
+    "secret_footer": "💌 Message secret",
+    "confirm_desc": "✅ Ton câlin secret a été envoyé à **{user}**!",
+    "confirm_footer": "Aperçu du GIF envoyé",
+    "dm_error": "❌ Impossible d'envoyer un message privé à {user}.",
+    "public_desc": "🤗 <@{author}> fait un câlin à <@${target}>!"
+  },
+  "kiss": {
+    "description": "Envoie un GIF de bisou à un utilisateur",
+    "usage": "!kiss @utilisateur [secret]",
+    "mention_error": "❌ **Erreur**: Tu dois mentionner un utilisateur!",
+    "self_error": "❌ Tu ne peux pas te faire un bisou toi-même! (Enfin c'est compliqué...)",
+    "secret_desc": "💋 **Quelqu'un** t'a envoyé un bisou secret!",
+    "confirm_desc": "✅ Ton bisou secret a été envoyé à **{user}**!",
+    "public_desc": "💋 <@{author}> fait un bisou à <@${target}>!"
+  },
+  "slap": {
+    "description": "Donne une baffe à un utilisateur",
+    "usage": "!slap @utilisateur [secret]",
+    "mention_error": "❌ **Erreur**: Tu dois mentionner un utilisateur!",
+    "self_error": "❌ Pourquoi tu veux te donner une baffe? 🤨",
+    "secret_desc": "💥 **Quelqu'un** t'a envoyé une baffe secrète! Aïe!",
+    "confirm_desc": "✅ Ta baffe secrète a été envoyée à **{user}**!",
+    "public_desc": "💥 <@{author}> {msg} <@${target}>!",
+    "fun_messages": [
+      "a giflé",
+      "a mis une tape à",
+      "a calmé",
+      "a recadré",
+      "a corrigé",
+      "a tapé"
+    ]
+  },
+  "who": {
+    "description": "Choisit une personne aléatoire connectée dans le salon vocal",
+    "usage": "!who",
+    "title": "🎯 Sélection Aléatoire",
+    "desc_pattern": "**{count}** joueurs dans le vocal...\n\n✨ **{user}** a été choisi!",
+    "forced_msg": "\n\n*(Le destin a frappé... ou peut-être la config 🤡)*",
+    "footer_pattern": "Sélectionné parmi {count} joueur(s)"
+  },
+  "osef": {
+    "description": "Envoie un GIF 'on s'en fout royalement' à un utilisateur",
+    "usage": "!osef @utilisateur [secret]",
+    "secret_desc": "🤷 **Quelqu'un** dit qu'on s'en fout royalement!",
+    "confirm_desc": "✅ Ton message 'osef' secret a été envoyé à **{user}**!",
+    "public_desc": "🤷 <@{author}> dit à <@{target}> : **On s'en fout royalement!**"
+  },
+  "rage": {
+    "description": "Calcule ton niveau de rage actuel",
+    "usage": "!rage [@utilisateur]",
+    "title": "😤 Niveau de Rage",
+    "footer": "Respire un bon coup...",
+    "states": [
+      "zen comme un moine",
+      "calme et posé",
+      "commence à souffler",
+      "bouillonne de l'intérieur",
+      "clavier en danger",
+      "mode destruction activé"
+    ]
+  },
+  "spam": {
+    "description": "Spam un joueur avec des mentions puis supprime tout",
+    "usage": "!spam @utilisateur [durée_en_secondes]",
+    "error_min_duration": "❌ **Erreur**: La durée minimum est de 1 seconde!",
+    "confirm_title": "⚠️ Spam en cours!",
+    "confirm_desc": "🎯 **Cible**: {target}\n👤 **Lancé par**: {author}\n⏱️ **Durée**: {duration} secondes\n💬 **Spam canal**: Toutes les 2s\n📩 **GIF DM**: Toutes les 10s\n🗑️ **Nettoyage**: Automatique après {duration}s",
+    "confirm_footer": "Attention, ça va chauffer! 🔥",
+    "dm_desc": "🔥 **SPAM ATTACK!** 🔥\nDe: {author}",
+    "dm_footer": "Tu es en train de te faire spammer! 😈",
+    "end_desc": "✅ Spam terminé!\n🗑️ {count} messages supprimés",
+    "end_footer": "Victime: {target} • Par: {author}",
+    "texts": [
+      "{target} 👀",
+      "Hey {target}! 👋",
+      "{target} regarde! 👁️",
+      "Coucou {target}! 🎉",
+      "{target} t'es là? 🤔",
+      "{target}!!!",
+      "Ping {target} 🔔",
+      "{target} réponds! 📢",
+      "Yo {target}! 🎮",
+      "{target} wake up! ⏰"
+    ]
+  },
+  "wifi": {
+    "description": "Vérifie la qualité de ta connexion",
+    "usage": "!wifi [@utilisateur]",
+    "title": "📶 Qualité de Connexion",
+    "label_player": "**Joueur**",
+    "label_status": "**État**",
+    "footer": "Test de vitesse effectué",
+    "states": [
+      {
+        "status": "Fibre optique",
+        "desc": "Connexion parfaite"
+      },
+      {
+        "status": "Excellent",
+        "desc": "Ping ultra stable"
+      },
+      {
+        "status": "Jouable",
+        "desc": "Quelques microlags"
+      },
+      {
+        "status": "Moyen",
+        "desc": "Commence à sentir le delay"
+      },
+      {
+        "status": "Injouable",
+        "desc": "Ta mère change de chaine, non ?"
+      },
+      {
+        "status": "Catastrophique",
+        "desc": "Internet Explorer vibes"
+      },
+      {
+        "status": "Ping infini",
+        "desc": "Rollback detected"
+      }
+    ]
+  },
+  "coin": {
+    "title": "🎲 Lancer de Pièce",
+    "result_label": "**Résultat**: **{result}**!",
+    "heads": "Pile",
+    "tails": "Face"
+  },
+  "dice": {
+    "title": "🎲 Lancer de Dés",
+    "result_label": "**Résultat**: **{result}**!"
+  },
+  "roll": {
+    "title": "🎲 Jet de Dés (Custom)",
+    "result_label": "**Résultat**: **{result}**!"
+  },
+  "random": {
+    "title": "🎲 Random Choice",
+    "result_label": "**Résultat**: **{result}**!",
+    "min_options": "❌ **Erreur**: Tu dois fournir au moins 2 options!",
+    "example": "**Exemple**: `!random pizza burger tacos`",
+    "with_spaces": "**Avec espaces**: `!random \"option 1\" \"option 2\"`",
+    "max_options": "❌ **Erreur**: Maximum 25 options autorisées!",
+    "empty_options": "❌ **Erreur**: Les options ne peuvent pas être vides!",
+    "options_label": "**Options** ({count}):",
+    "choice_label": "✨ **Je choisis**"
+  },
+  "welcome": {
+    "description": "Gérer le système de bienvenue",
+    "test_description": "Tester un message de bienvenue",
+    "messages": [
+      "Oh non... {user} vient de débarquer. Qui a laissé la porte ouverte ? 🙄",
+      "Tiens, {user} a trouvé le serveur. Quelqu'un peut lui expliquer qu'on est complets ? 😒",
+      "{user} vient d'arriver ! On fait semblant d'être contents ou... ? 🤔",
+      "Attention tout le monde, {user} est là ! Cachez vos memes de qualité ! 😏",
+      "{user} a rejoint le serveur. RIP notre tranquillité. ⚰️",
+      "Bienvenue {user} ! T'as pas mieux à faire de ta vie ? 😂",
+      "{user} vient de se connecter. Quelqu'un peut lui montrer la sortie ? 🚪",
+      "Oh super, {user} est arrivé. Comme si on avait besoin de plus de chaos ici... 🤦",
+      "{user} a décidé de nous rejoindre. Courage à nous tous ! 💀",
+      "Toc toc, qui est là ? C'est {user}. Malheureusement, on ne peut pas faire semblant de ne pas être là... 😅"
+    ]
+  },
+  "commands": {
+    "antiraid": {
+      "desc": "Configure le système anti-raid du serveur",
+      "usage": "!antiraid <on|off|config|status>"
+    },
+    "auto": {
+      "desc": "Envoie un message automatiquement tous les X secondes",
+      "usage": "!auto <temps_en_secondes> <message> OU !auto stop"
+    },
+    "clear": {
+      "desc": "Supprime un nombre de messages spécifié (max 100)",
+      "usage": "!clear <nombre> [mention]"
+    },
+    "mute": {
+      "desc": "Mute un joueur dans le vocal pendant une durée définie (mute forcé)",
+      "usage": "!mute @utilisateur <durée_en_secondes>"
+    },
+    "override": {
+      "desc": "[KING ONLY] Force l'arrêt de toutes les malédictions, mutes et sanctions",
+      "usage": "!override <curse|mute|roulettemute|all> [@utilisateur|all]"
+    },
+    "showdeleted": {
+      "desc": "Affiche les derniers messages supprimés",
+      "usage": "!showdeleted [nombre] [@utilisateur]"
+    },
+    "ticket-setup": {
+      "desc": "Envoie le message initial pour le système de tickets"
+    },
+    "welcome": {},
+    "brain": {
+      "desc": "Vérifie si ton cerveau est allumé",
+      "usage": "!brain [@utilisateur]"
+    },
+    "coach": {
+      "desc": "Reçois un conseil de coach gaming",
+      "usage": "!coach"
+    },
+    "coin": {
+      "desc": "Lance une pièce - Pile ou Face",
+      "usage": "!coin"
+    },
+    "curse": {
+      "desc": "Lance une malédiction sur un joueur",
+      "usage": "!curse [@joueur] [durée] [TYPE] OU !curse hidden [@joueur] [durée] [TYPE] OU !curse types"
+    },
+    "dice": {
+      "desc": "Lance un dé à 6 faces",
+      "usage": "!dice"
+    },
+    "hug": {
+      "desc": "Envoie un GIF de câlin à un utilisateur",
+      "usage": "!hug @utilisateur [secret]"
+    },
+    "keyboard": {
+      "desc": "Vérifie l'état de ton clavier",
+      "usage": "!keyboard [@utilisateur]"
+    },
+    "kiss": {
+      "desc": "Envoie un GIF de bisou à un utilisateur",
+      "usage": "!kiss @utilisateur [secret]"
+    },
+    "monitor": {
+      "desc": "Vérifie l'état de ton écran",
+      "usage": "!monitor [@utilisateur]"
+    },
+    "osef": {
+      "desc": "Envoie un GIF \"on s'en fout royalement\" à un utilisateur",
+      "usage": "!osef @utilisateur [secret]"
+    },
+    "rage": {
+      "desc": "Calcule ton niveau de rage actuel",
+      "usage": "!rage [@utilisateur]"
+    },
+    "random": {
+      "desc": "Choisit une option au hasard parmi celles fournies",
+      "usage": "!random <option1> <option2> [option3] ... ou !random \"option avec espaces\" \"autre option\""
+    },
+    "roll": {
+      "desc": "Lance un nombre aléatoire entre 1 et 100",
+      "usage": "!roll"
+    },
+    "roulette": {
+      "desc": "Sélectionne un joueur aléatoire du vocal et le déconnecte",
+      "usage": "!roulette"
+    },
+    "roulettehard": {
+      "desc": "Sélectionne un joueur aléatoire du vocal et l'exclut 5 minutes",
+      "usage": "!roulettehard"
+    },
+    "roulettemute": {
+      "desc": "Sélectionne un joueur aléatoire du vocal et le mute pendant une durée définie (mute forcé)",
+      "usage": "!roulettemute [durée_en_secondes]"
+    },
+    "slap": {
+      "desc": "Envoie un GIF de tape à un utilisateur (blague)",
+      "usage": "!slap @utilisateur [secret]"
+    },
+    "spam": {
+      "desc": "Spam un joueur avec des mentions puis supprime tout",
+      "usage": "!spam @utilisateur [durée_en_secondes]"
+    },
+    "who": {
+      "desc": "Choisit une personne aléatoire connectée dans le salon vocal",
+      "usage": "!who"
+    },
+    "wifi": {
+      "desc": "Vérifie la qualité de ta connexion",
+      "usage": "!wifi [@utilisateur]"
+    },
+    "battleship": {
+      "desc": "Lance une partie de Bataille Navale avancée (8x8)",
+      "usage": "!battleship [@joueur]"
+    },
+    "blackjack": {
+      "desc": "Lance une partie de Blackjack (Solo ou Multi contre le croupier)",
+      "usage": "!blackjack [@joueurs]"
+    },
+    "p4": {
+      "desc": "Lance une partie de Puissance 4 (Solo ou Multi)",
+      "usage": "!p4 [@joueur]"
+    },
+    "hangman": {
+      "desc": "Lance une partie de Pendu flash",
+      "usage": "!hangman"
+    },
+    "memory": {
+      "desc": "Lance une partie de Jeu de Mémoire (4x4)",
+      "usage": "!memory"
+    },
+    "minesweeper": {
+      "desc": "Lance une partie de démineur flash (5x5)",
+      "usage": "!minesweeper [mines]"
+    },
+    "reaction": {
+      "desc": "Lance un test de réaction multijoueur (tout le serveur)",
+      "usage": "!reaction"
+    },
+    "morpion": {
+      "desc": "Lance une partie de Morpion (Solo contre le bot ou Multi)",
+      "usage": "!morpion [@joueur]"
+    },
+    "help": {
+      "desc": "Affiche toutes les commandes disponibles avec menu de sélection",
+      "usage": "!help"
+    },
+    "ping": {
+      "desc": "Affiche la latence du bot",
+      "usage": "!ping"
+    },
+    "version": {
+      "desc": "Affiche la version actuelle du bot et les nouveautés",
+      "usage": "!version [version]"
+    }
+  }
+}

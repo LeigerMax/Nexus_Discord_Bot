@@ -12,7 +12,8 @@ module.exports = {
   description: 'Lance une partie de Blackjack (Solo ou Multi contre le croupier)',
   usage: '!blackjack [@joueurs]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     const mentions = message.mentions.users;
     const playerUsers = [message.author];
     mentions.forEach(user => {
@@ -83,43 +84,43 @@ module.exports = {
     const createEmbed = () => {
       const embed = new EmbedBuilder()
         .setColor(0x2F3136)
-        .setTitle('🃏 BLACKJACK MULTI 🃏')
+        .setTitle(t('blackjack.title'))
         .setTimestamp();
 
-      let dealerDesc = `Score: **${isDealerTurn || isGameOver ? calculateScore(dealerHand) : '?'}**\nCards: ${formatHand(dealerHand, !isDealerTurn && !isGameOver)}`;
-      embed.addFields({ name: '🤵 Croupier', value: dealerDesc });
+      let dealerDesc = `${t('blackjack.score_label')}: **${isDealerTurn || isGameOver ? calculateScore(dealerHand) : '?'}**\n${t('blackjack.cards_label')}: ${formatHand(dealerHand, !isDealerTurn && !isGameOver)}`;
+      embed.addFields({ name: `🤵 ${t('blackjack.dealer_label')}`, value: dealerDesc });
 
       players.forEach((p, i) => {
         let statusEmoji = '';
-        if (p.status === 'bust') statusEmoji = '💥 BUST';
-        else if (p.status === 'blackjack') statusEmoji = '🃏 BLACKJACK';
-        else if (p.status === 'stand') statusEmoji = '⏹️ STAND';
-        else if (i === currentPlayerIdx) statusEmoji = '👉 TURN';
+        if (p.status === 'bust') statusEmoji = t('blackjack.status_bust');
+        else if (p.status === 'blackjack') statusEmoji = t('blackjack.status_blackjack');
+        else if (p.status === 'stand') statusEmoji = t('blackjack.status_stand');
+        else if (i === currentPlayerIdx) statusEmoji = t('blackjack.status_turn');
 
-        const value = `Score: **${p.score}** ${statusEmoji}\nCards: ${formatHand(p.hand)}`;
+        const value = `${t('blackjack.score_label')}: **${p.score}** ${statusEmoji}\n${t('blackjack.cards_label')}: ${formatHand(p.hand)}`;
         embed.addFields({ name: `👤 ${p.user.username}`, value: value, inline: true });
       });
 
       if (isGameOver) {
-        let results = '';
+        let resultsList = '';
         const dealerScore = calculateScore(dealerHand);
         players.forEach(p => {
           let res = '';
-          if (p.status === 'bust') res = '❌ Perdu (Bust)';
+          if (p.status === 'bust') res = t('blackjack.res_lose_bust');
           else if (p.score === 21 && p.hand.length === 2) {
-             if (dealerScore === 21 && dealerHand.length === 2) res = '🤝 Push (Double Blackjack)';
-             else res = '💰 Blackjack !';
+             if (dealerScore === 21 && dealerHand.length === 2) res = t('blackjack.res_blackjack_push');
+             else res = t('blackjack.res_blackjack_win');
           }
-          else if (dealerScore > 21) res = '✅ Gagné (Dealer Bust)';
-          else if (p.score > dealerScore) res = '✅ Gagné';
-          else if (p.score < dealerScore) res = '❌ Perdu';
-          else res = '🤝 Push';
-          results += `**${p.user.username}** : ${res}\n`;
+          else if (dealerScore > 21) res = t('blackjack.res_win_dealer_bust');
+          else if (p.score > dealerScore) res = t('blackjack.res_win');
+          else if (p.score < dealerScore) res = t('blackjack.res_lose');
+          else res = t('blackjack.res_push');
+          resultsList += `**${p.user.username}** : ${res}\n`;
         });
-        embed.setDescription(`**RÉSULTATS :**\n${results}`);
+        embed.setDescription(`**${t('blackjack.results_title')}**\n${resultsList}`);
       } else {
-        const turnUser = players[currentPlayerIdx]?.user || 'Croupier';
-        embed.setDescription(isDealerTurn ? 'Le croupier joue...' : `C'est au tour de **${turnUser}** !`);
+        const turnUser = players[currentPlayerIdx]?.user || t('blackjack.dealer_label');
+        embed.setDescription(isDealerTurn ? t('blackjack.dealer_turn_desc') : t('blackjack.player_turn_desc', { user: turnUser.username }));
       }
 
       return embed;
@@ -129,12 +130,12 @@ module.exports = {
       const row = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId('bj_hit')
-          .setLabel('Tirer (Hit)')
+          .setLabel(t('blackjack.btn_hit'))
           .setStyle(ButtonStyle.Primary)
           .setDisabled(isDealerTurn || isGameOver),
         new ButtonBuilder()
           .setCustomId('bj_stand')
-          .setLabel('Rester (Stand)')
+          .setLabel(t('blackjack.btn_stand'))
           .setStyle(ButtonStyle.Secondary)
           .setDisabled(isDealerTurn || isGameOver)
       );
@@ -185,8 +186,9 @@ module.exports = {
 
     collector.on('collect', async (i) => {
       const p = players[currentPlayerIdx];
-      if (i.user.id !== p.user.id) {
-        return i.reply({ content: `❌ Ce n'est pas ton tour ! C'est à <@${p.user.id}> de jouer.`, ephemeral: true });
+      if (!p || i.user.id !== p.user.id) {
+        const turnUser = players[currentPlayerIdx]?.user;
+        return i.reply({ content: t('blackjack.not_your_turn', { user: turnUser.id }), ephemeral: true });
       }
 
       if (i.customId === 'bj_hit') {

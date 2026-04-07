@@ -1,12 +1,13 @@
 /**
  * @file RouletteMute Command
- * @description Sélectionne un joueur aléatoire du salon vocal et le mute 5 minutes avec maintien forcé
+ * @description Sélectionne un joueur aléatoire du salon vocal et le mute avec maintien forcé
  * @module commands/fun/roulettemute
  * @category Fun
  * @requires discord.js
  */
 
 const { EmbedBuilder } = require('discord.js');
+const storageService = require('../../services/storageService');
 
 // Map pour stocker les membres mutés et leurs timeouts
 const mutedMembers = new Map();
@@ -24,16 +25,17 @@ setInterval(() => {
 
 module.exports = {
   name: 'roulettemute',
-  description: 'Sélectionne un joueur aléatoire du vocal et le mute 5 minutes (mute forcé)',
+  description: 'Sélectionne un joueur aléatoire du vocal et le mute pendant une durée définie (mute forcé)',
   mutedMembers,
-  usage: '!roulettemute',
+  usage: '!roulettemute [durée_en_secondes]',
   
-  async execute(message, _args) {
+  async execute(message, _args, context) {
+    const { t } = context;
     try {
       // Vérifie que l'utilisateur est dans un salon vocal
       if (!message.member.voice.channel) {
         return message.reply({
-          content: '❌ **Erreur**: Tu dois être dans un salon vocal pour utiliser cette commande!'
+          content: t('roulette.no_voice')
         });
       }
 
@@ -43,11 +45,11 @@ module.exports = {
       const members = voiceChannel.members.filter(member => !member.user.bot);
       
       if (members.size === 0) {
-        return message.reply('❌ Aucun joueur dans le salon vocal!');
+        return message.reply(t('roulette.no_players'));
       }
 
       if (members.size === 1) {
-        return message.reply('❌ Tu es seul dans le vocal! Il faut au moins 2 joueurs.');
+        return message.reply(t('roulette.alone'));
       }
 
       // Sélectionne un membre aléatoire
@@ -55,15 +57,15 @@ module.exports = {
 
       // Vérifie si le membre est déjà muté par cette commande
       if (mutedMembers.has(randomMember.id)) {
-        return message.reply(`❌ ${randomMember.user.username} est déjà sous mute forcé!`);
+        return message.reply(t('curse.already_cursed', { user: randomMember.user.username }));
       }
 
       // Crée un embed pour annoncer le résultat
       const embed = new EmbedBuilder()
         .setColor(0xFF6600)
-        .setTitle('🔇 Roulette Russe MUTE')
-        .setDescription(`**${members.size}** joueurs dans le vocal...\n\n🎯 **${randomMember.user.username}** a été sélectionné!\n👤 **Lancé par**: ${message.author.username}`)
-        .setFooter({ text: 'Mute forcé pendant 5 minutes...' })
+        .setTitle(t('roulettemute.embed_title'))
+        .setDescription(t('roulettemute.embed_desc', { count: members.size, user: randomMember.user.username, by: message.author.username, duration: '...' }))
+        .setFooter({ text: t('roulettemute.embed_footer') })
         .setTimestamp();
 
       await message.channel.send({ embeds: [embed] });
@@ -73,9 +75,13 @@ module.exports = {
 
       // Mute le membre
       try {
-        await randomMember.voice.setMute(true, 'Roulette russe MUTE');
+        await randomMember.voice.setMute(true, t('roulettemute.audit_reason', { duration: '?' }));
         
-        const endTime = Date.now() + 300000; // 5 minutes
+        // Récupère la config
+        const config = storageService.get(message.guild.id);
+        let duration = parseInt(_args[0]) || config?.rouletteMuteDuration || 300;
+        
+        const endTime = Date.now() + (duration * 1000);
         
         // Système de surveillance pour remuter automatiquement
         const checkInterval = setInterval(async () => {
@@ -85,7 +91,6 @@ module.exports = {
             
             // Vérifie si le membre est toujours dans un vocal
             if (!currentMember.voice.channel) {
-              console.log(`${randomMember.user.username} a quitté le vocal`);
               clearInterval(checkInterval);
               mutedMembers.delete(randomMember.id);
               return;
@@ -93,14 +98,14 @@ module.exports = {
 
             // Si le temps est écoulé
             if (Date.now() >= endTime) {
-              await currentMember.voice.setMute(false, 'Fin du mute forcé');
+              await currentMember.voice.setMute(false, t('roulettemute.unmuted_footer'));
               clearInterval(checkInterval);
               mutedMembers.delete(randomMember.id);
               
               const unmutedEmbed = new EmbedBuilder()
                 .setColor(0x00FF00)
-                .setDescription(`🔊 **${randomMember.user.username}** peut à nouveau parler!`)
-                .setFooter({ text: 'Mute terminé' });
+                .setDescription(t('roulettemute.unmuted_desc', { user: randomMember.user.username }))
+                .setFooter({ text: t('roulettemute.unmuted_footer') });
               
               await message.channel.send({ embeds: [unmutedEmbed] });
               return;
@@ -108,8 +113,7 @@ module.exports = {
 
             // Si le membre a enlevé son mute, on le remute
             if (!currentMember.voice.serverMute) {
-              console.log(`Remute de ${randomMember.user.username}`);
-              await currentMember.voice.setMute(true, 'Tentative de démute détectée - Roulette MUTE');
+              await currentMember.voice.setMute(true, t('roulettemute.remut_footer'));
               
               // GIFs de moquerie
               const mockingGifs = [
@@ -123,64 +127,55 @@ module.exports = {
                 'https://media.giphy.com/media/3oz8xLd9DJq2l2VFtu/giphy.gif'
               ];
               
-              const mockingMessages = [
-                'Nice try! 😈',
-                'Tu pensais vraiment t\'échapper? 😂',
-                'Retente ta chance! 🤡',
-                'Impossible mon ami! 🙈',
-                'Tu rêves! 😏',
-                'Pas aujourd\'hui! 🚫',
-                'Trop facile! 😎',
-                'T\'as cru? 💀'
-              ];
+              const mockingMessages = t('roulettemute.mocking_messages');
               
               const randomGif = mockingGifs[Math.floor(Math.random() * mockingGifs.length)];
-              const randomMessage = mockingMessages[Math.floor(Math.random() * mockingMessages.length)];
+              const randomMsg = mockingMessages[Math.floor(Math.random() * mockingMessages.length)];
               
               const remutedEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setDescription(`🚫 **${randomMember.user.username}** a essayé de se démute!`)
+                .setDescription(t('roulettemute.remut_desc', { user: randomMember.user.username }))
                 .setImage(randomGif)
-                .setFooter({ text: randomMessage });
+                .setFooter({ text: randomMsg });
               
               await message.channel.send({ embeds: [remutedEmbed] });
             }
           } catch (err) {
             console.error('Erreur lors de la vérification du mute:', err);
           }
-        }, 1000); // Vérifie toutes les secondes
+        }, 1000);
 
         // Stocke les informations du mute
         mutedMembers.set(randomMember.id, {
           interval: checkInterval,
           endTime: endTime,
           channelId: message.channel.id,
-          expiresAt: endTime // Pour le GC
+          expiresAt: endTime
         });
 
         const successEmbed = new EmbedBuilder()
           .setColor(0xFF0000)
-          .setTitle('🔇 Mute Forcé Activé')
+          .setTitle(t('roulettemute.embed_title'))
           .setDescription(
-            `✅ **${randomMember.user.username}** a été muté!\n` +
-            `👤 **Par**: ${message.author.username}\n\n` +
-            `⏱️ **Durée**: 5 minutes\n` +
-            `🔓 **Fin**: <t:${Math.floor(endTime / 1000)}:R>\n` +
-            `⚠️ **Mute forcé**: Impossible de se démute`
+            t('roulettemute.success_desc', { user: randomMember.user.username, duration: duration }) + `\n` +
+            `👤 **${t('version.developed_by', { developer: '' }).split(' **')[0]}**: ${message.author.username}\n\n` +
+            `⏱️ **${t('roulette.list_field_time')}**: ${duration} seconde(s)\n` +
+            `🔓 **${t('version.recent_versions').split(' ')[1]}**: <t:${Math.floor(endTime / 1000)}:R>\n` +
+            `⚠️ **${t('roulettemute.embed_footer')}**`
           )
-          .setFooter({ text: 'Toute tentative de démute sera sanctionnée' })
+          .setFooter({ text: t('roulettemute.remut_footer') })
           .setTimestamp();
         
         await message.channel.send({ embeds: [successEmbed] });
 
       } catch (err) {
         console.error('Erreur lors du mute:', err);
-        return message.reply('❌ Impossible de mute le membre. Vérifiez les permissions du bot.');
+        return message.reply(t('roulettehard.permission_error'));
       }
 
     } catch (error) {
       console.error('Erreur dans la commande roulettemute:', error);
-      message.reply('❌ Une erreur est survenue lors du traitement de ta commande.');
+      message.reply(t('common.error'));
     }
   }
 };
