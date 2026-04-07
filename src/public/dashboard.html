@@ -597,18 +597,32 @@
         }
 
         async function fetchGuilds() {
-            const res = await fetch('/api/guilds');
-            const guilds = await res.json();
-            const list = document.getElementById('guild-list');
-            list.innerHTML = '';
-            guilds.forEach(guild => {
-                const card = document.createElement('div');
-                card.className = 'guild-card';
-                card.onclick = () => showServerConfig(guild.id, guild.name);
-                const icon = guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png';
-                card.innerHTML = `<img src="${icon}" class="guild-icon"><div><div style="font-weight:700">${guild.name}</div><div style="font-size:0.75rem;color:var(--text-muted)">ID: ${guild.id}</div></div>`;
-                list.appendChild(card);
-            });
+            try {
+                const res = await fetch('/api/guilds');
+                if (res.status === 401) {
+                    window.location.href = '/';
+                    return;
+                }
+                const guilds = await res.json();
+                const list = document.getElementById('guild-list');
+                list.innerHTML = '';
+                
+                if (!Array.isArray(guilds)) {
+                    console.error('Expected array of guilds, got:', guilds);
+                    return;
+                }
+
+                guilds.forEach(guild => {
+                    const card = document.createElement('div');
+                    card.className = 'guild-card';
+                    card.onclick = () => showServerConfig(guild.id, guild.name);
+                    const icon = guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png';
+                    card.innerHTML = `<img src="${icon}" class="guild-icon"><div><div style="font-weight:700">${guild.name}</div><div style="font-size:0.75rem;color:var(--text-muted)">ID: ${guild.id}</div></div>`;
+                    list.appendChild(card);
+                });
+            } catch (err) {
+                console.error('Error fetching guilds:', err);
+            }
         }
 
         async function resolveAndAddYT() {
