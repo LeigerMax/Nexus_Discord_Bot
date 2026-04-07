@@ -5,8 +5,6 @@
  */
 
 const axios = require('axios');
-const fs = require('node:fs');
-const path = require('node:path');
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 class UpdateService {

@@ -3,18 +3,34 @@
  */
 
 const welcomeCommand = require('../../../../commands/admin/welcome');
+const { createMockContext } = require('../../../testUtils');
 
 describe('Welcome Command', () => {
   let mockInteraction;
+  let mockContext;
 
   beforeEach(() => {
     mockInteraction = {
-      user: { username: 'TestUser', toString: () => '<@123456789>' },
       options: {
         getSubcommand: jest.fn(() => 'test'),
       },
+      member: {
+        id: 'user-456',
+        toString: () => '<@user-456>',
+      },
+      user: { id: '123456789', toString: () => '<@123456789>' },
+      isChatInputCommand: jest.fn(() => true),
       reply: jest.fn().mockResolvedValue(undefined),
     };
+
+    mockContext = createMockContext({
+      t: (key) => {
+        if (key === 'welcome.messages') {
+          return ['Bienvenue {user} !', 'Hello {user} !', 'Salut {user} !'];
+        }
+        return key;
+      }
+    });
   });
 
   afterEach(() => {
@@ -40,7 +56,7 @@ describe('Welcome Command', () => {
   // ========================================
 
   test('devrait exécuter le subcommand "test"', async () => {
-    await welcomeCommand.execute(mockInteraction);
+    await welcomeCommand.execute(mockInteraction, [], mockContext);
 
     expect(mockInteraction.options.getSubcommand).toHaveBeenCalled();
     expect(mockInteraction.reply).toHaveBeenCalledWith(
@@ -52,7 +68,7 @@ describe('Welcome Command', () => {
   });
 
   test('devrait retourner un message contenant le nom d\'utilisateur', async () => {
-    await welcomeCommand.execute(mockInteraction);
+    await welcomeCommand.execute(mockInteraction, [], mockContext);
 
     const replyCall = mockInteraction.reply.mock.calls[0][0];
     expect(replyCall.content).toContain('<@123456789>');
@@ -64,7 +80,7 @@ describe('Welcome Command', () => {
 
   test('getRandomWelcomeMessage devrait retourner un message', async () => {
     // Importe la fonction exportée (si elle l'est) ou appelle la commande
-    await welcomeCommand.execute(mockInteraction);
+    await welcomeCommand.execute(mockInteraction, [], mockContext);
     
     const replyCall = mockInteraction.reply.mock.calls[0][0];
     expect(replyCall.content).toBeDefined();
@@ -73,7 +89,7 @@ describe('Welcome Command', () => {
   });
 
   test('getRandomWelcomeMessage devrait contenir la mention du membre', async () => {
-    await welcomeCommand.execute(mockInteraction);
+    await welcomeCommand.execute(mockInteraction, [], mockContext);
     
     const replyCall = mockInteraction.reply.mock.calls[0][0];
     // Vérifie que le message contient la mention de l'utilisateur
@@ -87,11 +103,12 @@ describe('Welcome Command', () => {
     for (let i = 0; i < 20; i++) {
       const mockInt = {
         user: { username: 'TestUser', toString: () => '<@123456789>' },
+        isChatInputCommand: jest.fn(() => true),
         options: { getSubcommand: jest.fn(() => 'test') },
         reply: jest.fn().mockResolvedValue(undefined),
       };
       
-      await welcomeCommand.execute(mockInt);
+      await welcomeCommand.execute(mockInt, [], mockContext);
       const replyCall = mockInt.reply.mock.calls[0][0];
       messages.add(replyCall.content);
     }
@@ -107,6 +124,6 @@ describe('Welcome Command', () => {
   test('devrait gérer les erreurs lors de l\'exécution', async () => {
     mockInteraction.reply = jest.fn().mockRejectedValue(new Error('Interaction failed'));
 
-    await expect(welcomeCommand.execute(mockInteraction)).rejects.toThrow();
+    await expect(welcomeCommand.execute(mockInteraction, [], mockContext)).rejects.toThrow();
   });
 });

@@ -22,8 +22,6 @@ const keepAlive = require('./services/keepAlive');
 const storageService = require('./services/storageService');
 const statsService = require('./services/statsService');
 const updateService = require('./services/updateService');
-const https = require('node:https'); // Pour le test de connectivité
-
 // ============================================
 // Initialisation du client Discord
 // ============================================

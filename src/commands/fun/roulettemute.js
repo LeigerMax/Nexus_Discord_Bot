@@ -13,15 +13,17 @@ const storageService = require('../../services/storageService');
 const mutedMembers = new Map();
 
 // Garbage collector: nettoie les entrées expirées toutes les 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [userId, muteData] of mutedMembers) {
-    if (muteData.expiresAt && now >= muteData.expiresAt) {
-      if (muteData.timeout) clearTimeout(muteData.timeout);
-      mutedMembers.delete(userId);
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [userId, muteData] of mutedMembers) {
+      if (muteData.expiresAt && now >= muteData.expiresAt) {
+        if (muteData.timeout) clearTimeout(muteData.timeout);
+        mutedMembers.delete(userId);
+      }
     }
-  }
-}, 5 * 60 * 1000);
+  }, 5 * 60 * 1000);
+}
 
 module.exports = {
   name: 'roulettemute',

@@ -6,7 +6,7 @@
  * @requires discord.js
  */
 
-const { Events, EmbedBuilder } = require('discord.js');
+const { Events } = require('discord.js');
 const storageService = require('../services/storageService');
 const auditService = require('../services/auditService');
 const statsService = require('../services/statsService');

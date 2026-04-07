@@ -59,7 +59,7 @@ module.exports = (client) => {
         
         // Récupérer le cache de membre pour valider qu'il est bien sur le serveur
         let member;
-        try { member = await message.guild.members.fetch(targetId); } catch(e) {}
+        try { member = await message.guild.members.fetch(targetId); } catch { /* ignore */ }
         if (!member) return;
 
         // Récupérer une insulte parmi les 5 disponibles dans les traductions
@@ -75,7 +75,7 @@ module.exports = (client) => {
         const targetId = kings[Math.floor(Math.random() * kings.length)];
         
         let member;
-        try { member = await message.guild.members.fetch(targetId); } catch(e) {}
+        try { member = await message.guild.members.fetch(targetId); } catch { /* ignore */ }
         if (!member) return;
 
         const praiseIndex = Math.floor(Math.random() * 5);

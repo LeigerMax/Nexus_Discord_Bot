@@ -23,7 +23,7 @@ class I18nService {
       fs.mkdirSync(localesPath, { recursive: true });
     }
 
-    const localeFiles = fs.readdirSync(localesPath).filter(file => file.endsWith('.json'));
+    const localeFiles = (fs.readdirSync(localesPath) || []).filter(file => file.endsWith('.json'));
     
     for (const file of localeFiles) {
       const locale = file.split('.')[0];

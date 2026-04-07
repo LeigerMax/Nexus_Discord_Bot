@@ -3,11 +3,13 @@
  */
 
 const clearCommand = require('../../../../commands/admin/clear');
+const { createMockContext } = require('../../../testUtils');
 
 describe('Clear Command', () => {
   let mockMessage;
   let mockChannel;
   let mockMember;
+  let mockContext;
 
   beforeEach(() => {
     mockChannel = {
@@ -39,6 +41,13 @@ describe('Clear Command', () => {
       },
       reply: jest.fn().mockResolvedValue(undefined),
     };
+
+    mockContext = createMockContext({
+      message: mockMessage,
+      member: mockMember,
+      channel: mockChannel,
+      t: (key) => key // Simplifié pour les assertions existantes
+    });
 
     jest.useFakeTimers();
   });
@@ -81,50 +90,50 @@ describe('Clear Command', () => {
     test('devrait refuser si l\'utilisateur n\'a pas la permission ManageMessages', async () => {
       mockMember.permissions.has = jest.fn(() => false);
 
-      await clearCommand.execute(mockMessage, ['10']);
+      await clearCommand.execute(mockMessage, ['10'], mockContext);
 
       expect(mockMessage.reply).toHaveBeenCalledWith(
-        expect.stringContaining('permission')
+        expect.stringContaining('clear.no_permission')
       );
     });
   });
 
   describe('Validation des arguments', () => {
     test('devrait refuser si aucun nombre n\'est fourni', async () => {
-      await clearCommand.execute(mockMessage, []);
-
+      await clearCommand.execute(mockMessage, [], mockContext);
+      
       expect(mockMessage.reply).toHaveBeenCalledWith(
         expect.objectContaining({
-          content: expect.stringContaining('nombre valide')
+          content: expect.stringContaining('clear.invalid_amount')
         })
       );
     });
 
     test('devrait refuser si le nombre est invalide', async () => {
-      await clearCommand.execute(mockMessage, ['abc']);
+      await clearCommand.execute(mockMessage, ['abc'], mockContext);
 
       expect(mockMessage.reply).toHaveBeenCalledWith(
         expect.objectContaining({
-          content: expect.stringContaining('nombre valide')
+          content: expect.stringContaining('clear.invalid_amount')
         })
       );
     });
 
     test('devrait refuser si le nombre est inférieur à 1', async () => {
-      await clearCommand.execute(mockMessage, ['0']);
+      await clearCommand.execute(mockMessage, ['0'], mockContext);
 
       expect(mockMessage.reply).toHaveBeenCalledWith(
         expect.objectContaining({
-          content: expect.stringContaining('nombre valide')
+          content: expect.stringContaining('clear.invalid_amount')
         })
       );
     });
 
     test('devrait refuser si le nombre est supérieur à 100', async () => {
-      await clearCommand.execute(mockMessage, ['150']);
+      await clearCommand.execute(mockMessage, ['150'], mockContext);
 
       expect(mockMessage.reply).toHaveBeenCalledWith(
-        expect.stringContaining('100 messages')
+        expect.stringContaining('clear.limit_error')
       );
     });
   });
@@ -157,12 +166,12 @@ describe('Clear Command', () => {
       mockChannel.messages.fetch.mockResolvedValue(mockMessages);
       mockChannel.bulkDelete.mockResolvedValue(new Map([...mockMessages].slice(0, 10)));
 
-      await clearCommand.execute(mockMessage, ['10']);
+      await clearCommand.execute(mockMessage, ['10'], mockContext);
 
       expect(mockChannel.messages.fetch).toHaveBeenCalledWith({ limit: 11 });
       expect(mockChannel.bulkDelete).toHaveBeenCalled();
       expect(mockChannel.send).toHaveBeenCalledWith(
-        expect.stringContaining('10 message(s) supprimé(s)')
+        expect.stringContaining('clear.success_generic')
       );
     });
 
@@ -199,11 +208,11 @@ describe('Clear Command', () => {
         return Promise.resolve(messages);
       });
 
-      await clearCommand.execute(mockMessage, ['10']);
+      await clearCommand.execute(mockMessage, ['10'], mockContext);
 
       expect(mockChannel.bulkDelete).toHaveBeenCalled();
       expect(mockChannel.send).toHaveBeenCalledWith(
-        expect.stringContaining('TargetUser')
+        expect.stringContaining('clear.success_user')
       );
     });
 
@@ -231,7 +240,7 @@ describe('Clear Command', () => {
       mockChannel.bulkDelete.mockResolvedValue(mockMessages);
       mockChannel.send.mockResolvedValue(mockConfirmMessage);
 
-      await clearCommand.execute(mockMessage, ['1']);
+      await clearCommand.execute(mockMessage, ['1'], mockContext);
 
       expect(mockChannel.send).toHaveBeenCalled();
       
@@ -248,6 +257,16 @@ describe('Clear Command', () => {
   // ========================================
 
   describe('Gestion des erreurs', () => {
+    let consoleSpy;
+
+    beforeEach(() => {
+        consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        consoleSpy.mockRestore();
+    });
+
     test('devrait gérer l\'erreur des messages trop anciens (50034)', async () => {
       const error = new Error('Cannot delete messages older than 14 days');
       error.code = 50034;
@@ -266,20 +285,20 @@ describe('Clear Command', () => {
       mockChannel.messages.fetch.mockResolvedValue(mockMessages);
       mockChannel.bulkDelete.mockRejectedValue(error);
 
-      await clearCommand.execute(mockMessage, ['5']);
+      await clearCommand.execute(mockMessage, ['5'], mockContext);
 
       expect(mockMessage.reply).toHaveBeenCalledWith(
-        expect.stringContaining('14 jours')
+        expect.stringContaining('clear.old_messages_error')
       );
     });
 
     test('devrait gérer les erreurs générales', async () => {
       mockChannel.messages.fetch.mockRejectedValue(new Error('Network error'));
 
-      await clearCommand.execute(mockMessage, ['5']);
+      await clearCommand.execute(mockMessage, ['5'], mockContext);
 
       expect(mockMessage.reply).toHaveBeenCalledWith(
-        expect.stringContaining('erreur')
+        expect.stringContaining('common.error')
       );
     });
   });

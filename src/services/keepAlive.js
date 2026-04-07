@@ -19,7 +19,6 @@ const app = express();
  */
 function keepAlive(client) {
   const PORT = process.env.PORT || 10000;
-  const statsService = require('./statsService');
   const updateService = require('./updateService');
   const { PermissionsBitField } = require('discord.js');
 
@@ -27,7 +26,7 @@ function keepAlive(client) {
   app.use(express.json());
   app.use(express.static(path.join(__dirname, '../public')));
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'dev-secret-bot-123',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: process.env.NODE_ENV === 'production' }
@@ -70,7 +69,7 @@ function keepAlive(client) {
 
       req.session.user = userResponse.data;
       req.session.guilds = guildsResponse.data;
-      
+
       res.redirect('/dashboard.html');
     } catch (error) {
       console.error("❌ Erreur OAuth2:", error.response?.data || error.message);
@@ -133,7 +132,6 @@ function keepAlive(client) {
     try {
       const guild = await client.guilds.fetch(guildId);
       const members = await guild.members.fetch();
-      const { ChannelType } = require('discord.js');
       const channels = guild.channels.cache.map(c => ({
         id: c.id,
         name: c.name,
@@ -155,7 +153,7 @@ function keepAlive(client) {
       }));
 
       res.json({ config, members: memberList, channels, roles });
-    } catch (error) {
+    } catch {
       res.status(500).json({ error: 'Impossible de récupérer les membres du serveur' });
     }
   });
@@ -164,16 +162,16 @@ function keepAlive(client) {
   app.get('/api/auto-messages/:guildId', (req, res) => {
     if (!req.session.user) return res.status(401).json({ error: 'Non authentifié' });
     const guildId = req.params.guildId;
-    
+
     try {
       const autoCommand = client.commands.get('auto');
       if (!autoCommand || !autoCommand.getIntervals) {
         return res.json([]);
       }
-      
+
       const intervals = autoCommand.getIntervals().filter(i => i.guildId === guildId);
       res.json(intervals);
-    } catch (error) {
+    } catch {
       res.status(500).json({ error: 'Erreur lors de la récupération des automates' });
     }
   });
@@ -182,7 +180,7 @@ function keepAlive(client) {
   app.post('/api/auto-messages/stop', (req, res) => {
     if (!req.session.user) return res.status(401).json({ error: 'Non authentifié' });
     const { channelId } = req.body;
-    
+
     try {
       const autoCommand = client.commands.get('auto');
       if (autoCommand && autoCommand.stopInterval) {
@@ -191,7 +189,7 @@ function keepAlive(client) {
       } else {
         res.status(400).json({ error: 'Commande auto indisponible' });
       }
-    } catch (error) {
+    } catch {
       res.status(500).json({ error: 'Erreur lors de l\'arrêt de l\'automate' });
     }
   });
@@ -207,7 +205,7 @@ function keepAlive(client) {
       } else {
         res.status(404).json({ error: 'ID non trouvé' });
       }
-    } catch (error) {
+    } catch {
       res.status(500).json({ error: 'Erreur lors de la résolution' });
     }
   });
@@ -218,7 +216,7 @@ function keepAlive(client) {
     const versionPath = path.join(__dirname, '../config/version.json');
     if (fs.existsSync(versionPath)) {
       const versionData = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
-      
+
       // Localise le changelog si possible
       if (lang === 'en' && versionData.changelog) {
         Object.keys(versionData.changelog).forEach(v => {
@@ -227,7 +225,7 @@ function keepAlive(client) {
           if (entry.fixes_en) entry.fixes = entry.fixes_en;
         });
       }
-      
+
       res.json(versionData);
     } else {
       res.status(404).json({ error: 'Fichier non trouvé' });
@@ -238,7 +236,7 @@ function keepAlive(client) {
   app.get('/api/update', async (req, res) => {
     const latest = updateService.getLatestInfo();
     const current = require('../config/version.json').current;
-    
+
     if (latest) {
       const isNew = updateService.isNewer(latest.tag_name.replace('v', ''), current);
       res.json({ isNew, latest: latest.tag_name, url: latest.html_url, name: latest.name });

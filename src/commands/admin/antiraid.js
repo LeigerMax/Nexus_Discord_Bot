@@ -14,17 +14,19 @@ const i18n = require('../../services/i18nService');
 const recentJoins = new Map();
 
 // Garbage collector: nettoie les anciennes entrées toutes les 10 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [guildId, joins] of recentJoins) {
-    const filtered = joins.filter(j => now - j.timestamp < 60000); // Garde uniquement les joins de la dernière minute
-    if (filtered.length === 0) {
-      recentJoins.delete(guildId);
-    } else {
-      recentJoins.set(guildId, filtered);
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [guildId, joins] of recentJoins) {
+      const filtered = joins.filter(j => now - j.timestamp < 60000); // Garde uniquement les joins de la dernière minute
+      if (filtered.length === 0) {
+        recentJoins.delete(guildId);
+      } else {
+        recentJoins.set(guildId, filtered);
+      }
     }
-  }
-}, 10 * 60 * 1000);
+  }, 10 * 60 * 1000);
+}
 
 module.exports = {
   name: 'antiraid',
@@ -32,7 +34,7 @@ module.exports = {
   usage: '!antiraid <on|off|config|status>',
   
   async execute(message, args, context) {
-    const { t, locale } = context;
+    const { t } = context;
     try {
       // Vérifie les permissions
       if (!message.member.permissions.has('Administrator')) {

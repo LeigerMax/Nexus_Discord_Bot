@@ -346,16 +346,36 @@ function oppositeMessage(text) {
   result = result.replace(/\btoujours\b/gi, 'jamais');
   
   // Étape 2: Remplace les mots par leurs opposés (insensible à la casse)
-  for (const [word, opposite] of Object.entries(opposites)) {
+  // On utilise un mécanisme pour éviter de re-remplacer un mot déjà changé (ex: bien -> mal -> bien)
+  const entries = Object.entries(opposites);
+  
+  // On trie les mots par longueur décroissante pour éviter de remplacer des sous-chaines
+  entries.sort((a, b) => b[0].length - a[0].length);
+  
+  const placeholders = new Map();
+  let tempResult = result;
+  
+  entries.forEach(([word, opposite], index) => {
     const regex = new RegExp(`\\b${word}\\b`, 'gi');
-    result = result.replace(regex, (match) => {
-      // Préserve la capitalisation
-      if (match[0] === match[0].toUpperCase()) {
-        return opposite.charAt(0).toUpperCase() + opposite.slice(1);
-      }
-      return opposite;
-    });
-  }
+    if (regex.test(tempResult)) {
+        const placeholder = `__OPP_${index}__`;
+        placeholders.set(placeholder, opposite);
+        tempResult = tempResult.replace(regex, (match) => {
+            // On mémorise la capitalisation si besoin (simplifié ici car les opposés sont souvent minuscules)
+            const isCap = match[0] === match[0].toUpperCase();
+            const replacement = isCap ? opposite.charAt(0).toUpperCase() + opposite.slice(1) : opposite;
+            placeholders.set(placeholder, replacement);
+            return placeholder;
+        });
+    }
+  });
+
+  // Remplace les placeholders par les vrais mots
+  placeholders.forEach((value, key) => {
+    tempResult = tempResult.replace(new RegExp(key, 'g'), value);
+  });
+  
+  result = tempResult;
   
   // Étape 3: Si le message commence par certains verbes, ajoute une négation
   const needsNegation = /^(je (vais|suis|fais|pense|crois|veux|peux|dois))/i;

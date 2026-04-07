@@ -20,7 +20,6 @@ module.exports = {
       const results = [t('coin.heads'), t('coin.tails')];
       const result = results[Math.floor(Math.random() * results.length)];
       
-      const emoji = result === t('coin.heads') ? '🪙' : '💰';
 
       const embed = new EmbedBuilder()
         .setColor(result === t('coin.heads') ? 0xFFD700 : 0xC0C0C0)

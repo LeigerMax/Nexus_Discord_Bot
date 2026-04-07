@@ -149,7 +149,7 @@ async function handleTempChannels(oldState, newState) {
     if (oldState.channel.name.startsWith('🎙️ Vocal de') && oldState.channel.members.size === 0) {
       try {
         await oldState.channel.delete();
-      } catch (err) {
+      } catch {
         // Le salon a peut-être déjà été supprimé ou erreur de permission
       }
     }

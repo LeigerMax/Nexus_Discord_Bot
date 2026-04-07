@@ -121,7 +121,7 @@ async function handleCloseTicket(interaction) {
   setTimeout(async () => {
     try {
       await interaction.channel.delete();
-    } catch (err) {
+    } catch {
       // Déjà supprimé
     }
   }, 5000);

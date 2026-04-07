@@ -12,15 +12,17 @@ const storageService = require('../../services/storageService');
 const cursedPlayers = new Map();
 
 // Garbage collector: nettoie les entrées expirées toutes les 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [userId, curseData] of cursedPlayers) {
-    if (curseData.expiresAt && now >= curseData.expiresAt) {
-      clearInterval(curseData.interval);
-      cursedPlayers.delete(userId);
+if (process.env.NODE_ENV !== 'test') {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [userId, curseData] of cursedPlayers) {
+      if (curseData.expiresAt && now >= curseData.expiresAt) {
+        clearInterval(curseData.interval);
+        cursedPlayers.delete(userId);
+      }
     }
-  }
-}, 5 * 60 * 1000); // 5 minutes
+  }, 5 * 60 * 1000); // 5 minutes
+}
 
 // Types de malédictions disponibles (Données statiques pour la logique)
 const CURSES = {

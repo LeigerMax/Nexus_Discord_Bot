@@ -42,7 +42,7 @@ module.exports = {
       // On n'utilise pas message.reply ici car le message est peut-être déjà mort ou supprimé
       try {
         await message.channel.send(t('tickets.setup_error', { user: message.author }));
-      } catch (sendErr) {
+      } catch {
         // Au cas où le salon est inaccessible
       }
     }

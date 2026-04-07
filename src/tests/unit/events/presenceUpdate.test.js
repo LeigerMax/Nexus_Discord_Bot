@@ -7,6 +7,9 @@
 process.env.LOOSER_ID = 'looser-123';
 process.env.ACTIVITY_SALON_ID = 'activity-456';
 
+const storageService = require('../../../services/storageService');
+jest.mock('../../../services/storageService');
+
 describe('Event: presenceUpdate', () => {
   let mockClient;
   let presenceUpdateHandler;
@@ -16,6 +19,9 @@ describe('Event: presenceUpdate', () => {
   let mockMember;
 
   beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    storageService.get.mockReturnValue(null); // Default config
     mockMember = {
       user: {
         id: 'looser-123',

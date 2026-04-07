@@ -114,7 +114,7 @@ class StorageService {
           // Mais dans v14, on peut passer les nouveaux attachments.
           await message.edit({ content, files: [attachment] });
           this.cache.set(guildId, { config, messageId: entry.messageId });
-        } catch (e) {
+        } catch {
           const newMessage = await channel.send({ content, files: [attachment] });
           this.cache.set(guildId, { config, messageId: newMessage.id });
         }
