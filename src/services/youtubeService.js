@@ -24,19 +24,29 @@ class YoutubeService {
     input = input.trim();
 
     // 1. Si c'est déjà un ID valide (commence par UC)
-    if (input.startsWith('UC') && input.length === 24) return input;
+    if (/^UC[a-zA-Z0-9_-]{22}$/.test(input)) return input;
 
-    // 2. Si c'est une URL ou un handle, on tente de fetch la page
-    let url = input;
-    if (input.startsWith('@')) {
-      url = `https://www.youtube.com/${input}`;
-    } else if (!input.startsWith('http')) {
-      url = `https://www.youtube.com/@${input}`;
-    }
-
+    // 2. Construction et validation de l'URL pour éviter SSRF
+    let url;
     try {
+      if (input.startsWith('@')) {
+        url = `https://www.youtube.com/${input}`;
+      } else if (input.startsWith('http')) {
+        const parsedUrl = new URL(input);
+        const allowedDomains = ['www.youtube.com', 'youtube.com', 'youtu.be', 'm.youtube.com'];
+        if (!allowedDomains.includes(parsedUrl.hostname)) {
+          console.warn(`[YouTube] Blocage SSRF : tentative d'accès à un domaine non autorisé (${parsedUrl.hostname})`);
+          return null;
+        }
+        url = parsedUrl.toString();
+      } else {
+        // Par défaut, traite comme un handle
+        url = `https://www.youtube.com/@${input.replace(/^@/, '')}`;
+      }
+
       const response = await axios.get(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0 Safari/537.36' }
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36' },
+        timeout: 5000 // 5 secondes de timeout
       });
       
       // Extraction de l'ID via le tag meta identifier ou browse_id

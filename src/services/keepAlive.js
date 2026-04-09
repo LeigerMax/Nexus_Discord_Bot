@@ -11,6 +11,8 @@ const path = require('node:path');
 const fs = require('node:fs');
 const storageService = require('./storageService');
 const YoutubeService = require('./youtubeService');
+const helmet = require('helmet');
+const csrf = require('csurf');
 const app = express();
 
 /**
@@ -23,15 +25,44 @@ function keepAlive(client) {
   const { PermissionsBitField } = require('discord.js');
 
   // Middleware
+  // Middleware de sécurité
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+        "img-src": ["'self'", "https://cdn.discordapp.com", "data:"],
+        "connect-src": ["'self'", "https://discord.com"]
+      },
+    },
+  }));
+
   app.set('trust proxy', 1);
   app.use(express.json());
   app.use(express.static(path.join(__dirname, '../public')));
   app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'dev-secret-nexus-bot',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: process.env.NODE_ENV === 'production' }
+    name: '__nexus_session', // Nom de cookie personnalisé
+    cookie: { 
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000 // 24h
+    }
   }));
+
+  // CSRF Protection
+  const csrfProtection = csrf();
+  // On ne l'applique qu'aux routes qui en ont besoin ou on gère l'exception pour le callback OAuth
+  app.use((req, res, next) => {
+    // Le callback OAuth2 vient de Discord, il ne peut pas avoir de token CSRF
+    if (req.path === '/auth/callback' || req.path === '/login') {
+      return next();
+    }
+    csrfProtection(req, res, next);
+  });
 
   // --- Routes d'authentification ---
 
@@ -81,6 +112,11 @@ function keepAlive(client) {
   app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
+  });
+
+  // Fournit le token CSRF au frontend
+  app.get('/api/csrf-token', (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
   });
 
   // --- Routes API ---
