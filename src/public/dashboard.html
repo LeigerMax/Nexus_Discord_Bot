@@ -460,6 +460,41 @@
         let allGuildChannels = [];
         let currentTranslations = {};
         let currentLang = localStorage.getItem('nexus_lang') || 'fr';
+        let csrfToken = null;
+
+        async function fetchCsrfToken() {
+            try {
+                const res = await fetch('/api/csrf-token');
+                const data = await res.json();
+                csrfToken = data.csrfToken;
+            } catch (err) {
+                console.error('Failed to fetch CSRF token', err);
+            }
+        }
+
+        async function secureFetch(url, options = {}) {
+            if (!csrfToken && url !== '/api/csrf-token') {
+                await fetchCsrfToken();
+            }
+
+            if (options.method && options.method.toUpperCase() !== 'GET') {
+                options.headers = {
+                    ...options.headers,
+                    'csrf-token': csrfToken
+                };
+            }
+
+            const res = await fetch(url, options);
+            
+            // Si le token est expiré ou invalide, on tente de le rafraîchir une fois
+            if (res.status === 403 && url !== '/api/csrf-token') {
+                await fetchCsrfToken();
+                if (options.headers) options.headers['csrf-token'] = csrfToken;
+                return fetch(url, options);
+            }
+            
+            return res;
+        }
 
         async function loadTranslations(lang) {
             try {
@@ -630,7 +665,7 @@
             const status = document.getElementById('yt-resolve-status');
             if (!input) return;
             status.innerText = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.resolving') || '🔍 Résolution de la chaîne...';
-            const res = await fetch('/api/youtube/resolve', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: input }) });
+            const res = await secureFetch(`/api/youtube/resolve`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: input }) });
             const data = await res.json();
             if (data.success) {
                 const msg = getNestedValue(currentTranslations, 'dashboard.tabs.youtube.added') || '✅ Chaîne ajoutée (ID: {id})';
@@ -769,7 +804,7 @@
             list.innerHTML = autos.length === 0 ? '<p>Aucun automate actif.</p>' : '';
             autos.forEach(a => { const div = document.createElement('div'); div.className = 'auto-card'; div.innerHTML = `<div><strong>#${a.channelId}</strong><br><small>${a.message}</small></div><button type="button" class="btn btn-secondary" onclick="stopAuto('${a.channelId}')">Stop</button>`; list.appendChild(div); });
         }
-        async function stopAuto(cid) { await fetch('/api/auto-messages/stop', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ channelId: cid }) }); fetchAutoMessages(); }
+        async function stopAuto(cid) { await secureFetch('/api/auto-messages/stop', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ channelId: cid }) }); fetchAutoMessages(); }
 
         function renderMemberList(eid, ms, sids) {
             const c = document.getElementById(eid);
@@ -804,7 +839,7 @@
                 },
                 language: document.getElementById('bot-language').value
             };
-            const r = await fetch(`/api/config/${currentGuildId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) });
+            const r = await secureFetch(`/api/config/${currentGuildId}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(config) });
             if (r.ok) showToast();
         };
 
