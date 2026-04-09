@@ -31,8 +31,11 @@ function keepAlive(client) {
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+        "script-src-attr": ["'unsafe-inline'"],
+        "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         "img-src": ["'self'", "https://cdn.discordapp.com", "data:"],
-        "connect-src": ["'self'", "https://discord.com"]
+        "connect-src": ["'self'", "https://discord.com"],
+        "font-src": ["'self'", "https://fonts.gstatic.com"]
       },
     },
   }));
