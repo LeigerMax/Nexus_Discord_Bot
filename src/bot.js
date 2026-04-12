@@ -13,8 +13,15 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
+// Force IPv4 en premi猫re position pour Node 18+ (Correction des hangs DNS sur Render/Docker)
+// Force IPv4 en première position pour Node 18+ (Correction des hangs DNS sur Render/Docker)
+const dns = require('node:dns');
+if (typeof dns.setDefaultResultOrder === 'function') {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
-const { Client, GatewayIntentBits } = require('discord.js');
+
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const path = require('node:path');
 const CommandHandler = require('./utils/commandHandler');
 const YoutubeService = require('./services/youtubeService');
@@ -36,8 +43,8 @@ const client = new Client({
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.DirectMessages
   ],
-  partials: ['CHANNEL', 'MESSAGE', 'REACTION'],
-  // Force IPv4 pour éviter les hangs DNS sur certains serveurs (Node 18+)
+  partials: [Partials.Channel, Partials.Message, Partials.Reaction],
+  // Force IPv4 pour les requêtes REST (complémentaire à dns.setDefaultResultOrder)
   rest: {
     family: 4
   }
@@ -183,10 +190,14 @@ async function start() {
     const token = process.env.DISCORD_TOKEN;
     if (!token) throw new Error("DISCORD_TOKEN manquant");
 
+    console.log("⏳ Appel à client.login()...");
     await client.login(token);
     console.log("✅ client.login() a réussi!");
   } catch (error) {
     console.error('❌ Erreur fatale de connexion Discord:', error.message);
+    if (error.code === 'DisallowedIntents') {
+        console.error('❌ ERREUR: Vous devez activer les Privileged Gateway Intents dans le Portail Développeur Discord.');
+    }
     if (error.code) console.error(`Code d'erreur: ${error.code}`);
     process.exit(1);
   }
