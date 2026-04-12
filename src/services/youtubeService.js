@@ -104,27 +104,28 @@ class YoutubeService {
 
       if (!config.youtube.channels || config.youtube.channels.length === 0) continue;
 
-      for (const channelConfig of config.youtube.channels) {
+      // De-duplication locale pour ce cycle (pour ne pas fetcher 10 fois le même RSS si doublons)
+      const uniqueChannelIds = [...new Set(config.youtube.channels.map(c => c.id).filter(Boolean))];
+
+      for (const channelId of uniqueChannelIds) {
         try {
-          await this.checkChannel(guild, channelConfig);
+          await this.checkChannel(guild, channelId);
         } catch (error) {
-          console.error(`[YouTube] Erreur pour ${channelConfig.id} sur ${guild.name}:`, error.message);
+          console.error(`[YouTube] Erreur pour ${channelId} sur ${guild.name}:`, error.message);
         }
       }
     }
   }
 
-  async checkChannel(guild, channelConfig) {
-    if (!channelConfig.id || !channelConfig.discordChannelId) return;
-
-    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelConfig.id}`;
+  async checkChannel(guild, channelId) {
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
     
     const response = await axios.get(rssUrl).catch(() => null);
     if (!response || !response.data) return;
 
     const videoIdMatch = response.data.match(/<yt:videoId>(.*?)<\/yt:videoId>/);
     const titleMatch = response.data.match(/<title>(.*?)<\/title>/g); 
-    const authorMatch = response.data.match(/<name>(.*?)<\/name>/); // Nom de la chaîne
+    const authorMatch = response.data.match(/<name>(.*?)<\/name>/);
 
     if (!videoIdMatch) return;
 
@@ -132,43 +133,45 @@ class YoutubeService {
     const videoTitle = titleMatch && titleMatch[1] ? titleMatch[1].replace(/<\/?title>/g, '') : 'Nouvelle vidéo';
     const authorName = authorMatch ? authorMatch[1] : 'YouTube';
 
-    // Initialisation silencieuse
-    if (!channelConfig.lastVideoId) {
-      channelConfig.lastVideoId = latestVideoId;
-      const fullConfig = storageService.get(guild.id);
-      // On met à jour l'ID dans le bon objet du tableau
-      const idx = fullConfig.youtube.channels.findIndex(c => c.id === channelConfig.id);
-      if (idx !== -1) {
-        fullConfig.youtube.channels[idx].lastVideoId = latestVideoId;
-        await storageService.set(guild.id, fullConfig);
+    const fullConfig = storageService.get(guild.id);
+    if (!fullConfig?.youtube?.channels) return;
+
+    // Trouver toutes les entrées qui correspondent à cet ID de chaîne
+    const matchingConfigs = fullConfig.youtube.channels.filter(c => c.id === channelId);
+    let needsUpdate = false;
+
+    for (const channelConfig of matchingConfigs) {
+      // Initialisation silencieuse si pas encore d'ID stocké
+      if (!channelConfig.lastVideoId) {
+        channelConfig.lastVideoId = latestVideoId;
+        needsUpdate = true;
+        continue;
       }
-      return;
+
+      if (latestVideoId !== channelConfig.lastVideoId) {
+        console.log(`[YouTube] Nouvelle vidéo détectée pour ${authorName} sur ${guild.name}: ${latestVideoId}`);
+        
+        const discordChannel = guild.channels.cache.get(channelConfig.discordChannelId);
+        if (discordChannel) {
+          const videoUrl = `https://www.youtube.com/watch?v=${latestVideoId}`;
+          let messageText = channelConfig.customMessage || '🔴 Nouvelle vidéo : **{title}**\n👉 {link}';
+          
+          messageText = messageText
+            .replace(/{link}/g, videoUrl)
+            .replace(/{title}/g, videoTitle)
+            .replace(/{author}/g, authorName)
+            .replace(/{channel}/g, channelId);
+
+          await discordChannel.send(messageText).catch(e => console.error(`[YouTube] Erreur d'envoi Discord: ${e.message}`));
+        }
+        channelConfig.lastVideoId = latestVideoId;
+        needsUpdate = true;
+      }
     }
 
-    if (latestVideoId !== channelConfig.lastVideoId) {
-      console.log(`[YouTube] Nouvelle vidéo détectée pour ${authorName}: ${latestVideoId}`);
-      
-      const discordChannel = guild.channels.cache.get(channelConfig.discordChannelId);
-      if (discordChannel) {
-        const videoUrl = `https://www.youtube.com/watch?v=${latestVideoId}`;
-        let messageText = channelConfig.customMessage || '🔴 Nouvelle vidéo : **{title}**\n👉 {link}';
-        
-        messageText = messageText
-          .replace(/{link}/g, videoUrl)
-          .replace(/{title}/g, videoTitle)
-          .replace(/{author}/g, authorName)
-          .replace(/{channel}/g, channelConfig.id);
-
-        await discordChannel.send(messageText);
-      }
-
-      channelConfig.lastVideoId = latestVideoId;
-      const fullConfig = storageService.get(guild.id);
-      const idx = fullConfig.youtube.channels.findIndex(c => c.id === channelConfig.id);
-      if (idx !== -1) {
-        fullConfig.youtube.channels[idx].lastVideoId = latestVideoId;
-        await storageService.set(guild.id, fullConfig);
-      }
+    if (needsUpdate) {
+      // On sauvegarde la config avec les nouveaux IDs pour toutes les entrées correspondantes
+      await storageService.set(guild.id, fullConfig);
     }
   }
 }
