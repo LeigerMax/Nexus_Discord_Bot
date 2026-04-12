@@ -23,6 +23,7 @@ if (typeof dns.setDefaultResultOrder === 'function') {
 
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const path = require('node:path');
+const axios = require('axios');
 const CommandHandler = require('./utils/commandHandler');
 const YoutubeService = require('./services/youtubeService');
 const keepAlive = require('./services/keepAlive');
@@ -171,14 +172,36 @@ process.on('unhandledRejection', error => {
 // ============================================
 
 
+async function checkConnectivity(token) {
+  console.log("🔍 Test de connectivité API Discord...");
+  try {
+    const response = await axios.get('https://discord.com/api/v10/gateway/bot', {
+      headers: { Authorization: `Bot ${token}` },
+      timeout: 10000
+    });
+    console.log("✅ API Discord accessible (Gateway URL récupérée)");
+    return true;
+  } catch (error) {
+    if (error.response) {
+      console.error(`❌ Erreur API Discord (${error.response.status}):`, error.response.data);
+      if (error.response.status === 429 || error.response.status === 1015) {
+        console.error("⚠️ BLOQUAGE CLOUDFLARE 1015 DÉTECTÉ: Votre instance Render est actuellement bannie par Cloudflare/Discord.");
+        console.error("👉 Solution: Attendez au moins 1 heure ou essayez de redéployer pour obtenir une nouvelle IP.");
+      }
+    } else {
+      console.error("❌ Erreur réseau lors du test Discord:", error.message);
+    }
+    return false;
+  }
+}
+
 async function start() {
   // 1. Lance le serveur keep-alive avec le Dashboard
   keepAlive(client);
 
-
   // 3. Configuration des logs de debug
   client.on('debug', (info) => {
-    if (info.includes('heartbeat') || info.includes('latency')) return; // Filtre les logs trop fréquents
+    if (info.includes('heartbeat') || info.includes('latency')) return;
     console.log(`[DEBUG] ${info}`);
   });
 
@@ -189,6 +212,14 @@ async function start() {
   try {
     const token = process.env.DISCORD_TOKEN;
     if (!token) throw new Error("DISCORD_TOKEN manquant");
+
+    // Diagnostic avant login
+    const isReachable = await checkConnectivity(token);
+    if (!isReachable) {
+       console.log("⏳ En attente avant une nouvelle tentative automatique (60s)...");
+       setTimeout(() => start(), 60000);
+       return;
+    }
 
     console.log("⏳ Appel à client.login()...");
     await client.login(token);
