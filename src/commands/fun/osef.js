@@ -62,8 +62,10 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setColor(0x808080)
           .setDescription(t('osef.secret_desc'))
-          .setImage(gifUrl)
-          .setFooter({ text: t('hug.secret_footer') });
+          .setImage(gifUrl);
+
+        const secretFooter = t('hug.secret_footer');
+        if (secretFooter) embed.setFooter({ text: secretFooter });
 
         try {
           await mentionedUser.send({ embeds: [embed] });
@@ -75,8 +77,10 @@ module.exports = {
           const confirmEmbed = new EmbedBuilder()
             .setColor(0x808080)
             .setDescription(t('osef.confirm_desc', { user: mentionedUser.username }))
-            .setImage(gifUrl)
-            .setFooter({ text: t('hug.confirm_footer') });
+            .setImage(gifUrl);
+
+          const confirmFooter = t('hug.confirm_footer');
+          if (confirmFooter) confirmEmbed.setFooter({ text: confirmFooter });
           await message.author.send({ embeds: [confirmEmbed] });
         } catch {
           await message.channel.send(t('hug.dm_error', { user: mentionedUser }));

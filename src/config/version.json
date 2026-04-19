@@ -1,7 +1,24 @@
 {
-  "current": "1.0.2",
-  "releaseDate": "9 Avril 2026",
+  "current": "1.0.3",
+  "releaseDate": "19 Avril 2026",
   "changelog": {
+    "v1.0.3": {
+      "date": "19 Avril 2026",
+      "features": [],
+      "features_en": [],
+      "fixes": [
+        "Spam : Correction d'un crash lors de l'utilisation de tableaux de traduction avec paramètres",
+        "Mentions : Correction de la syntaxe des mentions dans les commandes fun (hug, kiss, slap)",
+        "Stabilité : Amélioration du CommandHandler pour gérer les messages supprimés pendant l'exécution",
+        "Slap : Correction d'une erreur de validation du footer qui faisait crasher la commande"
+      ],
+      "fixes_en": [
+        "Spam: Fixed a crash when using translation arrays with parameters",
+        "Mentions: Fixed mention syntax in fun commands (hug, kiss, slap)",
+        "Stability: Improved CommandHandler to handle messages deleted during execution",
+        "Slap: Fixed a footer validation error that caused the command to crash"
+      ]
+    },
     "v1.0.2": {
       "date": "9 Avril 2026",
       "features": [

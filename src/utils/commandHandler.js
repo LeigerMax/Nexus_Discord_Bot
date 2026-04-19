@@ -190,6 +190,11 @@ class CommandHandler {
       try {
         await message.reply({
           content: 'Une erreur est survenue lors de l\'exécution de cette commande.'
+        }).catch(async () => {
+          // Si message.reply échoue (message supprimé), on envoie dans le canal
+          await message.channel.send({
+            content: `❌ <@${message.author.id}>, une erreur est survenue lors de l'exécution de la commande \`${commandName}\`.`
+          });
         });
       } catch (replyError) {
         console.error('Impossible d\'envoyer le message d\'erreur:', replyError);

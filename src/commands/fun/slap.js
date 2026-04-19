@@ -66,8 +66,10 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setColor(0xFFA500)
           .setDescription(t('slap.secret_desc'))
-          .setImage(gifUrl)
-          .setFooter({ text: t('hug.secret_footer') });
+          .setImage(gifUrl);
+
+        const secretFooter = t('hug.secret_footer');
+        if (secretFooter) embed.setFooter({ text: secretFooter });
 
         try {
           await mentionedUser.send({ embeds: [embed] });
@@ -79,8 +81,10 @@ module.exports = {
           const confirmEmbed = new EmbedBuilder()
             .setColor(0xFFA500)
             .setDescription(t('slap.confirm_desc', { user: mentionedUser.username }))
-            .setImage(gifUrl)
-            .setFooter({ text: t('hug.confirm_footer') });
+            .setImage(gifUrl);
+
+          const confirmFooter = t('hug.confirm_footer');
+          if (confirmFooter) confirmEmbed.setFooter({ text: confirmFooter });
           await message.author.send({ embeds: [confirmEmbed] });
         } catch {
           await message.channel.send(t('hug.dm_error', { user: mentionedUser }));
@@ -90,8 +94,10 @@ module.exports = {
         const embed = new EmbedBuilder()
           .setColor(0xFFA500)
           .setDescription(t('slap.public_desc', { author: message.author.id, msg: randomMsg, target: mentionedUser.id }))
-          .setImage(gifUrl)
-          .setFooter({ text: t('hug.secret_footer').split(' • ')[1] || '' });
+          .setImage(gifUrl);
+
+        const publicFooter = t('hug.secret_footer'); // Slap uses hug footer as convention
+        if (publicFooter) embed.setFooter({ text: publicFooter });
 
         await message.channel.send({ embeds: [embed] });
       }

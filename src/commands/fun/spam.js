@@ -70,7 +70,7 @@ module.exports = {
       const spamGifs = [
         'https://i.giphy.com/QBd2kLB5qDmysEXre9.webp',
         'https://i.giphy.com/l0HlQ7LRalQqdWfao.webp',
-        'https://i.giphy.com/H6cmWzp6LGFvqjidB7.webpp'
+        'https://i.giphy.com/H6cmWzp6LGFvqjidB7.webp'
       ];
 
       // Fonction de spam en DM avec GIF toutes les 10 secondes

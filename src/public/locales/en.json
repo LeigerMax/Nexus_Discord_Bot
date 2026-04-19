@@ -1146,7 +1146,7 @@
     "confirm_desc": "✅ Your secret hug has been sent to **{user}**!",
     "confirm_footer": "Preview of the sent GIF",
     "dm_error": "❌ Unable to send a private message to {user}.",
-    "public_desc": "🤗 <@{author}> gives a hug to <@${target}>!"
+    "public_desc": "🤗 <@{author}> gives a hug to <@{target}>!"
   },
   "kiss": {
     "description": "Sends a kiss GIF to a user",
@@ -1155,7 +1155,7 @@
     "self_error": "❌ You can't kiss yourself! (Well, it's complicated...)",
     "secret_desc": "💋 **Someone** sent you a secret kiss!",
     "confirm_desc": "✅ Your secret kiss has been sent to **{user}**!",
-    "public_desc": "💋 <@{author}> gives a kiss to <@${target}>!"
+    "public_desc": "💋 <@{author}> gives a kiss to <@{target}>!"
   },
   "slap": {
     "description": "Slaps a user",
@@ -1164,7 +1164,7 @@
     "self_error": "❌ Why do you want to slap yourself? 🤨",
     "secret_desc": "💥 **Someone** sent you a secret slap! Ouch!",
     "confirm_desc": "✅ Your secret slap has been sent to **{user}**!",
-    "public_desc": "💥 <@{author}> {msg} <@${target}>!",
+    "public_desc": "💥 <@{author}> {msg} <@{target}>!",
     "fun_messages": [
       "slapped",
       "poked",

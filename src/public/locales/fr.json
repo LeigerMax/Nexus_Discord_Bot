@@ -1146,7 +1146,7 @@
     "confirm_desc": "✅ Ton câlin secret a été envoyé à **{user}**!",
     "confirm_footer": "Aperçu du GIF envoyé",
     "dm_error": "❌ Impossible d'envoyer un message privé à {user}.",
-    "public_desc": "🤗 <@{author}> fait un câlin à <@${target}>!"
+    "public_desc": "🤗 <@{author}> fait un câlin à <@{target}>!"
   },
   "kiss": {
     "description": "Envoie un GIF de bisou à un utilisateur",
@@ -1155,7 +1155,7 @@
     "self_error": "❌ Tu ne peux pas te faire un bisou toi-même! (Enfin c'est compliqué...)",
     "secret_desc": "💋 **Quelqu'un** t'a envoyé un bisou secret!",
     "confirm_desc": "✅ Ton bisou secret a été envoyé à **{user}**!",
-    "public_desc": "💋 <@{author}> fait un bisou à <@${target}>!"
+    "public_desc": "💋 <@{author}> fait un bisou à <@{target}>!"
   },
   "slap": {
     "description": "Donne une baffe à un utilisateur",
@@ -1164,7 +1164,7 @@
     "self_error": "❌ Pourquoi tu veux te donner une baffe? 🤨",
     "secret_desc": "💥 **Quelqu'un** t'a envoyé une baffe secrète! Aïe!",
     "confirm_desc": "✅ Ta baffe secrète a été envoyée à **{user}**!",
-    "public_desc": "💥 <@{author}> {msg} <@${target}>!",
+    "public_desc": "💥 <@{author}> {msg} <@{target}>!",
     "fun_messages": [
       "a giflé",
       "a mis une tape à",

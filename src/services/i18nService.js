@@ -58,12 +58,22 @@ class I18nService {
       return key; // Retourne la clé si aucune traduction n'est trouvée
     }
 
-    // Remplacement des paramètres {param}
-    Object.keys(params).forEach(param => {
-      text = text.replace(new RegExp(`{${param}}`, 'g'), params[param]);
-    });
+    // Fonction interne pour appliquer les remplacements
+    const applyReplacements = (val) => {
+      if (typeof val !== 'string') return val;
+      let result = val;
+      Object.keys(params).forEach(param => {
+        result = result.replace(new RegExp(`{${param}}`, 'g'), params[param]);
+      });
+      return result;
+    };
 
-    return text;
+    // Si c'est un tableau, on applique le remplacement à chaque élément
+    if (Array.isArray(text)) {
+      return text.map(item => applyReplacements(item));
+    }
+
+    return applyReplacements(text);
   }
 
   /**
