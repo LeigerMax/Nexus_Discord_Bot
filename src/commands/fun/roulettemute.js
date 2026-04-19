@@ -80,8 +80,16 @@ module.exports = {
         await randomMember.voice.setMute(true, t('roulettemute.audit_reason', { duration: '?' }));
         
         // Récupère la config
-        const config = storageService.get(message.guild.id);
+        const config = context.config;
         let duration = parseInt(_args[0]) || config?.rouletteMuteDuration || 300;
+        
+        // Vérification de la durée max configurée
+        const maxDuration = config?.durationSettings?.max_duration || 3600;
+        if (duration > maxDuration) {
+          // On s'assure de démuter si le bot a déjà muté le joueur par erreur juste avant (bien que le check se fasse ici)
+          await randomMember.voice.setMute(false, "Duration limit exceeded").catch(() => {});
+          return message.reply(t('common.error_max_duration', { max: maxDuration }));
+        }
         
         const endTime = Date.now() + (duration * 1000);
         

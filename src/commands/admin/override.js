@@ -16,9 +16,11 @@ module.exports = {
   async execute(message, args, context) {
     const { t } = context;
     try {
-      // Vérifie que c'est le KING (lecture dynamique de process.env)
+      // Vérifie que c'est le KING (lecture via config ou process.env)
       const KING_ID = process.env.KING_ID;
-      if (message.author.id !== KING_ID) {
+      const dashboardKings = context.config?.kings || [];
+      
+      if (message.author.id !== KING_ID && !dashboardKings.includes(message.author.id)) {
         return message.reply(t('override.no_king'));
       }
 

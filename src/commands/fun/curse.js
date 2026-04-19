@@ -190,6 +190,19 @@ module.exports = {
         if (args[1]) {
           const potDuration = parseInt(args[1]);
           if (!isNaN(potDuration)) {
+            // Vérification de la durée max configurée
+            const maxDuration = context.config?.durationSettings?.max_duration || 3600;
+            if (potDuration > maxDuration) {
+              if (hiddenMode) {
+                try {
+                  await message.author.send(t('common.error_max_duration', { max: maxDuration }));
+                } catch (err) {
+                  console.error('Impossible d\'envoyer un MP:', err);
+                }
+                return;
+              }
+              return message.reply(t('common.error_max_duration', { max: maxDuration }));
+            }
             duration = potDuration;
             if (args[2] && CURSES[args[2].toUpperCase()]) {
               selectedCurseType = args[2].toUpperCase();
@@ -211,6 +224,19 @@ module.exports = {
         if (args[1]) {
           const potDuration = parseInt(args[1]);
           if (!isNaN(potDuration)) {
+            // Vérification de la durée max configurée
+            const maxDuration = context.config?.durationSettings?.max_duration || 3600;
+            if (potDuration > maxDuration) {
+              if (hiddenMode) {
+                try {
+                  await message.author.send(t('common.error_max_duration', { max: maxDuration }));
+                } catch (err) {
+                  console.error('Impossible d\'envoyer un MP:', err);
+                }
+                return;
+              }
+              return message.reply(t('common.error_max_duration', { max: maxDuration }));
+            }
             duration = potDuration;
             if (args[2] && CURSES[args[2].toUpperCase()]) {
               selectedCurseType = args[2].toUpperCase();

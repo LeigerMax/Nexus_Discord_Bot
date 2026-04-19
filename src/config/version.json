@@ -1,7 +1,26 @@
 {
-  "current": "1.0.3",
+  "current": "1.0.4",
   "releaseDate": "19 Avril 2026",
   "changelog": {
+    "v1.0.4": {
+      "date": "19 Avril 2026",
+      "features": [
+        "Gestion Temporelle : Ajout d'une limite de durée maximale configurable via le dashboard pour les commandes (spam, curse, mute)",
+        "Dashboard : Nouveau champ de configuration 'Limite durée max' dans l'onglet Général"
+      ],
+      "features_en": [
+        "Time Management: Added a configurable maximum duration limit via the dashboard for commands (spam, curse, mute)",
+        "Dashboard: New 'Max Duration Limit' configuration field in the General tab"
+      ],
+      "fixes": [
+        "Permissions : La commande !override reconnaît désormais les 'Kings' définis dans le dashboard",
+        "Optimisation : Injection de la configuration serveur dans le contexte des commandes pour de meilleures performances"
+      ],
+      "fixes_en": [
+        "Permissions: The !override command now correctly recognizes 'Kings' defined in the dashboard",
+        "Optimization: Server configuration injected into command context for better performance"
+      ]
+    },
     "v1.0.3": {
       "date": "19 Avril 2026",
       "features": [],

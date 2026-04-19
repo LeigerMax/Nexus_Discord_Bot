@@ -34,6 +34,13 @@ module.exports = {
         if (parsedTime < 1) {
           return message.reply(t('spam.error_min_duration'));
         }
+        
+        // Vérification de la durée max configurée
+        const maxDuration = context.config?.durationSettings?.max_duration || 3600;
+        if (parsedTime > maxDuration) {
+          return message.reply(t('common.error_max_duration', { max: maxDuration }));
+        }
+        
         durationInSeconds = parsedTime;
       }
 

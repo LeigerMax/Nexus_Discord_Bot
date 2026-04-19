@@ -180,6 +180,7 @@ class CommandHandler {
       commands: this.commands,
       prefix: prefix,
       locale: locale,
+      config: config || {},
       t: (key, params) => i18n.t(key, locale, params)
     };
 

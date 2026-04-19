@@ -34,6 +34,7 @@
         "prefix": "⚡ Préfixe",
         "auto_feur": "🎭 Auto-Feur",
         "mute_duration": "⏱️ Durée Mute Roulette (s)",
+        "max_command_duration": "⏱️ Limite durée max (s)",
         "bot_language": "🌐 Langue du Bot",
         "random_taunts": "😈 Moqueries Aléatoires",
         "random_taunts_chance": "🎲 Probabilité (% par message)"
@@ -189,6 +190,7 @@
     "error_find_command": "Commande `{command}` introuvable.",
     "help_suggestion": "Utilise `{prefix}help` pour voir toutes les commandes.",
     "no_permission": "❌ Tu n'as pas la permission d'utiliser cette commande.",
+    "error_max_duration": "❌ **Erreur**: La durée maximum autorisée est de {max} secondes.",
     "requested_by": "Demandé par {user}",
     "loading": "Chargement...",
     "success": "Opération réussie !"
