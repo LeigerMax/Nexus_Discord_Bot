@@ -7,7 +7,6 @@
  */
 
 const { EmbedBuilder } = require('discord.js');
-const storageService = require('../../services/storageService');
 
 // Map pour stocker les membres mutés et leurs timeouts
 const mutedMembers = new Map();

@@ -175,7 +175,7 @@ process.on('unhandledRejection', error => {
 async function checkConnectivity(token) {
   console.log("🔍 Test de connectivité API Discord...");
   try {
-    const response = await axios.get('https://discord.com/api/v10/gateway/bot', {
+    await axios.get('https://discord.com/api/v10/gateway/bot', {
       headers: { Authorization: `Bot ${token}` },
       timeout: 10000
     });

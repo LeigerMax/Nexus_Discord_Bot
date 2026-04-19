@@ -143,9 +143,12 @@ class CommandHandler {
     // Récupère la configuration du serveur (préfixe et langue)
     let prefix = this.prefix;
     let locale = 'fr';
+    let config = {};
+
     if (message.guild) {
-      const config = storageService.get(message.guild.id);
-      if (config) {
+      const guildData = storageService.get(message.guild.id);
+      if (guildData) {
+        config = guildData;
         if (config.prefix) prefix = config.prefix;
         if (config.language) locale = config.language;
       }
